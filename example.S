@@ -45,20 +45,18 @@ func:
     str     r1, [fp, #-12]
     str     r2, [fp, #-4]
     cmp     r0, r1      @比较x和y
-    blt     .L3
-    cmp     r0, r2      @比较x和z
     blt     .L2
+    mul     r0, r2, r0  @x>=y,z*x
+    add     r0, r0, r1  @z*x+y
+    b       .L4
+.L2：
+    cmp     r0, r2      @比较x和z
+    blt     .L3
     mul     r0, r1, r0  @x*y
     sub     r0, r0, r2  @x*y-z
     b       .L4
-
-.L2:                    @x>y
-    sub     r0, r1, r0  @y-x
-    b       .L4
-
 .L3:
-    mul     r0, r2, r0  @z*x
-    add     r0, r0, r1  @z*x+y
+     sub     r0, r1, r0  @x<z,y-x
 .L4:
     add     sp, fp, #0
     ldr     fp, [sp], #4
