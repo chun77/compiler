@@ -8,16 +8,16 @@
     .section    .rodata
     .align  2
     
+    .global x
+    .align	4
+    .size	x, 4
 x:
-     .global 	x
-     .align	4
-     .size	x, 4
-     .word	5
+    .word	5
      
-array:
     .global array
     .align  4
     .size array, 20
+array:
     .word   2
     .word   6
     .word   13
