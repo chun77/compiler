@@ -37,7 +37,7 @@ _str2:
     .align  2
 
 func:
-    str     fp, [sp,#-4]！ 
+    str     fp, [sp,#-4]!
     mov     fp, sp
     sub     sp, sp, #12
 
@@ -108,7 +108,7 @@ end:
     mov     r1, #0      @初始化i
     mov     r2, #1      @初始化结果mul
 arrLoop:
-    ldr     r3，[r0],#4 @数组中的值拿出来存进r3,并将r0+4写入r0
+    ldr     r3,[r0],#4 @数组中的值拿出来存进r3,并将r0+4写入r0
     mul     r2,  r3, r2
     add     r1, r1, #1
     cmp     r1, #5
