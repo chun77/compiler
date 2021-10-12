@@ -2,6 +2,7 @@
 
     .comm   y, 4
     .comm   n, 4
+    .comm   z, 4
     .text
     .align  2
     .section    .rodata
@@ -42,16 +43,23 @@ func:
 
     str     r0, [fp, #-8] @将[fp+8]处的值放进r0
     str     r1, [fp, #-12]
-    cmp     r0, r1
+    str     r2, [fp, #-4]
+    cmp     r0, r1      @比较x和y
+    blt     .L3
+    cmp     r0, r2      @比较x和z
     blt     .L2
-    add     r0, r0, r1
-    b       .L3
+    mul     r0, r1, r0  @x*y
+    sub     r0, r0, r2  @x*y-z
+    b       .L4
 
-.L2:
-    mov     r2, r0
-    mul     r0, r2, r1
+.L2:                    @x>y
+    sub     r0, r1, r0  @y-x
+    b       .L4
+
 .L3:
-
+    mul     r0, r2, r0  @z*x
+    add     r0, r0, r1  @z*x+y
+.L4:
     add     sp, fp, #0
     ldr     fp, [sp], #4
     bx      lr
@@ -81,10 +89,15 @@ end:
     ldr     r1, _bridge+4   @r1=&y
     ldr     r0, _bridge+16
     bl      __isoc99_scanf  @输入y,r0是str1,r1是&y
+    ldr     r0, _bridge+16
+    ldr     r1, _bridge+24
+    bl      _isoc99_scanf   @输入z,r0是str1,r1是&z
     ldr     r3, _bridge+4
     ldr     r2, _bridge
+    ldr     r4, _bridge+24
     ldr     r0, [r2]    @r0是x
     ldr     r1, [r3]    @r1是y
+    ldr     r2, [r4]    @r2是z
     bl      func    @调用func
     mov     r1, r0
     ldr     r0, _bridge+20
@@ -112,3 +125,4 @@ _bridge:
     .word   _str0
     .word   _str1
     .word   _str2
+    .word   z
