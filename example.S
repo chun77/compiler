@@ -12,6 +12,17 @@ x:
      .align	4
      .size	x, 4
      .word	5
+     
+array:
+    .global array
+    .align  4
+    .size array, 20
+    .word   2
+    .word   6
+    .word   13
+    .word   3
+    .word   99
+    
 _str0:
     .ascii  "%d\n\0"
     .align 2
