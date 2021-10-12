@@ -32,7 +32,7 @@ _str1:
     .align  2
 
 _str2:
-    .ascii  "result is %d\n \0"
+    .ascii  "result is %d\n\0"
     .text
     .align  2
 
