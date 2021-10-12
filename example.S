@@ -32,7 +32,7 @@ _str1:
     .align  2
 
 _str2:
-    .ascii  "result is %d \0"
+    .ascii  "result is %d\n \0"
     .text
     .align  2
 
@@ -49,7 +49,7 @@ func:
     mul     r0, r2, r0  @x>=y,z*x
     add     r0, r0, r1  @z*x+y
     b       .L4
-.L2：
+.L2:
     cmp     r0, r2      @比较x和z
     blt     .L3
     mul     r0, r1, r0  @x*y
@@ -89,7 +89,7 @@ end:
     bl      __isoc99_scanf  @输入y,r0是str1,r1是&y
     ldr     r0, _bridge+16
     ldr     r1, _bridge+24
-    bl      _isoc99_scanf   @输入z,r0是str1,r1是&z
+    bl      __isoc99_scanf   @输入z,r0是str1,r1是&z
     ldr     r3, _bridge+4
     ldr     r2, _bridge
     ldr     r4, _bridge+24
