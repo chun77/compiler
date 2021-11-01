@@ -140,6 +140,20 @@ BLOCKCOMMENTEND \*\/
         return ADD;
     #endif
 }
+"*" {
+    #ifdef ONLY_FOR_LEX
+        outputline("MULT","*");
+    #else
+        return MULT;
+    #endif
+}
+"," {
+    #ifdef ONLY_FOR_LEX
+        outputline("COMMA",",");
+    #else
+        return COMMA;
+    #endif
+}
 ";" {
     #ifdef ONLY_FOR_LEX
         outputline("SEMICOLON",";");
