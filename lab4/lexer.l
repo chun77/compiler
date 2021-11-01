@@ -24,6 +24,7 @@
     extern FILE *yyin; 
     extern FILE *yyout;
     ofstream output;
+    int offset=0;
 
     void outputline(string s1,string s2,string s3=""){
         output.width(10);
@@ -33,7 +34,10 @@
         output.width(8);
         output<<to_string(yylineno);
         output.width(8);
-        output<<s3<<endl;
+        output<<s3;
+        output.width(8);
+        output<<offset<<endl;    
+        offset+=string(yytext).size();
     }
     #endif
 %}
@@ -55,7 +59,7 @@ BLOCKCOMMENTEND \*\/
 %%
 
 "int" {
-    /*
+    /*y
     * Questions: 
     *   Q1: Why we need to return INT in further labs?
     *   Q2: What is "INT" actually?
@@ -101,7 +105,13 @@ BLOCKCOMMENTEND \*\/
         return MAIN;
     #endif
 }
-
+"==" {
+    #ifdef ONLY_FOR_LEX
+        outputline("EQ","==");
+    #else
+        return ASSIGN;
+    #endif
+}
 "=" {
     #ifdef ONLY_FOR_LEX
         outputline("ASSIGN","=");
@@ -169,11 +179,17 @@ BLOCKCOMMENTEND \*\/
     #ifdef ONLY_FOR_LEX
         outputline("WHILE","while");
     #else
+        string s(yytext);
+        int siz=s.size();
+        offset+=siz;
         return WHILE;
     #endif
 }
 
-{EOL} yylineno++;
+{EOL} {
+    yylineno++;
+    offset=0;
+}
 {LINECOMMENT} 
 {BLOCKCOMMENTBEGIN} {BEGIN COMMENT;}
 <COMMENT>{BLOCKCOMMENT1} {
@@ -181,7 +197,9 @@ BLOCKCOMMENTEND \*\/
 }       
 <COMMENT>{BLOCKCOMMENT2} {}
 <COMMENT>{BLOCKCOMMENTEND} {BEGIN INITIAL;}
-{WHITE}
+{WHITE} {
+	offset++;
+}
 
 {DECIMAL} {
     #ifdef ONLY_FOR_LEX
@@ -199,7 +217,7 @@ BLOCKCOMMENTEND \*\/
         int a=0;
         for (int i=0;i<siz;i++) {
                 a= yytext[i]-'0';
-                num = num*8 +a;
+                num = num*8 +a ;
             }
 
         outputline("NUM",std::to_string(num));
@@ -265,9 +283,10 @@ int main(int argc, char **argv){
     output.width(12);
     output<<"lexeme";
     output.width(8);
-    output<<"lineno"<<endl;
-    //output.width(20);
-    //output<<"pointer_to_scope"<<endl;
+    output<<"lineno";
+    output.width(20);
+    output<<"offset"<<endl;
+    output.width(8);
     yylex();
 
     output.close();
