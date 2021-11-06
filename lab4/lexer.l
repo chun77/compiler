@@ -1,4 +1,4 @@
-%option noyywrap
+
 %{
     /*
     * You will need to comment this line in lab5.
@@ -187,6 +187,13 @@ BLOCKCOMMENTEND \*\/
         outputline("RBRACE","}");
     #else
         return RBRACE;
+    #endif
+}
+"." {
+    #ifdef ONLY_FOR_LEX
+        outputline("DOT",".");
+    #else
+        return DOT;
     #endif
 }
 "while" {
