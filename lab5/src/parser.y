@@ -28,11 +28,11 @@
 %token WHILE
 %token INT VOID
 %token LPAREN RPAREN LBRACE RBRACE SEMICOLON
-%token ADD SUB OR AND LESS ASSIGN
+%token ADD SUB OR AND LESS ASSIGN MORE MUL DIV NOT
 %token RETURN
 
 %nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt FuncDef
-%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp
+%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp MulExp
 %nterm <type> Type
 
 %precedence THEN
@@ -111,7 +111,7 @@ ReturnStmt
     ;
 Exp
     :
-    AddExp {$$ = $1;}
+    AddExp {$$ = $1;} | MulExp {$$ = $1;}
     ;
 Cond
     :
@@ -141,6 +141,22 @@ AddExp
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::SUB, $1, $3);
+    }
+    ;
+MulExp
+    :
+    PrimaryExp {$$ = $1;}
+    |
+    MulExp MUL PrimaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::MUL, $1, $3);
+    }
+    |
+    MulExp DIV PrimaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::DIV, $1, $3);
     }
     ;
 RelExp

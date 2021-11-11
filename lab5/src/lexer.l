@@ -22,7 +22,14 @@ DECIMIAL ([1-9][0-9]*|0)
 ID [[:alpha:]_][[:alpha:][:digit:]_]*
 EOL (\r\n|\n|\r)
 WHITE [\t ]
-%x BLOCKCOMMENT
+
+LINECOMMENT \/\/([^\n])*
+
+BLOCKCOMMENTBEGIN \/\*
+BLOCKCOMMENT1 \n
+BLOCKCOMMENT2 .
+BLOCKCOMMENTEND \*\/
+%x COMMENT
 
 %%
 
@@ -72,10 +79,45 @@ WHITE [\t ]
         DEBUG_FOR_LAB4("LESS\t<");
     return LESS;
 }
+">" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("MORE\t<");
+    return MORE;
+}
 "+" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("ADD\t+");
     return ADD;
+}
+"-" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("SUB\t<");
+    return SUB;
+}
+"*" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("MUL\t<");
+    return MUL;
+}
+"/" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("DIV\t<");
+    return DIV;
+}
+"&" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("AND\t<");
+    return AND;
+}
+"|" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("OR\t<");
+    return OR;
+}
+"~" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("NOT\t<");
+    return NOT;
 }
 ";" {
     if(dump_tokens)
@@ -121,4 +163,12 @@ WHITE [\t ]
 }
 {EOL} yylineno++;
 {WHITE}
+
+{LINECOMMENT} 
+{BLOCKCOMMENTBEGIN} {BEGIN COMMENT;}
+<COMMENT>{BLOCKCOMMENT1} {
+    yylineno++;
+}       
+<COMMENT>{BLOCKCOMMENT2} {}
+<COMMENT>{BLOCKCOMMENTEND} {BEGIN INITIAL;}
 %%
