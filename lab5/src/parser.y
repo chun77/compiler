@@ -111,7 +111,7 @@ ReturnStmt
     ;
 Exp
     :
-    AddExp {$$ = $1;} | MulExp {$$ = $1;}
+    AddExp {$$ = $1;} 
     ;
 Cond
     :
@@ -125,22 +125,6 @@ PrimaryExp
     | INTEGER {
         SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
         $$ = new Constant(se);
-    }
-    ;
-AddExp
-    :
-    PrimaryExp {$$ = $1;}
-    |
-    AddExp ADD PrimaryExp
-    {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$ = new BinaryExpr(se, BinaryExpr::ADD, $1, $3);
-    }
-    |
-    AddExp SUB PrimaryExp
-    {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$ = new BinaryExpr(se, BinaryExpr::SUB, $1, $3);
     }
     ;
 MulExp
@@ -159,6 +143,23 @@ MulExp
         $$ = new BinaryExpr(se, BinaryExpr::DIV, $1, $3);
     }
     ;
+AddExp
+    :
+    MulExp {$$ = $1;}
+    |
+    AddExp ADD MulExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::ADD, $1, $3);
+    }
+    |
+    AddExp SUB MulExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::SUB, $1, $3);
+    }
+    ;
+
 RelExp
     :
     AddExp {$$ = $1;}
