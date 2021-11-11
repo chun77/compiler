@@ -114,16 +114,24 @@ ReturnStmt
     ;
 Exp
     :
-<<<<<<< Updated upstream
     AddExp {$$ = $1;} 
-=======
-    AddExp {$$ = $1;}
->>>>>>> Stashed changes
     ;
 Cond
     :
     LOrExp {$$ = $1;}
     ;
+
+PrimaryExp
+    :
+    LVal {
+        $$ = $1;
+    }
+    | INTEGER {
+        SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
+        $$ = new Constant(se);
+    }
+    ;
+
 MulExp
     :
     PrimaryExp {$$ = $1;}
@@ -147,33 +155,6 @@ MulExp
     }
     ;
 
-PrimaryExp
-    :
-    LVal {
-        $$ = $1;
-    }
-    | INTEGER {
-        SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
-        $$ = new Constant(se);
-    }
-    ;
-MulExp
-    :
-    MulExp {$$ = $1;}
-    |
-    MulExp MUL PrimaryExp
-    {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$ = new BinaryExpr(se, BinaryExpr::MUL, $1, $3);
-    }
-    |
-    MulExp DIV PrimaryExp
-    {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$ = new BinaryExpr(se, BinaryExpr::DIV, $1, $3);
-    }
-    ;
-<<<<<<< Updated upstream
 AddExp
     :
     MulExp {$$ = $1;}
@@ -190,8 +171,6 @@ AddExp
         $$ = new BinaryExpr(se, BinaryExpr::SUB, $1, $3);
     }
     ;
-=======
->>>>>>> Stashed changes
 
 RelExp
     :
@@ -276,11 +255,11 @@ VarDef
 ConstDef
     :
     CONST Type ID ASSIGN Exp SEMICOLON {
-    SymbolEntry *se;
-    se = new IdentifierSymbolEntry($2, $3, identifiers->getLevel());
-    identifiers->install($3, se);
-    $$ = new ConstDef(new Id(se),$5);
-    delete []$3;
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry($2, $3, identifiers->getLevel());
+        identifiers->install($3, se);
+        $$ = new ConstDef(new Id(se),$5);
+        delete []$3;
     }
     ;
 FuncDef
