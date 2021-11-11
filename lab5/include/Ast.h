@@ -30,7 +30,7 @@ private:
     int op;
     ExprNode *expr1, *expr2;
 public:
-    enum {ADD, SUB, AND, OR, LESS, MORE, DIV, MUL};
+    enum {ADD, SUB, AND, OR, LESS, MORE, DIV, MUL,LESSQ,MOREQ,MOD};
     BinaryExpr(SymbolEntry *se, int op, ExprNode*expr1, ExprNode*expr2) : ExprNode(se), op(op), expr1(expr1), expr2(expr2){};
     void output(int level);
 };
@@ -70,12 +70,41 @@ public:
     void output(int level);
 };
 
-class DeclStmt : public StmtNode
+class VarDecl : public StmtNode
 {
 private:
     Id *id;
 public:
-    DeclStmt(Id *id) : id(id){};
+    VarDecl(Id *id) : id(id){};
+    void output(int level);
+};
+
+class ConstDecl : public StmtNode
+{
+private:
+    Id *id;
+public:
+    ConstDecl(Id *id) : id(id){};
+    void output(int level);
+};
+
+class VarDef : public StmtNode
+{
+private:
+    Id *id;
+    ExprNode *expr;
+public:
+    VarDef(Id *id,ExprNode* expr) : id(id), expr(expr){};
+    void output(int level);
+};
+
+class ConstDef : public StmtNode
+{
+private:
+    Id *id;
+    ExprNode *expr;
+public:
+    ConstDef(Id *id,ExprNode* expr) : id(id), expr(expr){};
     void output(int level);
 };
 
@@ -113,9 +142,9 @@ class WhileStmt : public StmtNode
 {
 private:
     ExprNode *cond;
-    StmtNode *thenStmt;
+    StmtNode *Stmt;
 public:
-    WhileStmt(ExprNode *cond, StmtNode *thenStmt) : cond(cond), thenStmt(thenStmt){};
+    WhileStmt(ExprNode *cond, StmtNode *Stmt) : cond(cond), Stmt(Stmt){};
     void output(int level);
 };
 

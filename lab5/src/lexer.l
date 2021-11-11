@@ -65,8 +65,13 @@ BLOCKCOMMENTEND \*\/
 };
 "while" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4("WHILE\treturn");
+        DEBUG_FOR_LAB4("WHILE\twhile");
     return WHILE;
+}
+"const" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("CONST\tconst");
+    return CONST;
 }
 
 "=" {
@@ -91,18 +96,23 @@ BLOCKCOMMENTEND \*\/
 }
 "-" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4("SUB\t<");
+        DEBUG_FOR_LAB4("SUB\t-");
     return SUB;
 }
 "*" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4("MUL\t<");
+        DEBUG_FOR_LAB4("MUL\t*");
     return MUL;
 }
 "/" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4("DIV\t<");
+        DEBUG_FOR_LAB4("DIV\t/");
     return DIV;
+}
+"%" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("DIV\t%");
+    return MOD;
 }
 "&" {
     if(dump_tokens)

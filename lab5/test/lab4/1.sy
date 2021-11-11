@@ -2,9 +2,12 @@ int a;
 
 int main()
 {
-    int a;
+    int a=1;
+    const int b=4;
     a = 1 + 2;
     if(a < 5)
         return 1;
+    a = 9%4;
+    a= 8/5;
     return 0;
 }

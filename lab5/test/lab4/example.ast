@@ -2,11 +2,19 @@ program
     Sequence
         Sequence
             Sequence
+<<<<<<< Updated upstream
                 DeclStmt
                     Id	name: a	scope: 0	type: int
                 DeclStmt
                     Id	name: b	scope: 0	type: int
             DeclStmt
+=======
+                VarDeclStmt
+                    Id	name: a	scope: 0	type: int
+                VarDeclStmt
+                    Id	name: b	scope: 0	type: int
+            VarDeclStmt
+>>>>>>> Stashed changes
                 Id	name: sum	scope: 0	type: int
         FunctionDefine function name: main, type: int()
             CompoundStmt
@@ -18,7 +26,11 @@ program
                                     Sequence
                                         Sequence
                                             Sequence
+<<<<<<< Updated upstream
                                                 DeclStmt
+=======
+                                                VarDeclStmt
+>>>>>>> Stashed changes
                                                     Id	name: a	scope: 2	type: int
                                                 AssignStmt
                                                     Id	name: a	scope: 2	type: int
@@ -31,12 +43,20 @@ program
                                                     IntegerLiteral	value: 5	type: int
                                                 ReturnStmt
                                                     IntegerLiteral	value: 1	type: int
+<<<<<<< Updated upstream
                                         DeclStmt
+=======
+                                        VarDeclStmt
+>>>>>>> Stashed changes
                                             Id	name: b	scope: 2	type: int
                                     AssignStmt
                                         Id	name: b	scope: 2	type: int
                                         IntegerLiteral	value: 0	type: int
+<<<<<<< Updated upstream
                                 DeclStmt
+=======
+                                VarDeclStmt
+>>>>>>> Stashed changes
                                     Id	name: sum	scope: 2	type: int
                             AssignStmt
                                 Id	name: sum	scope: 2	type: int

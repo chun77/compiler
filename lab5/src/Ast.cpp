@@ -47,6 +47,9 @@ void BinaryExpr::output(int level)
         case DIV:
             op_str = "div";
             break;
+        case MOD:
+            op_str = "mod";
+            break;
     }
     fprintf(yyout, "%*cBinaryExpr\top: %s\n", level, ' ', op_str.c_str());
     expr1->output(level + 4);
@@ -86,12 +89,29 @@ void SeqNode::output(int level)
     stmt2->output(level + 4);
 }
 
-void DeclStmt::output(int level)
+void VarDecl::output(int level)
 {
-    fprintf(yyout, "%*cDeclStmt\n", level, ' ');
+    fprintf(yyout, "%*cVarDeclStmt\n", level, ' ');
     id->output(level + 4);
 }
 
+void ConstDecl::output(int level)
+{
+    fprintf(yyout, "%*cConstDeclStmt\n", level, ' ');
+    id->output(level + 4);
+}
+void VarDef::output(int level)
+{
+    fprintf(yyout, "%*cVarDefStmt\n", level, ' ');
+    id->output(level + 4);
+    expr->output(level + 4);
+}
+void ConstDef::output(int level)
+{
+    fprintf(yyout, "%*cConstDefStmt\n", level, ' ');
+    id->output(level + 4);
+    expr->output(level + 4);
+}
 void IfStmt::output(int level)
 {
     fprintf(yyout, "%*cIfStmt\n", level, ' ');
@@ -111,7 +131,7 @@ void WhileStmt::output(int level)
 {
     fprintf(yyout, "%*cWhileStmt\n", level, ' ');
     cond->output(level + 4);
-    thenStmt->output(level + 4);
+    Stmt->output(level + 4);
 }
 
 void ReturnStmt::output(int level)

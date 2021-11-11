@@ -1,12 +1,17 @@
 program
     Sequence
+<<<<<<< Updated upstream
         DeclStmt
+=======
+        VarDeclStmt
+>>>>>>> Stashed changes
             Id	name: a	scope: 0	type: int
         FunctionDefine function name: main, type: int()
             CompoundStmt
                 Sequence
                     Sequence
                         Sequence
+<<<<<<< Updated upstream
                             DeclStmt
                                 Id	name: a	scope: 2	type: int
                             AssignStmt
@@ -20,5 +25,37 @@ program
                                 IntegerLiteral	value: 5	type: int
                             ReturnStmt
                                 IntegerLiteral	value: 1	type: int
+=======
+                            Sequence
+                                Sequence
+                                    Sequence
+                                        VarDefStmt
+                                            Id	name: a	scope: 2	type: int
+                                            IntegerLiteral	value: 1	type: int
+                                        ConstDefStmt
+                                            Id	name: b	scope: 2	type: int
+                                            IntegerLiteral	value: 4	type: int
+                                    AssignStmt
+                                        Id	name: a	scope: 2	type: int
+                                        BinaryExpr	op: add
+                                            IntegerLiteral	value: 1	type: int
+                                            IntegerLiteral	value: 2	type: int
+                                IfStmt
+                                    BinaryExpr	op: less
+                                        Id	name: a	scope: 2	type: int
+                                        IntegerLiteral	value: 5	type: int
+                                    ReturnStmt
+                                        IntegerLiteral	value: 1	type: int
+                            AssignStmt
+                                Id	name: a	scope: 2	type: int
+                                BinaryExpr	op: mod
+                                    IntegerLiteral	value: 9	type: int
+                                    IntegerLiteral	value: 4	type: int
+                        AssignStmt
+                            Id	name: a	scope: 2	type: int
+                            BinaryExpr	op: div
+                                IntegerLiteral	value: 8	type: int
+                                IntegerLiteral	value: 5	type: int
+>>>>>>> Stashed changes
                     ReturnStmt
                         IntegerLiteral	value: 0	type: int

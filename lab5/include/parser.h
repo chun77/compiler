@@ -62,6 +62,7 @@ extern int yydebug;
     IF = 260,
     ELSE = 261,
     WHILE = 262,
+<<<<<<< Updated upstream
     INT = 263,
     VOID = 264,
     LPAREN = 265,
@@ -81,6 +82,32 @@ extern int yydebug;
     NOT = 279,
     RETURN = 280,
     THEN = 281
+=======
+    FOR = 263,
+    INT = 264,
+    VOID = 265,
+    CONST = 266,
+    LPAREN = 267,
+    RPAREN = 268,
+    LBRACE = 269,
+    RBRACE = 270,
+    SEMICOLON = 271,
+    LESS = 272,
+    ASSIGN = 273,
+    MORE = 274,
+    LESSQ = 275,
+    MOREQ = 276,
+    MUL = 277,
+    DIV = 278,
+    MOD = 279,
+    OR = 280,
+    AND = 281,
+    NOT = 282,
+    ADD = 283,
+    SUB = 284,
+    RETURN = 285,
+    THEN = 286
+>>>>>>> Stashed changes
   };
 #endif
 
@@ -96,7 +123,11 @@ union YYSTYPE
     ExprNode* exprtype;
     Type* type;
 
+<<<<<<< Updated upstream
 #line 100 "include/parser.h"
+=======
+#line 105 "include/parser.h"
+>>>>>>> Stashed changes
 
 };
 typedef union YYSTYPE YYSTYPE;

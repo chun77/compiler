@@ -25,14 +25,17 @@
 %token <strtype> ID 
 %token <itype> INTEGER
 %token IF ELSE
-%token WHILE
-%token INT VOID
+%token WHILE FOR
+%token INT VOID CONST
 %token LPAREN RPAREN LBRACE RBRACE SEMICOLON
-%token ADD SUB OR AND LESS ASSIGN MORE MUL DIV NOT
+%token LESS ASSIGN MORE LESSQ MOREQ
+%token MUL DIV MOD
+%token OR AND NOT
+%token ADD SUB 
 %token RETURN
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt FuncDef
-%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp MulExp
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDecl VarDecl DefStmt VarDef ConstDef FuncDef
+%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp
 %nterm <type> Type
 
 %precedence THEN
@@ -57,7 +60,7 @@ Stmt
     | ReturnStmt {$$=$1;}
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
-    
+    | DefStmt {$$=$1;}
     ;
 LVal
     : ID {
@@ -101,7 +104,7 @@ IfStmt
 WhileStmt
     : WHILE LPAREN Cond RPAREN Stmt {
         $$ = new WhileStmt($3, $5);
-    }
+    } 
     ;
 ReturnStmt
     :
@@ -111,21 +114,15 @@ ReturnStmt
     ;
 Exp
     :
+<<<<<<< Updated upstream
     AddExp {$$ = $1;} 
+=======
+    AddExp {$$ = $1;}
+>>>>>>> Stashed changes
     ;
 Cond
     :
     LOrExp {$$ = $1;}
-    ;
-PrimaryExp
-    :
-    LVal {
-        $$ = $1;
-    }
-    | INTEGER {
-        SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
-        $$ = new Constant(se);
-    }
     ;
 MulExp
     :
@@ -142,7 +139,41 @@ MulExp
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::DIV, $1, $3);
     }
+    |
+    MulExp MOD PrimaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::MOD, $1, $3);
+    }
     ;
+
+PrimaryExp
+    :
+    LVal {
+        $$ = $1;
+    }
+    | INTEGER {
+        SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
+        $$ = new Constant(se);
+    }
+    ;
+MulExp
+    :
+    MulExp {$$ = $1;}
+    |
+    MulExp MUL PrimaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::MUL, $1, $3);
+    }
+    |
+    MulExp DIV PrimaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::DIV, $1, $3);
+    }
+    ;
+<<<<<<< Updated upstream
 AddExp
     :
     MulExp {$$ = $1;}
@@ -159,6 +190,8 @@ AddExp
         $$ = new BinaryExpr(se, BinaryExpr::SUB, $1, $3);
     }
     ;
+=======
+>>>>>>> Stashed changes
 
 RelExp
     :
@@ -200,12 +233,54 @@ Type
     ;
 DeclStmt
     :
+    ConstDecl {$$ = $1;}
+    |
+    VarDecl {$$ = $1;}
+    ;
+VarDecl
+    :
     Type ID SEMICOLON {
         SymbolEntry *se;
         se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
         identifiers->install($2, se);
-        $$ = new DeclStmt(new Id(se));
+        $$ = new VarDecl(new Id(se));
         delete []$2;
+    }
+    ;
+ConstDecl
+    :
+    CONST Type ID SEMICOLON {
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry($2, $3, identifiers->getLevel());
+        identifiers->install($3, se);
+        $$ = new ConstDecl(new Id(se));
+        delete []$3;
+    }
+    ;
+DefStmt
+    :
+    VarDef {$$ = $1;}
+    |
+    ConstDef {$$ = $1;}
+    ;
+VarDef
+    :
+    Type ID ASSIGN Exp SEMICOLON {
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
+        identifiers->install($2, se);
+        $$ = new VarDef(new Id(se),$4);
+        delete []$2;
+    }
+    ;
+ConstDef
+    :
+    CONST Type ID ASSIGN Exp SEMICOLON {
+    SymbolEntry *se;
+    se = new IdentifierSymbolEntry($2, $3, identifiers->getLevel());
+    identifiers->install($3, se);
+    $$ = new ConstDef(new Id(se),$5);
+    delete []$3;
     }
     ;
 FuncDef

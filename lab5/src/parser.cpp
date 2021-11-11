@@ -136,6 +136,7 @@ extern int yydebug;
     IF = 260,
     ELSE = 261,
     WHILE = 262,
+<<<<<<< Updated upstream
     INT = 263,
     VOID = 264,
     LPAREN = 265,
@@ -155,6 +156,32 @@ extern int yydebug;
     NOT = 279,
     RETURN = 280,
     THEN = 281
+=======
+    FOR = 263,
+    INT = 264,
+    VOID = 265,
+    CONST = 266,
+    LPAREN = 267,
+    RPAREN = 268,
+    LBRACE = 269,
+    RBRACE = 270,
+    SEMICOLON = 271,
+    LESS = 272,
+    ASSIGN = 273,
+    MORE = 274,
+    LESSQ = 275,
+    MOREQ = 276,
+    MUL = 277,
+    DIV = 278,
+    MOD = 279,
+    OR = 280,
+    AND = 281,
+    NOT = 282,
+    ADD = 283,
+    SUB = 284,
+    RETURN = 285,
+    THEN = 286
+>>>>>>> Stashed changes
   };
 #endif
 
@@ -170,7 +197,11 @@ union YYSTYPE
     ExprNode* exprtype;
     Type* type;
 
+<<<<<<< Updated upstream
 #line 174 "src/parser.cpp"
+=======
+#line 179 "src/parser.cpp"
+>>>>>>> Stashed changes
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -487,6 +518,7 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
+<<<<<<< Updated upstream
 #define YYFINAL  32
 /* YYLAST -- Last index in YYTABLE.  */
 #define YYLAST   66
@@ -502,6 +534,23 @@ union yyalloc
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   281
+=======
+#define YYFINAL  39
+/* YYLAST -- Last index in YYTABLE.  */
+#define YYLAST   82
+
+/* YYNTOKENS -- Number of terminals.  */
+#define YYNTOKENS  32
+/* YYNNTS -- Number of nonterminals.  */
+#define YYNNTS  28
+/* YYNRULES -- Number of rules.  */
+#define YYNRULES  49
+/* YYNSTATES -- Number of states.  */
+#define YYNSTATES  86
+
+#define YYUNDEFTOK  2
+#define YYMAXUTOK   286
+>>>>>>> Stashed changes
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -541,18 +590,30 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+<<<<<<< Updated upstream
       25,    26
+=======
+      25,    26,    27,    28,    29,    30,    31
+>>>>>>> Stashed changes
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int16 yyrline[] =
 {
+<<<<<<< Updated upstream
        0,    42,    42,    47,    48,    53,    54,    55,    56,    57,
       58,    59,    63,    78,    84,    83,    94,    97,   102,   108,
      114,   118,   122,   125,   132,   134,   140,   148,   150,   156,
      165,   167,   175,   177,   185,   187,   194,   197,   203,   213,
      213
+=======
+       0,    45,    45,    50,    51,    56,    57,    58,    59,    60,
+      61,    62,    63,    66,    81,    87,    86,    97,   100,   105,
+     111,   117,   121,   125,   127,   133,   139,   148,   151,   158,
+     160,   166,   175,   177,   185,   187,   195,   197,   204,   207,
+     213,   215,   219,   229,   239,   241,   245,   255,   265,   265
+>>>>>>> Stashed changes
 };
 #endif
 
@@ -562,12 +623,23 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "ID", "INTEGER", "IF", "ELSE", "WHILE",
+<<<<<<< Updated upstream
   "INT", "VOID", "LPAREN", "RPAREN", "LBRACE", "RBRACE", "SEMICOLON",
   "ADD", "SUB", "OR", "AND", "LESS", "ASSIGN", "MORE", "MUL", "DIV", "NOT",
   "RETURN", "THEN", "$accept", "Stmts", "Stmt", "AssignStmt", "BlockStmt",
   "IfStmt", "WhileStmt", "ReturnStmt", "DeclStmt", "FuncDef", "Exp",
   "AddExp", "Cond", "LOrExp", "PrimaryExp", "LVal", "RelExp", "LAndExp",
   "MulExp", "Type", "Program", "$@1", "$@2", YY_NULLPTR
+=======
+  "FOR", "INT", "VOID", "CONST", "LPAREN", "RPAREN", "LBRACE", "RBRACE",
+  "SEMICOLON", "LESS", "ASSIGN", "MORE", "LESSQ", "MOREQ", "MUL", "DIV",
+  "MOD", "OR", "AND", "NOT", "ADD", "SUB", "RETURN", "THEN", "$accept",
+  "Stmts", "Stmt", "AssignStmt", "BlockStmt", "IfStmt", "WhileStmt",
+  "ReturnStmt", "DeclStmt", "ConstDecl", "VarDecl", "DefStmt", "VarDef",
+  "ConstDef", "FuncDef", "Exp", "AddExp", "MulExp", "Cond", "LOrExp",
+  "PrimaryExp", "LVal", "RelExp", "LAndExp", "Type", "Program", "$@1",
+  "$@2", YY_NULLPTR
+>>>>>>> Stashed changes
 };
 #endif
 
@@ -578,11 +650,20 @@ static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
+<<<<<<< Updated upstream
      275,   276,   277,   278,   279,   280,   281
 };
 # endif
 
 #define YYPACT_NINF (-21)
+=======
+     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
+     285,   286
+};
+# endif
+
+#define YYPACT_NINF (-31)
+>>>>>>> Stashed changes
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -596,6 +677,7 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
+<<<<<<< Updated upstream
       26,   -21,    -8,    -6,   -21,   -21,   -21,     9,    26,   -21,
      -21,   -21,   -21,   -21,   -21,   -21,   -21,   -14,    15,    21,
        9,     9,    26,   -21,    11,     1,   -21,   -21,    -3,   -21,
@@ -603,6 +685,17 @@ static const yytype_int8 yypact[] =
      -21,     9,     9,     9,     9,    30,   -21,    39,    26,     9,
        9,     9,    26,   -21,    -3,    -3,   -21,   -21,   -21,    42,
       44,    29,     1,    24,   -21,    43,    26,   -21,   -21
+=======
+      14,   -31,    -7,    10,   -31,   -31,     4,   -31,    29,    14,
+     -31,   -31,   -31,   -31,   -31,   -31,   -31,   -31,   -31,   -31,
+     -31,   -31,   -31,     9,    35,    30,    29,    29,    43,    14,
+     -31,    36,    20,    18,   -31,   -31,   -31,    29,     2,   -31,
+      20,    38,    28,    39,    31,    42,    27,     1,   -31,    29,
+      29,    29,    29,    29,    44,   -31,    29,    47,    14,    29,
+      29,    29,    14,   -31,    29,   -31,   -31,   -31,   -31,   -31,
+     -31,   -31,    45,    50,    63,    31,    20,    39,   -31,    54,
+     -31,    57,    14,   -31,   -31,   -31
+>>>>>>> Stashed changes
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -610,6 +703,7 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
+<<<<<<< Updated upstream
        0,    12,     0,     0,    36,    37,    14,     0,     2,     3,
        5,     6,     7,     8,     9,    10,    11,     0,     0,     0,
        0,     0,     0,    23,     0,    20,    24,    22,    27,     4,
@@ -617,22 +711,45 @@ static const yytype_int8 yydefact[] =
       19,     0,     0,     0,     0,     0,    38,     0,     0,     0,
        0,     0,     0,    15,    28,    29,    25,    26,    13,     0,
       16,    35,    31,    33,    18,     0,     0,    40,    17
+=======
+       0,    13,     0,     0,    38,    39,     0,    15,     0,     2,
+       3,     5,     6,     7,     8,     9,    10,    40,    41,    12,
+      44,    45,    11,     0,     0,     0,     0,     0,     0,     0,
+      28,     0,    21,    29,    23,    27,     4,     0,    48,     1,
+      32,     0,    22,    34,    36,     0,     0,     0,    20,     0,
+       0,     0,     0,     0,     0,    42,     0,     0,     0,     0,
+       0,     0,     0,    43,     0,    16,    30,    31,    24,    25,
+      26,    14,     0,     0,    17,    37,    33,    35,    19,     0,
+      46,     0,     0,    47,    49,    18
+>>>>>>> Stashed changes
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
+<<<<<<< Updated upstream
      -21,    32,    -7,   -21,    -9,   -21,   -21,   -21,   -21,   -21,
       27,    -4,    37,   -21,   -20,     0,    10,    13,    -5,   -21,
      -21,   -21,   -21
+=======
+     -31,    46,    -8,   -31,    -9,   -31,   -31,   -31,   -31,   -31,
+     -31,   -31,   -31,   -31,   -31,   -30,   -24,   -31,    49,   -31,
+      15,     0,    12,    19,    71,   -31,   -31,   -31
+>>>>>>> Stashed changes
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
+<<<<<<< Updated upstream
       -1,     8,     9,    10,    11,    12,    13,    14,    15,    16,
       24,    33,    34,    35,    26,    27,    36,    37,    28,    18,
       19,    22,    47
+=======
+      -1,     9,    10,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,    20,    21,    22,    31,    32,    33,    41,    42,
+      34,    35,    43,    44,    24,    25,    29,    57
+>>>>>>> Stashed changes
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -640,6 +757,7 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
+<<<<<<< Updated upstream
       17,    29,    20,    25,    21,     1,    30,     2,    17,     3,
        4,     5,     1,    23,     6,    53,    41,    42,    31,    43,
       44,    32,    17,    56,    57,    40,    25,     7,    46,     1,
@@ -647,10 +765,22 @@ static const yytype_int8 yytable[] =
       49,    60,    52,    50,    58,    64,    62,    51,    17,    59,
       66,     7,    17,    65,    39,     6,    67,    45,    38,    68,
        0,    63,    61,     0,     0,     0,    17
+=======
+      23,    36,    40,    40,     1,    26,     2,    54,     3,    23,
+       4,     5,     6,     4,     5,     7,    65,     1,    55,     2,
+      56,     3,    27,     4,     5,     6,    72,    37,     7,    23,
+      39,     8,     1,    30,    79,    40,    76,    40,    38,    36,
+      51,    52,    53,    63,     8,    64,    46,    23,    49,    50,
+      74,    58,    48,    59,    78,    62,    60,    61,    23,    73,
+      71,    80,    23,    81,    66,    67,    68,    69,    70,    82,
+      83,     7,    84,    77,    85,    47,    45,    28,    75,     0,
+       0,     0,    23
+>>>>>>> Stashed changes
 };
 
 static const yytype_int8 yycheck[] =
 {
+<<<<<<< Updated upstream
        0,     8,    10,     7,    10,     3,    20,     5,     8,     7,
        8,     9,     3,     4,    12,    13,    15,    16,     3,    22,
       23,     0,    22,    43,    44,    14,    30,    25,    14,     3,
@@ -658,12 +788,24 @@ static const yytype_int8 yycheck[] =
       17,    48,    11,    19,    14,    52,    50,    18,    48,    10,
        6,    25,    52,    11,    22,    12,    65,    30,    21,    66,
       -1,    51,    49,    -1,    -1,    -1,    66
+=======
+       0,     9,    26,    27,     3,    12,     5,    37,     7,     9,
+       9,    10,    11,     9,    10,    14,    15,     3,    16,     5,
+      18,     7,    12,     9,    10,    11,    56,    18,    14,    29,
+       0,    30,     3,     4,    64,    59,    60,    61,     3,    47,
+      22,    23,    24,    16,    30,    18,     3,    47,    28,    29,
+      58,    13,    16,    25,    62,    13,    17,    26,    58,    12,
+      16,    16,    62,    13,    49,    50,    51,    52,    53,     6,
+      16,    14,    81,    61,    82,    29,    27,     6,    59,    -1,
+      -1,    -1,    82
+>>>>>>> Stashed changes
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
+<<<<<<< Updated upstream
        0,     3,     5,     7,     8,     9,    12,    25,    28,    29,
       30,    31,    32,    33,    34,    35,    36,    42,    46,    47,
       10,    10,    48,     4,    37,    38,    41,    42,    45,    29,
@@ -671,26 +813,52 @@ static const yytype_int8 yystos[] =
       14,    15,    16,    22,    23,    37,    14,    49,    11,    17,
       19,    18,    11,    13,    45,    45,    41,    41,    14,    10,
       29,    44,    38,    43,    29,    11,     6,    31,    29
+=======
+       0,     3,     5,     7,     9,    10,    11,    14,    30,    33,
+      34,    35,    36,    37,    38,    39,    40,    41,    42,    43,
+      44,    45,    46,    53,    56,    57,    12,    12,    56,    58,
+       4,    47,    48,    49,    52,    53,    34,    18,     3,     0,
+      48,    50,    51,    54,    55,    50,     3,    33,    16,    28,
+      29,    22,    23,    24,    47,    16,    18,    59,    13,    25,
+      17,    26,    13,    16,    18,    15,    52,    52,    52,    52,
+      52,    16,    47,    12,    34,    55,    48,    54,    34,    47,
+      16,    13,     6,    16,    36,    34
+>>>>>>> Stashed changes
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
+<<<<<<< Updated upstream
        0,    27,    47,    28,    28,    29,    29,    29,    29,    29,
       29,    29,    42,    30,    48,    31,    32,    32,    33,    34,
       37,    39,    41,    41,    45,    45,    45,    38,    38,    38,
       43,    43,    44,    44,    40,    40,    46,    46,    35,    49,
       36
+=======
+       0,    32,    57,    33,    33,    34,    34,    34,    34,    34,
+      34,    34,    34,    53,    35,    58,    36,    37,    37,    38,
+      39,    47,    50,    49,    49,    49,    49,    52,    52,    48,
+      48,    48,    54,    54,    55,    55,    51,    51,    56,    56,
+      40,    40,    42,    41,    43,    43,    44,    45,    59,    46
+>>>>>>> Stashed changes
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     1,     2,     1,     1,     1,     1,     1,
+<<<<<<< Updated upstream
        1,     1,     1,     4,     0,     4,     5,     7,     5,     3,
        1,     1,     1,     1,     1,     3,     3,     1,     3,     3,
        1,     3,     1,     3,     1,     3,     1,     1,     3,     0,
        6
+=======
+       1,     1,     1,     1,     4,     0,     4,     5,     7,     5,
+       3,     1,     1,     1,     3,     3,     3,     1,     1,     1,
+       3,     3,     1,     3,     1,     3,     1,     3,     1,     1,
+       1,     1,     3,     4,     1,     1,     5,     6,     0,     6
+>>>>>>> Stashed changes
 };
 
 
@@ -1386,16 +1554,25 @@ yyreduce:
   switch (yyn)
     {
   case 2:
+<<<<<<< Updated upstream
 #line 42 "src/parser.y"
             {
         ast.setRoot((yyvsp[0].stmttype));
     }
 #line 1394 "src/parser.cpp"
+=======
+#line 45 "src/parser.y"
+            {
+        ast.setRoot((yyvsp[0].stmttype));
+    }
+#line 1412 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 3:
-#line 47 "src/parser.y"
+#line 50 "src/parser.y"
            {(yyval.stmttype)=(yyvsp[0].stmttype);}
+<<<<<<< Updated upstream
 #line 1400 "src/parser.cpp"
     break;
 
@@ -1405,52 +1582,92 @@ yyreduce:
         (yyval.stmttype) = new SeqNode((yyvsp[-1].stmttype), (yyvsp[0].stmttype));
     }
 #line 1408 "src/parser.cpp"
+=======
+#line 1418 "src/parser.cpp"
+    break;
+
+  case 4:
+#line 51 "src/parser.y"
+                {
+        (yyval.stmttype) = new SeqNode((yyvsp[-1].stmttype), (yyvsp[0].stmttype));
+    }
+#line 1426 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 5:
-#line 53 "src/parser.y"
+#line 56 "src/parser.y"
                  {(yyval.stmttype)=(yyvsp[0].stmttype);}
+<<<<<<< Updated upstream
 #line 1414 "src/parser.cpp"
+=======
+#line 1432 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 6:
-#line 54 "src/parser.y"
+#line 57 "src/parser.y"
                 {(yyval.stmttype)=(yyvsp[0].stmttype);}
+<<<<<<< Updated upstream
 #line 1420 "src/parser.cpp"
+=======
+#line 1438 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 7:
-#line 55 "src/parser.y"
+#line 58 "src/parser.y"
              {(yyval.stmttype)=(yyvsp[0].stmttype);}
+<<<<<<< Updated upstream
 #line 1426 "src/parser.cpp"
+=======
+#line 1444 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 8:
-#line 56 "src/parser.y"
+#line 59 "src/parser.y"
                 {(yyval.stmttype)=(yyvsp[0].stmttype);}
+<<<<<<< Updated upstream
 #line 1432 "src/parser.cpp"
+=======
+#line 1450 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 9:
-#line 57 "src/parser.y"
+#line 60 "src/parser.y"
                  {(yyval.stmttype)=(yyvsp[0].stmttype);}
+<<<<<<< Updated upstream
 #line 1438 "src/parser.cpp"
+=======
+#line 1456 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 10:
-#line 58 "src/parser.y"
+#line 61 "src/parser.y"
                {(yyval.stmttype)=(yyvsp[0].stmttype);}
+<<<<<<< Updated upstream
 #line 1444 "src/parser.cpp"
+=======
+#line 1462 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 11:
-#line 59 "src/parser.y"
+#line 62 "src/parser.y"
               {(yyval.stmttype)=(yyvsp[0].stmttype);}
+<<<<<<< Updated upstream
 #line 1450 "src/parser.cpp"
+=======
+#line 1468 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 12:
 #line 63 "src/parser.y"
+<<<<<<< Updated upstream
          {
         SymbolEntry *se;
         se = identifiers->lookup((yyvsp[0].strtype));
@@ -1497,10 +1714,57 @@ yyreduce:
         (yyval.stmttype) = new IfStmt((yyvsp[-2].exprtype), (yyvsp[0].stmttype));
     }
 #line 1500 "src/parser.cpp"
+=======
+              {(yyval.stmttype)=(yyvsp[0].stmttype);}
+#line 1474 "src/parser.cpp"
+    break;
+
+  case 13:
+#line 66 "src/parser.y"
+         {
+        SymbolEntry *se;
+        se = identifiers->lookup((yyvsp[0].strtype));
+        if(se == nullptr)
+        {
+            fprintf(stderr, "identifier \"%s\" is undefined\n", (char*)(yyvsp[0].strtype));
+            delete [](char*)(yyvsp[0].strtype);
+            assert(se != nullptr);
+        }
+        (yyval.exprtype) = new Id(se);
+        delete [](yyvsp[0].strtype);
+    }
+#line 1491 "src/parser.cpp"
+    break;
+
+  case 14:
+#line 81 "src/parser.y"
+                              {
+        (yyval.stmttype) = new AssignStmt((yyvsp[-3].exprtype), (yyvsp[-1].exprtype));
+    }
+#line 1499 "src/parser.cpp"
+    break;
+
+  case 15:
+#line 87 "src/parser.y"
+        {identifiers = new SymbolTable(identifiers);}
+#line 1505 "src/parser.cpp"
+    break;
+
+  case 16:
+#line 89 "src/parser.y"
+        {
+            (yyval.stmttype) = new CompoundStmt((yyvsp[-1].stmttype));
+            SymbolTable *top = identifiers;
+            identifiers = identifiers->getPrev();
+            delete top;
+        }
+#line 1516 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 17:
 #line 97 "src/parser.y"
+<<<<<<< Updated upstream
                                            {
         (yyval.stmttype) = new IfElseStmt((yyvsp[-4].exprtype), (yyvsp[-2].stmttype), (yyvsp[0].stmttype));
     }
@@ -1527,11 +1791,42 @@ yyreduce:
 #line 114 "src/parser.y"
            {(yyval.exprtype) = (yyvsp[0].exprtype);}
 #line 1530 "src/parser.cpp"
+=======
+                                            {
+        (yyval.stmttype) = new IfStmt((yyvsp[-2].exprtype), (yyvsp[0].stmttype));
+    }
+#line 1524 "src/parser.cpp"
+    break;
+
+  case 18:
+#line 100 "src/parser.y"
+                                           {
+        (yyval.stmttype) = new IfElseStmt((yyvsp[-4].exprtype), (yyvsp[-2].stmttype), (yyvsp[0].stmttype));
+    }
+#line 1532 "src/parser.cpp"
+    break;
+
+  case 19:
+#line 105 "src/parser.y"
+                                    {
+        (yyval.stmttype) = new WhileStmt((yyvsp[-2].exprtype), (yyvsp[0].stmttype));
+    }
+#line 1540 "src/parser.cpp"
+    break;
+
+  case 20:
+#line 111 "src/parser.y"
+                        {
+        (yyval.stmttype) = new ReturnStmt((yyvsp[-1].exprtype));
+    }
+#line 1548 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 21:
-#line 118 "src/parser.y"
+#line 117 "src/parser.y"
            {(yyval.exprtype) = (yyvsp[0].exprtype);}
+<<<<<<< Updated upstream
 #line 1536 "src/parser.cpp"
     break;
 
@@ -1541,10 +1836,20 @@ yyreduce:
         (yyval.exprtype) = (yyvsp[0].exprtype);
     }
 #line 1544 "src/parser.cpp"
+=======
+#line 1554 "src/parser.cpp"
+    break;
+
+  case 22:
+#line 121 "src/parser.y"
+           {(yyval.exprtype) = (yyvsp[0].exprtype);}
+#line 1560 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 23:
 #line 125 "src/parser.y"
+<<<<<<< Updated upstream
               {
         SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, (yyvsp[0].itype));
         (yyval.exprtype) = new Constant(se);
@@ -1574,16 +1879,55 @@ yyreduce:
         (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::DIV, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
     }
 #line 1577 "src/parser.cpp"
+=======
+               {(yyval.exprtype) = (yyvsp[0].exprtype);}
+#line 1566 "src/parser.cpp"
+    break;
+
+  case 24:
+#line 128 "src/parser.y"
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::MUL, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
+    }
+#line 1575 "src/parser.cpp"
+    break;
+
+  case 25:
+#line 134 "src/parser.y"
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::DIV, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
+    }
+#line 1584 "src/parser.cpp"
+    break;
+
+  case 26:
+#line 140 "src/parser.y"
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::MOD, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
+    }
+#line 1593 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 27:
 #line 148 "src/parser.y"
+<<<<<<< Updated upstream
            {(yyval.exprtype) = (yyvsp[0].exprtype);}
 #line 1583 "src/parser.cpp"
+=======
+         {
+        (yyval.exprtype) = (yyvsp[0].exprtype);
+    }
+#line 1601 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 28:
 #line 151 "src/parser.y"
+<<<<<<< Updated upstream
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::ADD, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
@@ -1613,33 +1957,80 @@ yyreduce:
         (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::LESS, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
     }
 #line 1616 "src/parser.cpp"
+=======
+              {
+        SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, (yyvsp[0].itype));
+        (yyval.exprtype) = new Constant(se);
+    }
+#line 1610 "src/parser.cpp"
+    break;
+
+  case 29:
+#line 158 "src/parser.y"
+           {(yyval.exprtype) = (yyvsp[0].exprtype);}
+#line 1616 "src/parser.cpp"
+    break;
+
+  case 30:
+#line 161 "src/parser.y"
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::ADD, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
+    }
+#line 1625 "src/parser.cpp"
+    break;
+
+  case 31:
+#line 167 "src/parser.y"
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::SUB, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
+    }
+#line 1634 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 32:
 #line 175 "src/parser.y"
            {(yyval.exprtype) = (yyvsp[0].exprtype);}
+<<<<<<< Updated upstream
 #line 1622 "src/parser.cpp"
+=======
+#line 1640 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 33:
 #line 178 "src/parser.y"
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+<<<<<<< Updated upstream
         (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::AND, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
     }
 #line 1631 "src/parser.cpp"
+=======
+        (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::LESS, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
+    }
+#line 1649 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 34:
 #line 185 "src/parser.y"
+<<<<<<< Updated upstream
             {(yyval.exprtype) = (yyvsp[0].exprtype);}
 #line 1637 "src/parser.cpp"
+=======
+           {(yyval.exprtype) = (yyvsp[0].exprtype);}
+#line 1655 "src/parser.cpp"
+>>>>>>> Stashed changes
     break;
 
   case 35:
 #line 188 "src/parser.y"
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+<<<<<<< Updated upstream
         (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::OR, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
     }
 #line 1646 "src/parser.cpp"
@@ -1702,6 +2093,145 @@ yyreduce:
 
 
 #line 1705 "src/parser.cpp"
+=======
+        (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::AND, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
+    }
+#line 1664 "src/parser.cpp"
+    break;
+
+  case 36:
+#line 195 "src/parser.y"
+            {(yyval.exprtype) = (yyvsp[0].exprtype);}
+#line 1670 "src/parser.cpp"
+    break;
+
+  case 37:
+#line 198 "src/parser.y"
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        (yyval.exprtype) = new BinaryExpr(se, BinaryExpr::OR, (yyvsp[-2].exprtype), (yyvsp[0].exprtype));
+    }
+#line 1679 "src/parser.cpp"
+    break;
+
+  case 38:
+#line 204 "src/parser.y"
+          {
+        (yyval.type) = TypeSystem::intType;
+    }
+#line 1687 "src/parser.cpp"
+    break;
+
+  case 39:
+#line 207 "src/parser.y"
+           {
+        (yyval.type) = TypeSystem::voidType;
+    }
+#line 1695 "src/parser.cpp"
+    break;
+
+  case 40:
+#line 213 "src/parser.y"
+              {(yyval.stmttype) = (yyvsp[0].stmttype);}
+#line 1701 "src/parser.cpp"
+    break;
+
+  case 41:
+#line 215 "src/parser.y"
+            {(yyval.stmttype) = (yyvsp[0].stmttype);}
+#line 1707 "src/parser.cpp"
+    break;
+
+  case 42:
+#line 219 "src/parser.y"
+                      {
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry((yyvsp[-2].type), (yyvsp[-1].strtype), identifiers->getLevel());
+        identifiers->install((yyvsp[-1].strtype), se);
+        (yyval.stmttype) = new VarDecl(new Id(se));
+        delete [](yyvsp[-1].strtype);
+    }
+#line 1719 "src/parser.cpp"
+    break;
+
+  case 43:
+#line 229 "src/parser.y"
+                            {
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry((yyvsp[-2].type), (yyvsp[-1].strtype), identifiers->getLevel());
+        identifiers->install((yyvsp[-1].strtype), se);
+        (yyval.stmttype) = new ConstDecl(new Id(se));
+        delete [](yyvsp[-1].strtype);
+    }
+#line 1731 "src/parser.cpp"
+    break;
+
+  case 44:
+#line 239 "src/parser.y"
+           {(yyval.stmttype) = (yyvsp[0].stmttype);}
+#line 1737 "src/parser.cpp"
+    break;
+
+  case 45:
+#line 241 "src/parser.y"
+             {(yyval.stmttype) = (yyvsp[0].stmttype);}
+#line 1743 "src/parser.cpp"
+    break;
+
+  case 46:
+#line 245 "src/parser.y"
+                                 {
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry((yyvsp[-4].type), (yyvsp[-3].strtype), identifiers->getLevel());
+        identifiers->install((yyvsp[-3].strtype), se);
+        (yyval.stmttype) = new VarDef(new Id(se),(yyvsp[-1].exprtype));
+        delete [](yyvsp[-3].strtype);
+    }
+#line 1755 "src/parser.cpp"
+    break;
+
+  case 47:
+#line 255 "src/parser.y"
+                                       {
+    SymbolEntry *se;
+    se = new IdentifierSymbolEntry((yyvsp[-4].type), (yyvsp[-3].strtype), identifiers->getLevel());
+    identifiers->install((yyvsp[-3].strtype), se);
+    (yyval.stmttype) = new ConstDef(new Id(se),(yyvsp[-1].exprtype));
+    delete [](yyvsp[-3].strtype);
+    }
+#line 1767 "src/parser.cpp"
+    break;
+
+  case 48:
+#line 265 "src/parser.y"
+            {
+        Type *funcType;
+        funcType = new FunctionType((yyvsp[-1].type),{});
+        SymbolEntry *se = new IdentifierSymbolEntry(funcType, (yyvsp[0].strtype), identifiers->getLevel());
+        identifiers->install((yyvsp[0].strtype), se);
+        identifiers = new SymbolTable(identifiers);
+    }
+#line 1779 "src/parser.cpp"
+    break;
+
+  case 49:
+#line 274 "src/parser.y"
+    {
+        SymbolEntry *se;
+        se = identifiers->lookup((yyvsp[-4].strtype));
+        assert(se != nullptr);
+        (yyval.stmttype) = new FunctionDef(se, (yyvsp[0].stmttype));
+        SymbolTable *top = identifiers;
+        identifiers = identifiers->getPrev();
+        delete top;
+        delete [](yyvsp[-4].strtype);
+    }
+#line 1794 "src/parser.cpp"
+    break;
+
+
+#line 1798 "src/parser.cpp"
+>>>>>>> Stashed changes
 
       default: break;
     }
@@ -1933,7 +2463,11 @@ yyreturn:
 #endif
   return yyresult;
 }
+<<<<<<< Updated upstream
 #line 233 "src/parser.y"
+=======
+#line 285 "src/parser.y"
+>>>>>>> Stashed changes
 
 
 int yyerror(char const* message)
