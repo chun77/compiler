@@ -90,7 +90,6 @@ BlockStmt
         Stmts RBRACE 
         {
             $$ = new CompoundStmt($3);
-            SymbolTable *top = identifiers;
             identifiers = identifiers->getPrev();
             delete top;
         }
@@ -313,7 +312,6 @@ VarDef
         delete []$2;
     }
     ;
-    
 ConstDef
     :
     CONST Type ID ASSIGN Exp SEMICOLON {
