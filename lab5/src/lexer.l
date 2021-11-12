@@ -79,6 +79,27 @@ BLOCKCOMMENTEND \*\/
         DEBUG_FOR_LAB4("ASSIGN\t=");
     return ASSIGN;
 }
+"==" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("EQ\t==");
+    return EQ;
+}
+"!=" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("NOTEQ\t!=");
+    return NOTEQ;
+}
+"<=" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("LESSQ\t<=");
+    return LESSQ;
+}
+">=" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("MOREQ\t>=");
+    return MOREQ;
+}
+
 "<" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("LESS\t<");
@@ -114,17 +135,17 @@ BLOCKCOMMENTEND \*\/
         DEBUG_FOR_LAB4("DIV\t%");
     return MOD;
 }
-"&" {
+"&&" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("AND\t<");
     return AND;
 }
-"|" {
+"||" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("OR\t<");
     return OR;
 }
-"~" {
+"!" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("NOT\t<");
     return NOT;

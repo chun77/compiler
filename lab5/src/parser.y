@@ -28,7 +28,8 @@
 %token WHILE FOR
 %token INT VOID CONST
 %token LPAREN RPAREN LBRACE RBRACE SEMICOLON COMMA
-%token LESS ASSIGN MORE LESSQ MOREQ
+%token ASSIGN
+%token LESS EQ MORE LESSQ MOREQ NOTEQ
 %token MUL DIV MOD
 %token OR AND NOT
 %token ADD SUB 
@@ -210,6 +211,36 @@ RelExp
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::LESS, $1, $3);
+    }
+    |
+    RelExp MORE AddExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::MORE, $1, $3);
+    }
+    |
+    RelExp LESSQ AddExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::LESSQ, $1, $3);
+    }
+    |
+    RelExp MOREQ AddExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::MOREQ, $1, $3);
+    }
+    |
+    RelExp EQ AddExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::EQ, $1, $3);
+    }
+    |
+    RelExp NOTEQ AddExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::NOTEQ, $1, $3);
     }
     ;
 LAndExp

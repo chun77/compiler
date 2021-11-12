@@ -50,6 +50,18 @@ void BinaryExpr::output(int level)
         case MOD:
             op_str = "mod";
             break;
+        case EQ:
+            op_str = "eq";
+            break;    
+        case NOTEQ:
+            op_str = "noteq";
+            break;
+        case MOREQ:
+            op_str = "moreq";
+            break;
+        case LESSQ:
+            op_str = "lessq";
+            break;        
     }
     fprintf(yyout, "%*cBinaryExpr\top: %s\n", level, ' ', op_str.c_str());
     expr1->output(level + 4);
