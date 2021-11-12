@@ -101,9 +101,8 @@ class VarDecl : public StmtNode
 {
 private:
     Id *id;
-    ExprNode *expr;
 public:
-    VarDecl(Id *id,ExprNode *expr) : id(id),expr(expr){};
+    VarDecl(Id *id) : id(id){};
     void output(int level);
 };
 

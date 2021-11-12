@@ -292,7 +292,7 @@ VarDecl
         SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se),nullptr);
+        $$ = new VarDecl(new Id(se));
         delete []$1;
     }
     |
@@ -300,7 +300,7 @@ VarDecl
         SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se),$3);
+        $$ = new VarDef(new Id(se),$3);
         delete []$1;
     }
     ;

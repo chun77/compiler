@@ -138,7 +138,6 @@ void VarDecl::output(int level)
 {
     fprintf(yyout, "%*cVarDeclStmt\n", level, ' ');
     id->output(level + 4);
-    expr->output(level + 4);
 }
 
 void ConstDecl::output(int level)

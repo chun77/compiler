@@ -35,7 +35,7 @@
 %token ADD SUB 
 %token RETURN
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDecl VarDeclStmt VarDecls VarDecl DefStmt ConstDef FuncDef 
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDecl VarDeclStmt VarDecls VarDecl DefStmt VarDef ConstDef FuncDef 
 %nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp
 %nterm <type> Type
 
@@ -292,7 +292,7 @@ VarDecl
         SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se),nullptr);
+        $$ = new VarDecl(new Id(se));
         delete []$1;
     }
     |
@@ -300,7 +300,7 @@ VarDecl
         SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se),$3);
+        $$ = new VarDef(new Id(se),$3);
         delete []$1;
     }
     ;

@@ -35,7 +35,7 @@
 %token ADD SUB 
 %token RETURN
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDecl VarDeclStmt VarDecls VarDecl DefStmt ConstDef FuncDef 
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt ConstDecl VarDeclStmt VarDecls VarDecl DefStmt VarDef ConstDef FuncDef 
 %nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp
 %nterm <type> Type
 
@@ -292,15 +292,7 @@ VarDecl
         SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se),nullptr);
-        delete []$1;
-    }
-    |
-    ID ASSIGN Exp{
-        SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
-        identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se),$3);
+        $$ = new VarDecl(new Id(se));
         delete []$1;
     }
     ;
@@ -316,8 +308,20 @@ ConstDecl
     ;
 DefStmt
     :
+    VarDef {$$ = $1;}
+    |
     ConstDef {$$ = $1;}
     ;
+VarDef
+    :
+    Type ID ASSIGN Exp SEMICOLON {
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
+        identifiers->install($2, se);
+        $$ = new VarDef(new Id(se),$4);
+        delete []$2;
+    }
+     ;
 ConstDef
     :
     CONST Type ID ASSIGN Exp SEMICOLON {
