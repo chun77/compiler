@@ -35,6 +35,17 @@ public:
     void output(int level);
 };
 
+class UnaryExpr : public ExprNode
+{
+private:
+    int op;
+    ExprNode *expr;
+public:
+    enum {ADD,SUB,NOT};
+    UnaryExpr(SymbolEntry *se,int op, ExprNode* expr) : ExprNode(se),op(op),expr(expr) {};
+    void output(int level);
+};
+
 class Constant : public ExprNode
 {
 public:

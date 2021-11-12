@@ -27,15 +27,15 @@
 %token IF ELSE
 %token WHILE FOR
 %token INT VOID CONST
-%token LPAREN RPAREN LBRACE RBRACE SEMICOLON
+%token LPAREN RPAREN LBRACE RBRACE SEMICOLON COMMA
 %token LESS ASSIGN MORE LESSQ MOREQ
 %token MUL DIV MOD
 %token OR AND NOT
 %token ADD SUB 
 %token RETURN
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDecl VarDecl DefStmt VarDef ConstDef FuncDef
-%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDecl VarDecl DefStmt VarDef ConstDef FuncDef 
+%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp
 %nterm <type> Type
 
 %precedence THEN
@@ -53,12 +53,12 @@ Stmts
     }
     ;
 Stmt
-    : AssignStmt {$$=$1;}
+    : AssignStmt SEMICOLON{$$=$1;}
     | BlockStmt {$$=$1;}
     | IfStmt {$$=$1;}
     | WhileStmt {$$=$1;}
     | ReturnStmt {$$=$1;}
-    | DeclStmt {$$=$1;}
+    | DeclStmt SEMICOLON{$$=$1;}
     | FuncDef {$$=$1;}
     | DefStmt {$$=$1;}
     ;
@@ -76,9 +76,10 @@ LVal
         delete []$1;
     }
     ;
+
 AssignStmt
     :
-    LVal ASSIGN Exp SEMICOLON {
+    LVal ASSIGN Exp {
         $$ = new AssignStmt($1, $3);
     }
     ;
@@ -119,41 +120,7 @@ Exp
 Cond
     :
     LOrExp {$$ = $1;}
-    ;
-
-PrimaryExp
-    :
-    LVal {
-        $$ = $1;
-    }
-    | INTEGER {
-        SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
-        $$ = new Constant(se);
-    }
-    ;
-
-MulExp
-    :
-    PrimaryExp {$$ = $1;}
-    |
-    MulExp MUL PrimaryExp
-    {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$ = new BinaryExpr(se, BinaryExpr::MUL, $1, $3);
-    }
-    |
-    MulExp DIV PrimaryExp
-    {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$ = new BinaryExpr(se, BinaryExpr::DIV, $1, $3);
-    }
-    |
-    MulExp MOD PrimaryExp
-    {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$ = new BinaryExpr(se, BinaryExpr::MOD, $1, $3);
-    }
-    ;
+    ;    
 
 AddExp
     :
@@ -169,6 +136,69 @@ AddExp
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::SUB, $1, $3);
+    }
+    ;
+
+MulExp
+    :
+    UnaryExp {$$ = $1;}
+    |
+    MulExp MUL UnaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::MUL, $1, $3);
+    }
+    |
+    MulExp DIV UnaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::DIV, $1, $3);
+    }
+    |
+    MulExp MOD UnaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::MOD, $1, $3);
+    }
+    ;
+
+UnaryExp
+    :
+    PrimaryExp {$$=$1;}
+    |
+    ADD PrimaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new UnaryExpr(se, UnaryExpr::ADD, $2);
+    }
+    |
+    SUB PrimaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new UnaryExpr(se, UnaryExpr::SUB, $2);
+    }
+    |
+    NOT PrimaryExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new UnaryExpr(se, UnaryExpr::NOT, $2);
+    }
+    ;
+
+
+PrimaryExp
+    :
+    LVal {
+        $$ = $1;
+    }  
+    |  
+    LPAREN Exp RPAREN {
+        $$=$2;
+    }
+    | 
+    INTEGER {
+        SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
+        $$ = new Constant(se);
     }
     ;
 
@@ -218,7 +248,7 @@ DeclStmt
     ;
 VarDecl
     :
-    Type ID SEMICOLON {
+    Type ID {
         SymbolEntry *se;
         se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
         identifiers->install($2, se);
@@ -228,7 +258,7 @@ VarDecl
     ;
 ConstDecl
     :
-    CONST Type ID SEMICOLON {
+    CONST Type ID {
         SymbolEntry *se;
         se = new IdentifierSymbolEntry($2, $3, identifiers->getLevel());
         identifiers->install($3, se);
@@ -252,6 +282,7 @@ VarDef
         delete []$2;
     }
     ;
+    
 ConstDef
     :
     CONST Type ID ASSIGN Exp SEMICOLON {

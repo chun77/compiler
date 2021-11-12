@@ -154,6 +154,11 @@ BLOCKCOMMENTEND \*\/
         DEBUG_FOR_LAB4("RBRACE\t}");
     return RBRACE;
 }
+"," {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("COMMA\t,");
+    return COMMA;
+}
 
 {DECIMIAL} {
     if(dump_tokens)

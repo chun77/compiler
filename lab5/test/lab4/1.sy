@@ -5,6 +5,8 @@ int main()
     int a=1;
     const int b=4;
     a = 1 + 2;
+    b = -a;
+    b=~a;
     if(a < 5)
         return 1;
     a = 9%4;
