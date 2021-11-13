@@ -1,8 +1,10 @@
 //test global var define
-int a=3;
-int b=1;
+int a=3,b;
+void f(int a){
+    int x=0;
+}
 
-int main(){
+int main(int f,int s){
     const int c;
     const int d=1,e;
     a=1+3;

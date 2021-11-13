@@ -137,6 +137,25 @@ public:
     void output(int level);
 };
 
+class FuncParams : public StmtNode
+{
+private:
+    StmtNode* funcParam,*funcParams;
+public:
+    FuncParams(StmtNode* funcParam, StmtNode* funcParams) : funcParam(funcParam), funcParams(funcParams) {};
+    void output(int level);
+};
+
+class FuncParam : public StmtNode
+{
+private:
+    Id* id;
+    ExprNode* expr;
+public:
+    FuncParam(Id* id,ExprNode* expr) : id(id), expr(expr) {};
+    void output(int level);
+};
+
 
 class IfStmt : public StmtNode
 {

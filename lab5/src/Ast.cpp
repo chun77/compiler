@@ -165,6 +165,22 @@ void ConstDecl::output(int level)
     }
 }
 
+void FuncParams::output(int level)
+{
+    fprintf(yyout, "%*cFuncParams\n", level, ' ');
+    funcParam->output(level + 4);
+    funcParams->output(level + 4);
+}
+
+void FuncParam::output(int level)
+{
+    fprintf(yyout, "%*cFuncParam\n", level, ' ');
+    id->output(level + 4);
+    if(expr!=NULL){
+        expr->output(level + 4);
+    }
+}
+
 void IfStmt::output(int level)
 {
     fprintf(yyout, "%*cIfStmt\n", level, ' ');

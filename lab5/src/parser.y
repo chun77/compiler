@@ -35,7 +35,7 @@
 %token ADD SUB 
 %token RETURN
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func
 %nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp
 %nterm <type> Type
 
@@ -343,20 +343,55 @@ FuncDef
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
     }
-    LPAREN RPAREN
+    Func
     BlockStmt
     {
         SymbolEntry *se;
         se = identifiers->lookup($2);
         assert(se != nullptr);
-        $$ = new FunctionDef(se, $6);
+        $$ = new FunctionDef(se, $5);
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
         delete []$2;
     }
+    
     ;
 
+Func
+    :
+    LPAREN RPAREN  {}
+    |
+    LPAREN FuncParams RPAREN {$$=$2;}
+    ;
+
+FuncParams 
+    :
+    FuncParam {$$=$1;}
+    |
+    FuncParam COMMA FuncParams {
+        $$=new FuncParams($1,$3);
+    }
+    ;
+
+FuncParam
+    :
+    Type ID {
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
+        identifiers->install($2, se);
+        $$ = new FuncParam(new Id(se),nullptr);
+        delete []$2;
+    }
+    |
+    Type ID ASSIGN Exp{
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
+        identifiers->install($2, se);
+        $$ = new FuncParam(new Id(se),$4);
+        delete []$2;
+    }
+    ;
 %%
 
 int yyerror(char const* message)
