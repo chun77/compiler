@@ -35,7 +35,7 @@
 %token ADD SUB 
 %token RETURN
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDecl VarDeclStmt VarDecls VarDecl DefStmt ConstDef FuncDef 
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef
 %nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp
 %nterm <type> Type
 
@@ -61,7 +61,6 @@ Stmt
     | ReturnStmt {$$=$1;}
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
-    | DefStmt {$$=$1;}
 
     ;
 LVal
@@ -81,7 +80,7 @@ LVal
 
 AssignStmt
     :
-    LVal ASSIGN Exp {
+    LVal ASSIGN Exp SEMICOLON{
         $$ = new AssignStmt($1, $3);
     }
     ;
@@ -273,19 +272,31 @@ Type
     }
     ;
 DeclStmt
-    :VarDeclStmt{$$=$1;}
+    : VarDeclStmt {$$=$1;}
     |
-    ConstDecl{$$=$1;}
+    ConstDeclStmt {$$=$1;}
     ;
 VarDeclStmt
-    :Type VarDecls SEMICOLON{
-        $$ = new VarDeclStmt($2);
+    :Type VarDecls SEMICOLON {
+        $$=$2;
+    };
+ConstDeclStmt
+    :CONST Type ConstDecls SEMICOLON {
+        $$=$3;
     };
 VarDecls
     : VarDecl {$$=$1;}
-    | VarDecl COMMA VarDecls{
+    | 
+    VarDecl COMMA VarDecls {
         $$ = new VarDecls($1, $3);
     };
+ConstDecls
+    : ConstDecl {$$=$1;}
+    |
+    ConstDecl COMMA ConstDecls {
+        $$ = new ConstDecls($1, $3);
+    }
+
 VarDecl
     :
     ID {
@@ -306,28 +317,23 @@ VarDecl
     ;
 ConstDecl
     :
-    CONST Type ID {
+    ID {
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry($2, $3, identifiers->getLevel());
-        identifiers->install($3, se);
-        $$ = new ConstDecl(new Id(se));
-        delete []$3;
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        identifiers->install($1, se);
+        $$ = new ConstDecl(new Id(se),nullptr);
+        delete []$1;
+    }
+    |
+    ID ASSIGN Exp{
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        identifiers->install($1, se);
+        $$ = new ConstDecl(new Id(se),$3);
+        delete []$1;
     }
     ;
-DefStmt
-    :
-    ConstDef {$$ = $1;}
-    ;
-ConstDef
-    :
-    CONST Type ID ASSIGN Exp SEMICOLON {
-        SymbolEntry *se;
-        se = new IdentifierSymbolEntry($2, $3, identifiers->getLevel());
-        identifiers->install($3, se);
-        $$ = new ConstDef(new Id(se),$5);
-        delete []$3;
-    }
-    ;
+
 FuncDef
     :
     Type ID {
@@ -350,6 +356,7 @@ FuncDef
         delete []$2;
     }
     ;
+
 %%
 
 int yyerror(char const* message)

@@ -1,0 +1,31 @@
+program
+    Sequence
+        Sequence
+            VarDecl
+                Id	name: a	scope: 0	type: int
+                IntegerLiteral	value: 3	type: int
+            VarDecl
+                Id	name: b	scope: 0	type: int
+                IntegerLiteral	value: 1	type: int
+        FunctionDefine function name: main, type: int()
+            CompoundStmt
+                Sequence
+                    Sequence
+                        Sequence
+                            ConstDecl
+                                Id	name: c	scope: 2	type: int
+                            ConstDecls
+                                ConstDecl
+                                    Id	name: d	scope: 2	type: int
+                                    IntegerLiteral	value: 1	type: int
+                                ConstDecl
+                                    Id	name: e	scope: 2	type: int
+                        AssignStmt
+                            Id	name: a	scope: 0	type: int
+                            BinaryExpr	op: add
+                                IntegerLiteral	value: 1	type: int
+                                IntegerLiteral	value: 3	type: int
+                    ReturnStmt
+                        BinaryExpr	op: add
+                            Id	name: a	scope: 0	type: int
+                            Id	name: b	scope: 0	type: int

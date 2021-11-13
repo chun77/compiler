@@ -80,6 +80,7 @@ public:
     SeqNode(StmtNode *stmt1, StmtNode *stmt2) : stmt1(stmt1), stmt2(stmt2){};
     void output(int level);
 };
+
 class VarDeclStmt : public StmtNode
 {
 private:
@@ -88,12 +89,31 @@ public:
     VarDeclStmt(StmtNode *varDecls): varDecls(varDecls){};
     void output(int level);   
 };
+
+class ConstDeclStmt : public StmtNode
+{
+private:
+    StmtNode *constDecls;
+public:
+    ConstDeclStmt(StmtNode *constDecls): constDecls(constDecls){};
+    void output(int level);   
+};
+
 class VarDecls : public StmtNode
 {
 private:
     StmtNode *varDecl,*varDecls;
 public:
     VarDecls(StmtNode *varDecl,StmtNode *varDecls): varDecl(varDecl), varDecls(varDecls){};
+    void output(int level);
+};
+
+class ConstDecls : public StmtNode
+{
+private:
+    StmtNode *constDecl,*constDecls;
+public:
+    ConstDecls(StmtNode *constDecl,StmtNode *constDecls): constDecl(constDecl), constDecls(constDecls){};
     void output(int level);
 };
 
@@ -111,30 +131,12 @@ class ConstDecl : public StmtNode
 {
 private:
     Id *id;
+    ExprNode *expr;
 public:
-    ConstDecl(Id *id) : id(id){};
+    ConstDecl(Id *id, ExprNode* expr) : id(id), expr(expr){};
     void output(int level);
 };
 
-class VarDef : public StmtNode
-{
-private:
-    Id *id;
-    ExprNode *expr;
-public:
-    VarDef(Id *id,ExprNode* expr) : id(id), expr(expr){};
-    void output(int level);
-};
-
-class ConstDef : public StmtNode
-{
-private:
-    Id *id;
-    ExprNode *expr;
-public:
-    ConstDef(Id *id,ExprNode* expr) : id(id), expr(expr){};
-    void output(int level);
-};
 
 class IfStmt : public StmtNode
 {

@@ -105,6 +105,7 @@ void Id::output(int level)
     scope = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getScope();
     fprintf(yyout, "%*cId\tname: %s\tscope: %d\ttype: %s\n", level, ' ',
             name.c_str(), scope, type.c_str());
+    
 }
 
 void CompoundStmt::output(int level)
@@ -122,42 +123,48 @@ void SeqNode::output(int level)
 
 void VarDeclStmt::output(int level)
 {
-    fprintf(yyout, "%*cVarDeclStmtStmt\n", level, ' ');
+    fprintf(yyout, "%*cVarDeclStmt\n", level, ' ');
     varDecls->output(level + 4);
+}
+
+void ConstDeclStmt::output(int level)
+{
+    fprintf(yyout, "%*cConstDeclStmt\n", level, ' ');
+    constDecls->output(level + 4);
 }
 
 void VarDecls::output(int level)
 {
-    fprintf(yyout, "%*cVarDeclsStmt\n", level, ' ');
+    fprintf(yyout, "%*cVarDecls\n", level, ' ');
     varDecl->output(level + 4);
     varDecls->output(level + 4);
 }
 
+void ConstDecls::output(int level)
+{
+    fprintf(yyout, "%*cConstDecls\n", level, ' ');
+    constDecl->output(level + 4);
+    constDecls->output(level + 4);
+}
 
 void VarDecl::output(int level)
 {
-    fprintf(yyout, "%*cVarDeclStmt\n", level, ' ');
+    fprintf(yyout, "%*cVarDecl\n", level, ' ');
     id->output(level + 4);
-    expr->output(level + 4);
+    if(expr!=NULL){
+        expr->output(level + 4);
+    }
 }
 
 void ConstDecl::output(int level)
 {
-    fprintf(yyout, "%*cConstDeclStmt\n", level, ' ');
+    fprintf(yyout, "%*cConstDecl\n", level, ' ');
     id->output(level + 4);
+    if(expr!=NULL){
+        expr->output(level + 4);
+    }
 }
-void VarDef::output(int level)
-{
-    fprintf(yyout, "%*cVarDefStmt\n", level, ' ');
-    id->output(level + 4);
-    expr->output(level + 4);
-}
-void ConstDef::output(int level)
-{
-    fprintf(yyout, "%*cConstDefStmt\n", level, ' ');
-    id->output(level + 4);
-    expr->output(level + 4);
-}
+
 void IfStmt::output(int level)
 {
     fprintf(yyout, "%*cIfStmt\n", level, ' ');
