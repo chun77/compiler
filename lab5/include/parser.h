@@ -63,32 +63,36 @@ extern int yydebug;
     ELSE = 261,
     WHILE = 262,
     FOR = 263,
-    INT = 264,
-    VOID = 265,
-    CONST = 266,
-    LPAREN = 267,
-    RPAREN = 268,
-    LBRACE = 269,
-    RBRACE = 270,
-    SEMICOLON = 271,
-    COMMA = 272,
-    ASSIGN = 273,
-    LESS = 274,
-    EQ = 275,
-    MORE = 276,
-    LESSQ = 277,
-    MOREQ = 278,
-    NOTEQ = 279,
-    MUL = 280,
-    DIV = 281,
-    MOD = 282,
-    OR = 283,
-    AND = 284,
-    NOT = 285,
-    ADD = 286,
-    SUB = 287,
-    RETURN = 288,
-    THEN = 289
+    BREAK = 264,
+    CONTINUE = 265,
+    INT = 266,
+    VOID = 267,
+    CONST = 268,
+    LPAREN = 269,
+    RPAREN = 270,
+    LBRACE = 271,
+    RBRACE = 272,
+    SEMICOLON = 273,
+    COMMA = 274,
+    LBRACKET = 275,
+    RBRACKET = 276,
+    ASSIGN = 277,
+    LESS = 278,
+    EQ = 279,
+    MORE = 280,
+    LESSQ = 281,
+    MOREQ = 282,
+    NOTEQ = 283,
+    MUL = 284,
+    DIV = 285,
+    MOD = 286,
+    OR = 287,
+    AND = 288,
+    NOT = 289,
+    ADD = 290,
+    SUB = 291,
+    RETURN = 292,
+    THEN = 293
   };
 #endif
 
@@ -104,7 +108,7 @@ union YYSTYPE
     ExprNode* exprtype;
     Type* type;
 
-#line 108 "include/parser.h"
+#line 112 "include/parser.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

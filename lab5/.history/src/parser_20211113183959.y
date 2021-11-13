@@ -59,7 +59,7 @@ Stmt
     | BlockStmt {$$=$1;}
     | IfStmt {$$=$1;}
     | WhileStmt {$$=$1;}
-    | ReturnStmt {$$=$1;}
+    | ReturnStmt {$$=$1;} 
     | BreakStmt {$$=$1;}
     | ContinueStmt {$$=$1;}
     | DeclStmt {$$=$1;}
@@ -114,10 +114,6 @@ ReturnStmt
     :
     RETURN Exp SEMICOLON{
         $$ = new ReturnStmt($2);
-    }
-    |
-    RETURN SEMICOLON{
-        $$ = new ReturnStmt();
     }
     ;
 BreakStmt

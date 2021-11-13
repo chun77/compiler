@@ -76,12 +76,12 @@ BLOCKCOMMENTEND \*\/
 "break" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("BREAK\tbreak");
-    return BREAK;
+    return CONST;
 }
 "continue" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4("CONTINUE\tcontinue");
-    return CONTINUE;
+        DEBUG_FOR_LAB4("CONST\tcontinue");
+    return CONST;
 }
 "=" {
     if(dump_tokens)

@@ -213,12 +213,10 @@ void BreakStmt::output(int level)
 {
     fprintf(yyout, "%*cBreakStmt\n", level, ' ');
 }
-
 void ContinueStmt::output(int level)
 {
     fprintf(yyout, "%*cContinueStmt\n", level, ' ');
 }
-
 void AssignStmt::output(int level)
 {
     fprintf(yyout, "%*cAssignStmt\n", level, ' ');

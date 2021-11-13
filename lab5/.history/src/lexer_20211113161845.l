@@ -73,16 +73,7 @@ BLOCKCOMMENTEND \*\/
         DEBUG_FOR_LAB4("CONST\tconst");
     return CONST;
 }
-"break" {
-    if(dump_tokens)
-        DEBUG_FOR_LAB4("BREAK\tbreak");
-    return BREAK;
-}
-"continue" {
-    if(dump_tokens)
-        DEBUG_FOR_LAB4("CONTINUE\tcontinue");
-    return CONTINUE;
-}
+
 "=" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("ASSIGN\t=");
@@ -184,6 +175,18 @@ BLOCKCOMMENTEND \*\/
         DEBUG_FOR_LAB4("RBRACE\t}");
     return RBRACE;
 }
+}
+"[" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("LBRACKET\t}");
+    return RBRACE;
+}
+"]" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("RBRACKET
+        \t}");
+    return RBRACE;
+}
 "," {
     if(dump_tokens)
         DEBUG_FOR_LAB4("COMMA\t,");
@@ -206,6 +209,7 @@ BLOCKCOMMENTEND \*\/
     yylval.strtype = lexeme;
     return ID;
 }
+
 {EOL} yylineno++;
 {WHITE}
 

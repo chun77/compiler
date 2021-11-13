@@ -25,7 +25,7 @@
 %token <strtype> ID 
 %token <itype> INTEGER
 %token IF ELSE
-%token WHILE FOR BREAK CONTINUE
+%token WHILE FOR
 %token INT VOID CONST
 %token LPAREN RPAREN LBRACE RBRACE SEMICOLON COMMA LBRACKET RBRACKET
 %token ASSIGN
@@ -36,7 +36,7 @@
 %token RETURN
 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func
 %nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp
 %nterm <type> Type
 
@@ -60,10 +60,9 @@ Stmt
     | IfStmt {$$=$1;}
     | WhileStmt {$$=$1;}
     | ReturnStmt {$$=$1;}
-    | BreakStmt {$$=$1;}
-    | ContinueStmt {$$=$1;}
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
+
     ;
 LVal
     : ID {
@@ -115,21 +114,7 @@ ReturnStmt
     RETURN Exp SEMICOLON{
         $$ = new ReturnStmt($2);
     }
-    |
-    RETURN SEMICOLON{
-        $$ = new ReturnStmt();
-    }
     ;
-BreakStmt
-    :
-    BREAK SEMICOLON{
-        $$ = new BreakStmt();
-    }
-ContinueStmt
-    :
-    CONTINUE SEMICOLON{
-        $$ = new ContinueStmt();
-    }
 Exp
     :
     AddExp {$$ = $1;} 
@@ -330,7 +315,14 @@ VarDecl
         $$ = new VarDecl(new Id(se),$3);
         delete []$1;
     }
+    |
+    ArrayList
     ;
+ArrayList
+    :ID LBRACKET INT RBRACKET
+    {
+
+    }
 ConstDecl
     :
     ID {

@@ -184,7 +184,6 @@ private:
     ExprNode *retValue;
 public:
     ReturnStmt(ExprNode*retValue) : retValue(retValue) {};
-    ReturnStmt() : retValue(nullptr) {};
     void output(int level);
 };
 

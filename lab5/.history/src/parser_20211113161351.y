@@ -25,7 +25,7 @@
 %token <strtype> ID 
 %token <itype> INTEGER
 %token IF ELSE
-%token WHILE FOR BREAK CONTINUE
+%token WHILE FOR
 %token INT VOID CONST
 %token LPAREN RPAREN LBRACE RBRACE SEMICOLON COMMA LBRACKET RBRACKET
 %token ASSIGN
@@ -35,8 +35,7 @@
 %token ADD SUB 
 %token RETURN
 
-
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef 
 %nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp
 %nterm <type> Type
 
@@ -60,10 +59,9 @@ Stmt
     | IfStmt {$$=$1;}
     | WhileStmt {$$=$1;}
     | ReturnStmt {$$=$1;}
-    | BreakStmt {$$=$1;}
-    | ContinueStmt {$$=$1;}
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
+
     ;
 LVal
     : ID {
@@ -115,21 +113,7 @@ ReturnStmt
     RETURN Exp SEMICOLON{
         $$ = new ReturnStmt($2);
     }
-    |
-    RETURN SEMICOLON{
-        $$ = new ReturnStmt();
-    }
     ;
-BreakStmt
-    :
-    BREAK SEMICOLON{
-        $$ = new BreakStmt();
-    }
-ContinueStmt
-    :
-    CONTINUE SEMICOLON{
-        $$ = new ContinueStmt();
-    }
 Exp
     :
     AddExp {$$ = $1;} 
@@ -330,6 +314,7 @@ VarDecl
         $$ = new VarDecl(new Id(se),$3);
         delete []$1;
     }
+
     ;
 ConstDecl
     :
@@ -359,55 +344,20 @@ FuncDef
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
     }
-    Func
+    LPAREN RPAREN
     BlockStmt
     {
         SymbolEntry *se;
         se = identifiers->lookup($2);
         assert(se != nullptr);
-        $$ = new FunctionDef(se, $5);
+        $$ = new FunctionDef(se, $6);
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
         delete []$2;
     }
-    
     ;
 
-Func
-    :
-    LPAREN RPAREN  {}
-    |
-    LPAREN FuncParams RPAREN {$$=$2;}
-    ;
-
-FuncParams 
-    :
-    FuncParam {$$=$1;}
-    |
-    FuncParam COMMA FuncParams {
-        $$=new FuncParams($1,$3);
-    }
-    ;
-
-FuncParam
-    :
-    Type ID {
-        SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
-        identifiers->install($2, se);
-        $$ = new FuncParam(new Id(se),nullptr);
-        delete []$2;
-    }
-    |
-    Type ID ASSIGN Exp{
-        SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
-        identifiers->install($2, se);
-        $$ = new FuncParam(new Id(se),$4);
-        delete []$2;
-    }
-    ;
 %%
 
 int yyerror(char const* message)

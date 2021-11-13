@@ -73,16 +73,7 @@ BLOCKCOMMENTEND \*\/
         DEBUG_FOR_LAB4("CONST\tconst");
     return CONST;
 }
-"break" {
-    if(dump_tokens)
-        DEBUG_FOR_LAB4("BREAK\tbreak");
-    return BREAK;
-}
-"continue" {
-    if(dump_tokens)
-        DEBUG_FOR_LAB4("CONTINUE\tcontinue");
-    return CONTINUE;
-}
+
 "=" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("ASSIGN\t=");
