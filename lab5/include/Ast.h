@@ -24,6 +24,16 @@ public:
     ExprNode(SymbolEntry *symbolEntry) : symbolEntry(symbolEntry){};
 };
 
+
+class FuncCallStmt : public ExprNode
+{
+private:
+    ExprNode* callList;
+public:
+    FuncCallStmt(SymbolEntry* se, ExprNode* callList): ExprNode(se), callList(callList) {};
+    void output(int level);
+};
+
 class BinaryExpr : public ExprNode
 {
 private:
@@ -134,6 +144,16 @@ private:
     ExprNode *expr;
 public:
     ConstDecl(Id *id, ExprNode* expr) : id(id), expr(expr){};
+    void output(int level);
+};
+
+class CallList : public ExprNode
+{
+private:
+    ExprNode* call;
+    ExprNode* callList;
+public:
+    CallList(SymbolEntry*se, ExprNode* call, ExprNode* callList) : ExprNode(se),call(call), callList(callList) {};
     void output(int level);
 };
 

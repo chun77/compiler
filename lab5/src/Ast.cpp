@@ -181,6 +181,22 @@ void FuncParam::output(int level)
     }
 }
 
+void CallList::output(int level)
+{
+    fprintf(yyout, "%*cFuncCallList\n", level, ' ');
+    call->output(level+4);
+    if(callList!=NULL){
+        callList->output(level+4);
+    }
+}
+
+
+void FuncCallStmt::output(int level)
+{
+    fprintf(yyout, "%*cFuncCallStmt\n", level, ' ');
+    callList->output(level+4);
+}
+
 void IfStmt::output(int level)
 {
     fprintf(yyout, "%*cIfStmt\n", level, ' ');

@@ -36,8 +36,8 @@
 %token RETURN
 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func
-%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func 
+%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList Call
 %nterm <type> Type
 
 %precedence THEN
@@ -133,6 +133,8 @@ ContinueStmt
 Exp
     :
     AddExp {$$ = $1;} 
+    |
+    FuncCallExp {$$=$1;}
     ;
 Cond
     :
@@ -408,6 +410,45 @@ FuncParam
         delete []$2;
     }
     ;
+
+CallList
+    :
+    Call {$$=$1;}
+    |
+    Call COMMA CallList
+    {
+        $$=new CallList(nullptr,$1,$3);
+    }
+    ;
+
+Call
+    :
+    Exp {
+        $$=$1;
+    }
+    |
+    ID {
+        $$=$1;
+    }
+    ;
+
+FuncCallExp
+    :
+    ID LPAREN RPAREN SEMICOLON
+    {
+        SymbolEntry *se=identifiers->lookup($1);
+        assert(se==nullptr);
+        $$=new FuncCallStmt(se,nullptr);
+    }
+    |
+    ID LPAREN CallList RPAREN SEMICOLON
+    {
+        SymbolEntry *se=identifiers->lookup($1);
+        assert(se==nullptr);
+        $$=new FuncCallStmt(se,$3);
+    }
+    ;
+
 %%
 
 int yyerror(char const* message)
