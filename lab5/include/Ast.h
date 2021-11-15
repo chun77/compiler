@@ -166,6 +166,14 @@ public:
     void output(int level);
 };
 
+class NullStmt : public StmtNode
+{
+private:
+    ExprNode* expr;
+public:
+    NullStmt(ExprNode* expr): expr(expr) {};
+    void output(int level);
+};
 
 class FuncParams : public StmtNode
 {

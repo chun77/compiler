@@ -36,7 +36,7 @@
 %token RETURN
 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func CallStmt
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func CallStmt NullStmt
 %nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList 
 %nterm <type> Type
 
@@ -65,6 +65,7 @@ Stmt
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
     | CallStmt{$$=$1;}
+    | NullStmt {$$=$1;}
     ;
 LVal
     : ID {
@@ -139,6 +140,18 @@ CallStmt
         $$=new CallStmt($1);
     }
     ;
+NullStmt
+    :
+    SEMICOLON 
+    {
+        $$=new NullStmt(nullptr);
+    }
+    |
+    AddExp SEMICOLON
+    {
+        $$=new NullStmt($1);
+    }
+    ;
 Exp
     :
     AddExp {$$ = $1;} 
@@ -194,19 +207,19 @@ UnaryExp
     :
     PrimaryExp {$$=$1;}
     |
-    ADD PrimaryExp
+    ADD UnaryExp
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new UnaryExpr(se, UnaryExpr::ADD, $2);
     }
     |
-    SUB PrimaryExp
+    SUB UnaryExp
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new UnaryExpr(se, UnaryExpr::SUB, $2);
     }
     |
-    NOT PrimaryExp
+    NOT UnaryExp
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new UnaryExpr(se, UnaryExpr::NOT, $2);

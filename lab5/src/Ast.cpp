@@ -204,6 +204,13 @@ void CallStmt::output(int level)
     callExp->output(level+4);
 }
 
+void NullStmt::output(int level)
+{
+    fprintf(yyout, "%*cNullStmt\n", level, ' ');
+    if(expr!=NULL){
+        expr->output(level+4);
+    }
+}
 void IfStmt::output(int level)
 {
     fprintf(yyout, "%*cIfStmt\n", level, ' ');
