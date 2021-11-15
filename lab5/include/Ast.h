@@ -25,12 +25,12 @@ public:
 };
 
 
-class FuncCallStmt : public ExprNode
+class FuncCallExp : public ExprNode
 {
 private:
     ExprNode* callList;
 public:
-    FuncCallStmt(SymbolEntry* se, ExprNode* callList): ExprNode(se), callList(callList) {};
+    FuncCallExp(SymbolEntry* se, ExprNode* callList): ExprNode(se), callList(callList) {};
     void output(int level);
 };
 
@@ -150,12 +150,22 @@ public:
 class CallList : public ExprNode
 {
 private:
-    ExprNode* call;
+    ExprNode* expr;
     ExprNode* callList;
 public:
-    CallList(SymbolEntry*se, ExprNode* call, ExprNode* callList) : ExprNode(se),call(call), callList(callList) {};
+    CallList(SymbolEntry*se, ExprNode* expr, ExprNode* callList) : ExprNode(se),expr(expr), callList(callList) {};
     void output(int level);
 };
+
+class CallStmt : public StmtNode
+{
+private:
+    ExprNode* callExp;
+public:
+    CallStmt(ExprNode* callExp) : callExp(callExp) {};
+    void output(int level);
+};
+
 
 class FuncParams : public StmtNode
 {

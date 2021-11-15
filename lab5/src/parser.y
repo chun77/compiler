@@ -36,8 +36,8 @@
 %token RETURN
 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func 
-%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList Call
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func CallStmt
+%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList 
 %nterm <type> Type
 
 %precedence THEN
@@ -64,6 +64,7 @@ Stmt
     | ContinueStmt {$$=$1;}
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
+    | CallStmt{$$=$1;}
     ;
 LVal
     : ID {
@@ -130,6 +131,14 @@ ContinueStmt
     CONTINUE SEMICOLON{
         $$ = new ContinueStmt();
     }
+    ;
+CallStmt
+    :
+    FuncCallExp SEMICOLON
+    {
+        $$=new CallStmt($1);
+    }
+    ;
 Exp
     :
     AddExp {$$ = $1;} 
@@ -413,39 +422,32 @@ FuncParam
 
 CallList
     :
-    Call {$$=$1;}
+    Exp {$$=$1;}
     |
-    Call COMMA CallList
+    Exp COMMA CallList
     {
         $$=new CallList(nullptr,$1,$3);
     }
     ;
 
-Call
-    :
-    Exp {
-        $$=$1;
-    }
-    |
-    ID {
-        $$=$1;
-    }
-    ;
-
 FuncCallExp
     :
-    ID LPAREN RPAREN SEMICOLON
+    ID LPAREN RPAREN
     {
-        SymbolEntry *se=identifiers->lookup($1);
-        assert(se==nullptr);
-        $$=new FuncCallStmt(se,nullptr);
+        SymbolEntry *se=new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        identifiers->install($1, se);
+        identifiers = new SymbolTable(identifiers);
+        $$=new FuncCallExp(se,nullptr);
+        delete []$1;
     }
     |
-    ID LPAREN CallList RPAREN SEMICOLON
+    ID LPAREN CallList RPAREN
     {
-        SymbolEntry *se=identifiers->lookup($1);
-        assert(se==nullptr);
-        $$=new FuncCallStmt(se,$3);
+        SymbolEntry *se=new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        identifiers->install($1, se);
+        identifiers = new SymbolTable(identifiers);
+        $$=new FuncCallExp(se,$3);
+        delete[] $1;
     }
     ;
 
