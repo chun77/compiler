@@ -27,7 +27,7 @@
 %token IF ELSE
 %token WHILE FOR BREAK CONTINUE
 %token INT VOID CONST
-%token LPAREN RPAREN LBRACE RBRACE SEMICOLON COMMA LBRACKET RBRACKET GETINT PUTINT
+%token LPAREN RPAREN LBRACE RBRACE SEMICOLON COMMA LBRACKET RBRACKET
 %token ASSIGN
 %token LESS EQ MORE LESSQ MOREQ NOTEQ
 %token MUL DIV MOD
@@ -37,7 +37,7 @@
 
 
 %nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func CallStmt NullStmt
-%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList Istream Ostream 
+%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList 
 %nterm <type> Type
 
 %precedence THEN
@@ -106,7 +106,7 @@ IfStmt
     | IF LPAREN Cond RPAREN Stmt ELSE Stmt {
         $$ = new IfElseStmt($3, $5, $7);
     }
-
+    
     ;
 WhileStmt
     : WHILE LPAREN Cond RPAREN Stmt {
@@ -158,7 +158,6 @@ Exp
     AddExp {$$ = $1;} 
     |
     FuncCallExp {$$=$1;}
-
     ;
 Cond
     :
@@ -434,16 +433,7 @@ FuncParam
         delete []$2;
     }
     ;
-Istream
-    :GETINT LPAREN RPAREN
-    {
-        $$=new Istream(nullptr);
-    }
-Ostream
-    :PUTINT LPAREN Exp RPAREN
-    {
-        $$=new Ostream(nullptr,$3);
-    }
+
 CallList
     :
     Exp {$$=$1;}
@@ -458,25 +448,21 @@ FuncCallExp
     :
     ID LPAREN RPAREN
     {
-        SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        SymbolEntry *se=new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
+        identifiers = new SymbolTable(identifiers);
         $$=new FuncCallExp(se,nullptr);
         delete []$1;
     }
     |
     ID LPAREN CallList RPAREN
     {
-        SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        SymbolEntry *se=new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
+        identifiers = new SymbolTable(identifiers);
         $$=new FuncCallExp(se,$3);
         delete[] $1;
     }
-    |
-    Istream{$$ = $1;}
-    |
-    Ostream{$$ = $1;}
     ;
 
 %%

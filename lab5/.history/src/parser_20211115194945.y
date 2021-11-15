@@ -158,7 +158,10 @@ Exp
     AddExp {$$ = $1;} 
     |
     FuncCallExp {$$=$1;}
-
+    |
+    Istream{$$ = $1;}
+    |
+    Ostream{$$ = $1;}
     ;
 Cond
     :
@@ -458,25 +461,21 @@ FuncCallExp
     :
     ID LPAREN RPAREN
     {
-        SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        SymbolEntry *se=new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
+        identifiers = new SymbolTable(identifiers);
         $$=new FuncCallExp(se,nullptr);
         delete []$1;
     }
     |
     ID LPAREN CallList RPAREN
     {
-        SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        SymbolEntry *se=new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
+        identifiers = new SymbolTable(identifiers);
         $$=new FuncCallExp(se,$3);
         delete[] $1;
     }
-    |
-    Istream{$$ = $1;}
-    |
-    Ostream{$$ = $1;}
     ;
 
 %%

@@ -158,7 +158,10 @@ Exp
     AddExp {$$ = $1;} 
     |
     FuncCallExp {$$=$1;}
-
+    |
+    Istream{$$ = $1;}
+    |
+    Ostream{$$ = $1;}
     ;
 Cond
     :
@@ -473,10 +476,6 @@ FuncCallExp
         $$=new FuncCallExp(se,$3);
         delete[] $1;
     }
-    |
-    Istream{$$ = $1;}
-    |
-    Ostream{$$ = $1;}
     ;
 
 %%

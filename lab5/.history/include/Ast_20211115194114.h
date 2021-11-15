@@ -276,16 +276,16 @@ class Ostream : public ExprNode
 private:
     ExprNode * exp;
 public:
-    Ostream(SymbolEntry* se,ExprNode * exp):ExprNode(se),exp(exp){};
+    Ostream(ExprNode * exp):exp(exp){};
     void output(int level);
 };
 
 class Istream : public ExprNode
 {
 private:
-
+    ExprNode * exp;
 public:
-    Istream(SymbolEntry* se): ExprNode(se){};
+    Istream(ExprNode * exp){};
     void output(int level);
 };
 
