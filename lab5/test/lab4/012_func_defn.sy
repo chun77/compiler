@@ -1,11 +1,11 @@
 int a;
-int func(int p){
+int func(int p,int b){
 	p = p - 1;
 	return p;
 }
 int main(){
 	int b;
 	a = 10;
-	b = func(a);
+	b = func(a,b);
 	return b;
 }

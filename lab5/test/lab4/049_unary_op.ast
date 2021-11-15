@@ -1,0 +1,31 @@
+program
+    FunctionDefine function name: main, type: int()
+        CompoundStmt
+            Sequence
+                Sequence
+                    Sequence
+                        VarDecl
+                            Id	name: a	scope: 1	type: int
+                        AssignStmt
+                            Id	name: a	scope: 1	type: int
+                            IntegerLiteral	value: 10	type: int
+                    IfElseStmt
+                        UnaryExpr	op: pos
+                            UnaryExpr	op: nag
+                                UnaryExpr	op: not
+                                    UnaryExpr	op: not
+                                        UnaryExpr	op: not
+                                            Id	name: a	scope: 1	type: int
+                        CompoundStmt
+                            AssignStmt
+                                Id	name: a	scope: 1	type: int
+                                UnaryExpr	op: nag
+                                    UnaryExpr	op: nag
+                                        UnaryExpr	op: nag
+                                            IntegerLiteral	value: 1	type: int
+                        CompoundStmt
+                            AssignStmt
+                                Id	name: a	scope: 1	type: int
+                                IntegerLiteral	value: 0	type: int
+                ReturnStmt
+                    Id	name: a	scope: 1	type: int

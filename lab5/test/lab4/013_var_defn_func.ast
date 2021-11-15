@@ -1,0 +1,14 @@
+program
+    Sequence
+        FunctionDefine function name: defn, type: int()
+            CompoundStmt
+                ReturnStmt
+                    IntegerLiteral	value: 4	type: int
+        FunctionDefine function name: main, type: int()
+            CompoundStmt
+                Sequence
+                    VarDecl
+                        Id	name: a	scope: 1	type: int
+                        FuncCallExp
+                    ReturnStmt
+                        Id	name: a	scope: 1	type: int

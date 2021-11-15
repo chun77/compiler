@@ -1,0 +1,9 @@
+program
+    Sequence
+        ConstDecl
+            Id	name: a	scope: 0	type: int
+            IntegerLiteral	value: 10	type: int
+        FunctionDefine function name: main, type: int()
+            CompoundStmt
+                ReturnStmt
+                    Id	name: a	scope: 0	type: int

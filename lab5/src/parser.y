@@ -36,7 +36,7 @@
 %token RETURN
 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam Func CallStmt NullStmt
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam CallStmt NullStmt
 %nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList Istream Ostream 
 %nterm <type> Type
 
@@ -378,32 +378,35 @@ ConstDecl
 
 FuncDef
     :
-    Type ID {
+    Type ID LPAREN FuncParams RPAREN BlockStmt
+    {
         Type *funcType;
         funcType = new FunctionType($1,{});
         SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
-    }
-    Func BlockStmt
-    {
-        SymbolEntry *se;
-        se = identifiers->lookup($2);
-        assert(se != nullptr);
-        $$ = new FunctionDef(se, $4, $5);
+
+        $$ = new FunctionDef(se, $4, $6);
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
         delete []$2;
     }
-    
-    ;
-
-Func
-    :
-    LPAREN RPAREN  {}
     |
-    LPAREN FuncParams RPAREN {$$=$2;}
+    Type ID LPAREN RPAREN BlockStmt
+    {
+        Type *funcType;
+        funcType = new FunctionType($1,{});
+        SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
+        identifiers->install($2, se);
+        identifiers = new SymbolTable(identifiers);
+
+        $$ = new FunctionDef(se, nullptr, $5);
+        SymbolTable *top = identifiers;
+        identifiers = identifiers->getPrev();
+        delete top;
+        delete []$2;
+    }
     ;
 
 FuncParams 

@@ -1,0 +1,65 @@
+program
+    Sequence
+        FunctionDefine function name: fun, type: int()
+            FuncParams
+                FuncParam
+                    Id	name: m	scope: 0	type: int
+                FuncParam
+                    Id	name: n	scope: 0	type: int
+            CompoundStmt
+                Sequence
+                    Sequence
+                        VarDecl
+                            Id	name: rem	scope: 1	type: int
+                        WhileStmt
+                            BinaryExpr	op: more
+                                Id	name: n	scope: 0	type: int
+                                IntegerLiteral	value: 0	type: int
+                            CompoundStmt
+                                Sequence
+                                    Sequence
+                                        AssignStmt
+                                            Id	name: rem	scope: 1	type: int
+                                            BinaryExpr	op: mod
+                                                Id	name: m	scope: 0	type: int
+                                                Id	name: n	scope: 0	type: int
+                                        AssignStmt
+                                            Id	name: m	scope: 0	type: int
+                                            Id	name: n	scope: 0	type: int
+                                    AssignStmt
+                                        Id	name: n	scope: 0	type: int
+                                        Id	name: rem	scope: 1	type: int
+                    ReturnStmt
+                        Id	name: m	scope: 0	type: int
+        FunctionDefine function name: main, type: int()
+            CompoundStmt
+                Sequence
+                    Sequence
+                        Sequence
+                            Sequence
+                                Sequence
+                                    Sequence
+                                        VarDecls
+                                            VarDecl
+                                                Id	name: n	scope: 1	type: int
+                                            VarDecl
+                                                Id	name: m	scope: 1	type: int
+                                        VarDecl
+                                            Id	name: num	scope: 1	type: int
+                                    AssignStmt
+                                        Id	name: m	scope: 1	type: int
+                                        Istream
+                                AssignStmt
+                                    Id	name: n	scope: 1	type: int
+                                    Istream
+                            AssignStmt
+                                Id	name: num	scope: 1	type: int
+                                FuncCallExp
+                                    FuncCallList
+                                        Id	name: m	scope: 1	type: int
+                                        Id	name: n	scope: 1	type: int
+                        FuncCallStmt
+                            Ostream
+                                Id	name: num	scope: 1	type: int
+                    ReturnStmt
+                        IntegerLiteral	value: 0	type: int

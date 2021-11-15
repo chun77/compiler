@@ -1,0 +1,83 @@
+program
+    Sequence
+        Sequence
+            FunctionDefine function name: enc, type: int()
+                FuncParam
+                    Id	name: a	scope: 0	type: int
+                CompoundStmt
+                    Sequence
+                        IfElseStmt
+                            BinaryExpr	op: more
+                                Id	name: a	scope: 0	type: int
+                                IntegerLiteral	value: 25	type: int
+                            AssignStmt
+                                Id	name: a	scope: 0	type: int
+                                BinaryExpr	op: add
+                                    Id	name: a	scope: 0	type: int
+                                    IntegerLiteral	value: 60	type: int
+                            CompoundStmt
+                                AssignStmt
+                                    Id	name: a	scope: 0	type: int
+                                    BinaryExpr	op: sub
+                                        Id	name: a	scope: 0	type: int
+                                        IntegerLiteral	value: 15	type: int
+                        ReturnStmt
+                            Id	name: a	scope: 0	type: int
+            FunctionDefine function name: dec, type: int()
+                FuncParam
+                    Id	name: a	scope: 0	type: int
+                CompoundStmt
+                    Sequence
+                        IfElseStmt
+                            BinaryExpr	op: more
+                                Id	name: a	scope: 0	type: int
+                                IntegerLiteral	value: 85	type: int
+                            AssignStmt
+                                Id	name: a	scope: 0	type: int
+                                BinaryExpr	op: sub
+                                    Id	name: a	scope: 0	type: int
+                                    IntegerLiteral	value: 59	type: int
+                            CompoundStmt
+                                AssignStmt
+                                    Id	name: a	scope: 0	type: int
+                                    BinaryExpr	op: add
+                                        Id	name: a	scope: 0	type: int
+                                        IntegerLiteral	value: 14	type: int
+                        ReturnStmt
+                            Id	name: a	scope: 0	type: int
+        FunctionDefine function name: main, type: int()
+            CompoundStmt
+                Sequence
+                    Sequence
+                        Sequence
+                            Sequence
+                                Sequence
+                                    Sequence
+                                        Sequence
+                                            Sequence
+                                                VarDecl
+                                                    Id	name: a	scope: 1	type: int
+                                                AssignStmt
+                                                    Id	name: a	scope: 1	type: int
+                                                    IntegerLiteral	value: 400	type: int
+                                            VarDecl
+                                                Id	name: res	scope: 1	type: int
+                                        AssignStmt
+                                            Id	name: res	scope: 1	type: int
+                                            FuncCallExp
+                                                Id	name: a	scope: 1	type: int
+                                    AssignStmt
+                                        Id	name: res	scope: 1	type: int
+                                        FuncCallExp
+                                            Id	name: res	scope: 1	type: int
+                                FuncCallStmt
+                                    Ostream
+                                        Id	name: res	scope: 1	type: int
+                            AssignStmt
+                                Id	name: res	scope: 1	type: int
+                                IntegerLiteral	value: 10	type: int
+                        FuncCallStmt
+                            FuncCallExp
+                                Id	name: res	scope: 1	type: int
+                    ReturnStmt
+                        IntegerLiteral	value: 0	type: int

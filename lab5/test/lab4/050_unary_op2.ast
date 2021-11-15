@@ -1,0 +1,55 @@
+program
+    FunctionDefine function name: main, type: int()
+        CompoundStmt
+            Sequence
+                Sequence
+                    Sequence
+                        Sequence
+                            Sequence
+                                Sequence
+                                    VarDecls
+                                        VarDecl
+                                            Id	name: a	scope: 1	type: int
+                                        VarDecl
+                                            Id	name: b	scope: 1	type: int
+                                    AssignStmt
+                                        Id	name: a	scope: 1	type: int
+                                        IntegerLiteral	value: 56	type: int
+                                AssignStmt
+                                    Id	name: b	scope: 1	type: int
+                                    IntegerLiteral	value: 4	type: int
+                            AssignStmt
+                                Id	name: a	scope: 1	type: int
+                                BinaryExpr	op: add
+                                    BinaryExpr	op: sub
+                                        Id	name: a	scope: 1	type: int
+                                        UnaryExpr	op: nag
+                                            IntegerLiteral	value: 4	type: int
+                                    UnaryExpr	op: pos
+                                        Id	name: b	scope: 1	type: int
+                        IfElseStmt
+                            UnaryExpr	op: pos
+                                UnaryExpr	op: nag
+                                    UnaryExpr	op: not
+                                        UnaryExpr	op: not
+                                            UnaryExpr	op: not
+                                                Id	name: a	scope: 1	type: int
+                            CompoundStmt
+                                AssignStmt
+                                    Id	name: a	scope: 1	type: int
+                                    UnaryExpr	op: nag
+                                        UnaryExpr	op: nag
+                                            UnaryExpr	op: nag
+                                                IntegerLiteral	value: 1	type: int
+                            CompoundStmt
+                                AssignStmt
+                                    Id	name: a	scope: 1	type: int
+                                    BinaryExpr	op: add
+                                        IntegerLiteral	value: 0	type: int
+                                        UnaryExpr	op: pos
+                                            Id	name: b	scope: 1	type: int
+                    FuncCallStmt
+                        Ostream
+                            Id	name: a	scope: 1	type: int
+                ReturnStmt
+                    IntegerLiteral	value: 0	type: int
