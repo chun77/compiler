@@ -168,7 +168,7 @@ void ConstDecl::output(int level)
 void FuncParams::output(int level)
 {
     fprintf(yyout, "%*cFuncParams\n", level, ' ');
-    if(funcParam!=NULL){
+    if(funcParam){
         funcParam->output(level + 4);
     }
     if(funcParams!=NULL){
@@ -179,9 +179,7 @@ void FuncParams::output(int level)
 void FuncParam::output(int level)
 {
     fprintf(yyout, "%*cFuncParam\n", level, ' ');
-    if(id!=NULL){
     id->output(level + 4);
-    }
     if(expr!=NULL){
         expr->output(level + 4);
     }

@@ -179,9 +179,7 @@ void FuncParams::output(int level)
 void FuncParam::output(int level)
 {
     fprintf(yyout, "%*cFuncParam\n", level, ' ');
-    if(id!=NULL){
     id->output(level + 4);
-    }
     if(expr!=NULL){
         expr->output(level + 4);
     }
@@ -269,9 +267,9 @@ void FunctionDef::output(int level)
     type = se->getType()->toStr();
     fprintf(yyout, "%*cFunctionDefine function name: %s, type: %s\n", level, ' ', 
             name.c_str(), type.c_str());
-    // if(param!=NULL){
-    //     param->output(level + 4);
-    // }
+    if(param!=NULL){
+        param->output(level + 4);
+    }
     stmt->output(level + 4);
     
 }

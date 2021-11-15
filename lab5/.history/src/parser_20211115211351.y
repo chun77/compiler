@@ -385,7 +385,8 @@ FuncDef
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
     }
-    Func BlockStmt
+    Func
+    BlockStmt
     {
         SymbolEntry *se;
         se = identifiers->lookup($2);

@@ -168,23 +168,19 @@ void ConstDecl::output(int level)
 void FuncParams::output(int level)
 {
     fprintf(yyout, "%*cFuncParams\n", level, ' ');
-    if(funcParam!=NULL){
-        funcParam->output(level + 4);
-    }
-    if(funcParams!=NULL){
-        funcParams->output(level + 4);
-    }
+    // funcParam->output(level + 4);
+    // if(funcParams!=NULL){
+    //     funcParams->output(level + 4);
+    // }
 }
 
 void FuncParam::output(int level)
 {
-    fprintf(yyout, "%*cFuncParam\n", level, ' ');
-    if(id!=NULL){
-    id->output(level + 4);
-    }
-    if(expr!=NULL){
-        expr->output(level + 4);
-    }
+    // fprintf(yyout, "%*cFuncParam\n", level, ' ');
+    // id->output(level + 4);
+    // if(expr!=NULL){
+    //     expr->output(level + 4);
+    // }
 }
 
 void CallList::output(int level)

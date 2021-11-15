@@ -269,9 +269,9 @@ void FunctionDef::output(int level)
     type = se->getType()->toStr();
     fprintf(yyout, "%*cFunctionDefine function name: %s, type: %s\n", level, ' ', 
             name.c_str(), type.c_str());
-    // if(param!=NULL){
-    //     param->output(level + 4);
-    // }
+    if(param!=NULL){
+        param->output(level + 4);
+    }
     stmt->output(level + 4);
     
 }

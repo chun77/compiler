@@ -385,12 +385,13 @@ FuncDef
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
     }
-    Func BlockStmt
+    Func
+    BlockStmt
     {
         SymbolEntry *se;
         se = identifiers->lookup($2);
         assert(se != nullptr);
-        $$ = new FunctionDef(se, $4, $5);
+        $$ = new FunctionDef(se, $5);
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
@@ -472,7 +473,7 @@ FuncCallExp
         $$=new FuncCallExp(se,$3);
         delete[] $1;
     }
-    |
+        |
     Istream{$$ = $1;}
     |
     Ostream{$$ = $1;}

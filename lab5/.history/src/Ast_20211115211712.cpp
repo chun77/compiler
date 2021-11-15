@@ -179,9 +179,7 @@ void FuncParams::output(int level)
 void FuncParam::output(int level)
 {
     fprintf(yyout, "%*cFuncParam\n", level, ' ');
-    if(id!=NULL){
     id->output(level + 4);
-    }
     if(expr!=NULL){
         expr->output(level + 4);
     }
