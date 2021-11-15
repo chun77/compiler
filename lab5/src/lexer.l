@@ -19,6 +19,8 @@
 %}
 
 DECIMIAL ([1-9][0-9]*|0)
+OCTADECIMAL ([0][1-7][0-7]*)
+HEXADECIMAL (0[xX][1-9a-fA-F][0-9a-fA-F]*)
 ID [[:alpha:]_][[:alpha:][:digit:]_]*
 EOL (\r\n|\n|\r)
 WHITE [\t ]
@@ -196,7 +198,47 @@ BLOCKCOMMENTEND \*\/
     yylval.itype = atoi(yytext);
     return INTEGER;
 }
+{OCTADECIMAL} {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4(yytext);
+    int num = 0; 
+    string s(yytext);
+    int siz=s.size();
+    int a=0;
+    for (int i=0;i<siz;i++) {
+            a= yytext[i]-'0';
+            num = num*8 +a ;
+        }
+    yylval.itype=num;
+    return INTEGER;
+    
+}
+{HEXADECIMAL} {
+    int num = 0; 
+    string s(yytext);
+    int siz=s.size();
+    int a=0;
+    for (int i=0;i<siz;i++) {
+            if(i<2){
 
+            }
+            else{
+                if('A'<=yytext[i]&&yytext[i]<='F'){
+                    a= (yytext[i]-'A')+10;
+                }
+                if('a'<=yytext[i]&&yytext[i]<='f'){
+                    a= (yytext[i]-'a')+10;
+                }
+                else{
+                    a= yytext[i]-'0';
+                }
+                num = num*16 +a ; 
+            }
+    }
+    yylval.itype=num;
+    return INTEGER;
+
+}
 {ID} {
     if(dump_tokens)
         DEBUG_FOR_LAB4(yytext);
@@ -206,6 +248,7 @@ BLOCKCOMMENTEND \*\/
     yylval.strtype = lexeme;
     return ID;
 }
+
 {EOL} yylineno++;
 {WHITE}
 
