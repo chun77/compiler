@@ -27,7 +27,7 @@
 %token IF ELSE
 %token WHILE FOR BREAK CONTINUE
 %token INT VOID CONST
-%token LPAREN RPAREN LBRACE RBRACE SEMICOLON COMMA LBRACKET RBRACKET GETINT PUTINT
+%token LPAREN RPAREN LBRACE RBRACE SEMICOLON COMMA LBRACKET RBRACKET GETINT PUTINT PUTCH
 %token ASSIGN
 %token LESS EQ MORE LESSQ MOREQ NOTEQ
 %token MUL DIV MOD
@@ -36,7 +36,7 @@
 %token RETURN
 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam CallStmt NullStmt
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam NullStmt
 %nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList Istream Ostream 
 %nterm <type> Type
 
@@ -64,7 +64,7 @@ Stmt
     | ContinueStmt {$$=$1;}
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
-    | CallStmt{$$=$1;}
+
     | NullStmt {$$=$1;}
     ;
 LVal
@@ -103,6 +103,9 @@ IfStmt
     : IF LPAREN Cond RPAREN Stmt %prec THEN {
         $$ = new IfStmt($3, $5);
     }
+    | IF LPAREN Cond RPAREN LBRACE RBRACE {
+        $$ = new IfStmt($3,nullptr);
+    }
     | IF LPAREN Cond RPAREN Stmt ELSE Stmt {
         $$ = new IfElseStmt($3, $5, $7);
     }
@@ -120,7 +123,7 @@ ReturnStmt
     }
     |
     RETURN SEMICOLON{
-        $$ = new ReturnStmt();
+        $$ = new ReturnStmt(nullptr);
     }
     ;
 BreakStmt
@@ -134,13 +137,6 @@ ContinueStmt
         $$ = new ContinueStmt();
     }
     ;
-CallStmt
-    :
-    FuncCallExp SEMICOLON
-    {
-        $$=new CallStmt($1);
-    }
-    ;
 NullStmt
     :
     SEMICOLON 
@@ -148,17 +144,14 @@ NullStmt
         $$=new NullStmt(nullptr);
     }
     |
-    AddExp SEMICOLON
+    Exp SEMICOLON
     {
         $$=new NullStmt($1);
     }
     ;
 Exp
     :
-    AddExp {$$ = $1;} 
-    |
-    FuncCallExp {$$=$1;}
-
+    AddExp {$$ = $1;}
     ;
 Cond
     :
@@ -242,6 +235,10 @@ PrimaryExp
     INTEGER {
         SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
         $$ = new Constant(se);
+    }
+    |
+    FuncCallExp{
+        $$=$1;
     }
     ;
 
@@ -443,6 +440,11 @@ Istream
     }
 Ostream
     :PUTINT LPAREN Exp RPAREN
+    {
+        $$=new Ostream(nullptr,$3);
+    }
+    |
+    PUTCH LPAREN Exp RPAREN
     {
         $$=new Ostream(nullptr,$3);
     }

@@ -640,7 +640,9 @@ void IfStmt::output(int level)
 {
     fprintf(yyout, "%*cIfStmt\n", level, ' ');
     cond->output(level + 4);
-    thenStmt->output(level + 4);
+    if(thenStmt!=NULL){
+        thenStmt->output(level + 4);
+    }
 }
 
 void IfElseStmt::output(int level)
