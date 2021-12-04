@@ -1,0 +1,15 @@
+int a=1,b=1;
+
+int main(int c)
+{
+//    int a=1;
+ //   int b=4;
+    a = 1 + 2;
+    b = -a;
+    
+    if(a != 5 && b <2 )
+        return 1;
+    a = 9%4;
+    a= 8/5;
+    return 0;
+}

@@ -43,6 +43,8 @@ public:
     FunctionType(Type* returnType, std::vector<Type*> paramsType) : 
     Type(Type::FUNC), returnType(returnType), paramsType(paramsType){};
     Type* getRetType() {return returnType;};
+    void addParam(Type* type) {this->paramsType.push_back(type);};
+    int getParamNum() {return this->paramsType.size();};
     std::string toStr();
 };
 

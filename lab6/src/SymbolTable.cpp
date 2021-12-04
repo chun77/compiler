@@ -97,7 +97,24 @@ SymbolEntry* SymbolTable::lookup(std::string name)
 // install the entry into current symbol table.
 void SymbolTable::install(std::string name, SymbolEntry* entry)
 {
-    symbolTable[name] = entry;
+    //symbolTable[name] = entry;
+    if(symbolTable[name] == nullptr)
+        symbolTable[name] = entry;
+    else
+    {
+        SymbolEntry* temp = symbolTable[name];
+        while(temp != nullptr)
+        {
+            if(temp->next == nullptr)
+            {
+                temp->next = entry;
+                break;
+            }
+            else{
+                temp= temp->next;
+            }
+        }
+    }   
 }
 
 int SymbolTable::counter = 0;

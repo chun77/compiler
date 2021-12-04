@@ -16,6 +16,7 @@ protected:
     Type *type;
 
 public:
+    SymbolEntry *next;
     SymbolEntry(Type *type, int kind);
     virtual ~SymbolEntry() {};
     bool isConstant() const {return kind == CONSTANT;};
