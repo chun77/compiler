@@ -91,6 +91,7 @@ public:
     int getScope() const {return scope;};
     void setAddr(Operand *addr) {this->addr = addr;};
     Operand* getAddr() {return addr;};
+    std::string getName() {return name;};
     // You can add any function you need here.
 };
 

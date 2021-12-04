@@ -77,7 +77,7 @@ LVal
             delete [](char*)$1;
             assert(se != nullptr);
         }
-        $$ = new Id(se,se);
+        $$ = new Id(se);
         delete []$1;
     }
     ;
@@ -340,21 +340,17 @@ VarDecl
     :
     ID {
         SymbolEntry *se;
-        SymbolEntry *se1;
-        se1 = identifiers->lookup($1);
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se,se1),nullptr);
+        $$ = new VarDecl(new Id(se),nullptr);
         delete []$1;
     }
     |
     ID ASSIGN Exp{
         SymbolEntry *se;
-        SymbolEntry *se1;
-        se1 = identifiers->lookup($1);
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se,se1),$3);
+        $$ = new VarDecl(new Id(se),$3);
         delete []$1;
     }
     ;
@@ -362,21 +358,17 @@ ConstDecl
     :
     ID {
         SymbolEntry *se;
-        SymbolEntry *se1;
-        se1 = identifiers->lookup($1);
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new ConstDecl(new Id(se,se1),nullptr);
+        $$ = new ConstDecl(new Id(se),nullptr);
         delete []$1;
     }
     |
     ID ASSIGN Exp{
         SymbolEntry *se;
-        SymbolEntry *se1;
-        se1 = identifiers->lookup($1);
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new ConstDecl(new Id(se,se1),$3);
+        $$ = new ConstDecl(new Id(se),$3);
         delete []$1;
     }
     ;
@@ -391,21 +383,10 @@ FuncDef
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
 
-        while(se->next!=nullptr){
-            se=se->next;
-        }
-        StmtNode *temp=$4;
-        if(temp){
-            dynamic_cast<FunctionType*>(funcType)->addParam(TypeSystem::intType);
-        }
-        while(temp && dynamic_cast<FuncParams*>(temp)->getNext())
-        {
-            temp = dynamic_cast<FuncParams*>(temp)->getNext();
-            dynamic_cast<FunctionType*>(funcType)->addParam(TypeSystem::intType);
-        }
-        assert(se != nullptr);
-
         $$ = new FunctionDef(se, $4, $6);
+        SymbolTable *top = identifiers;
+        identifiers = identifiers->getPrev();
+        delete top;
         delete []$2;
     }
     |
@@ -440,7 +421,7 @@ FuncParam
         SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
         identifiers->install($2, se);
-        $$ = new FuncParam(new Id(se,nullptr),nullptr);
+        $$ = new FuncParam(new Id(se),nullptr);
         delete []$2;
     }
     |
@@ -448,7 +429,7 @@ FuncParam
         SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
         identifiers->install($2, se);
-        $$ = new FuncParam(new Id(se,nullptr),$4);
+        $$ = new FuncParam(new Id(se),$4);
         delete []$2;
     }
     ;

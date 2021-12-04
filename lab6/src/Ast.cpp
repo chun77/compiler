@@ -329,6 +329,13 @@ void BinaryExpr::typeCheck()
 void UnaryExpr::typeCheck()
 {
     expr->typeCheck();
+    Type *type=expr->getSymPtr()->getType();
+    if(type==TypeSystem::voidType)
+    {
+        this->symbolEntry->setType(TypeSystem::voidType);
+    }else{
+        this->symbolEntry->setType(TypeSystem::intType);
+    }
 }
 
 void VarDeclStmt::typeCheck()
@@ -343,26 +350,43 @@ void ConstDeclStmt::typeCheck()
 
 void VarDecls::typeCheck()
 {
-    varDecls->typeCheck();
-    varDecl->typeCheck();
+    if(varDecls!=NULL){
+        varDecls->typeCheck();
+    }
+    if(varDecl!=NULL){
+        varDecl->typeCheck();
+    }
 }
 
 void ConstDecls::typeCheck()
 {
-    constDecls->typeCheck();
-    constDecl->typeCheck();
+    if(constDecls!=NULL){
+        constDecls->typeCheck();
+    }
+    if(constDecl!=NULL){
+        constDecl->typeCheck();
+    }
 }
 
 void VarDecl::typeCheck()
 {
     id->typeCheck();
-    expr->typeCheck();
+    if(expr!=NULL){
+        expr->typeCheck();
+    }
+
 }
 
 void ConstDecl::typeCheck()
 {
     id->typeCheck();
-    expr->typeCheck();
+    if(expr!=NULL){
+        expr->typeCheck();
+    }else{
+        printf("%s","error: const value has not been initialized!\n");
+    }
+
+
 }
 
 void FuncCallExp::typeCheck()
@@ -416,7 +440,10 @@ void ContinueStmt::typeCheck()
 
 void WhileStmt::typeCheck()
 {
-
+    cond->typeCheck();
+    Stmt->typeCheck();
+    SymbolEntry *se=cond->getSymPtr();
+    se->setType(TypeSystem::boolType);
 }
 
 void Ostream::typeCheck()

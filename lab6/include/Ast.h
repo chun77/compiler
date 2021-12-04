@@ -93,10 +93,8 @@ public:
 
 class Id : public ExprNode
 {
-private:
-    SymbolEntry *se;
 public:
-    Id(SymbolEntry *se1,SymbolEntry *se2) : ExprNode(se1),se(se2) {SymbolEntry *temp = new TemporarySymbolEntry(se->getType(), SymbolTable::getLabel()); dst = new Operand(temp);};
+    Id(SymbolEntry *se) : ExprNode(se) {SymbolEntry *temp = new TemporarySymbolEntry(se->getType(), SymbolTable::getLabel()); dst = new Operand(temp);};
     void output(int level);
     void typeCheck();
     void genCode();
