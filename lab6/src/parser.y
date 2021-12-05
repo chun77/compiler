@@ -19,6 +19,7 @@
     StmtNode* stmttype;
     ExprNode* exprtype;
     Type* type;
+    SymbolEntry* se;
 }
 
 %start Program
@@ -36,8 +37,8 @@
 %token RETURN
 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef FuncParams FuncParam NullStmt
-%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList Istream Ostream 
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt WhileStmt ReturnStmt BreakStmt ContinueStmt DeclStmt ConstDeclStmt ConstDecls ConstDecl VarDeclStmt VarDecls VarDecl FuncDef  NullStmt
+%nterm <exprtype> Exp AddExp MulExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp FuncCallExp CallList Istream Ostream FuncParams FuncParam
 %nterm <type> Type
 
 %precedence THEN
@@ -375,30 +376,39 @@ ConstDecl
 
 FuncDef
     :
-    Type ID LPAREN FuncParams RPAREN BlockStmt
+    Type ID LPAREN FuncParams RPAREN 
     {
         Type *funcType;
-        funcType = new FunctionType($1,{});
+        std::vector<Type*> vec;
+        FuncParams* temp = (FuncParams*)$4;
+        while(temp){
+            vec.push_back(temp->getParam()->getSymPtr()->getType());
+            temp = (FuncParams*)(temp->getNext());
+        }
+        funcType = new FunctionType($1,vec);
         SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
-
-        $$ = new FunctionDef(se, $4, $6);
+        $<se>$ = se;
+    }BlockStmt{
+        $$ = new FunctionDef($<se>6, (FuncParams*)$4, $7);
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
         delete []$2;
     }
     |
-    Type ID LPAREN RPAREN BlockStmt
+    Type ID LPAREN RPAREN 
     {
         Type *funcType;
         funcType = new FunctionType($1,{});
         SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
-
-        $$ = new FunctionDef(se, nullptr, $5);
+        printf("fundef:%d%s",identifiers->getLevel(),"\n");
+        $<se>$ = se;
+    }BlockStmt{
+        $$ = new FunctionDef($<se>5, nullptr, $6);
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
@@ -411,7 +421,8 @@ FuncParams
     FuncParam {$$=$1;}
     |
     FuncParam COMMA FuncParams {
-        $$=new FuncParams($1,$3);
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$=new FuncParams(se,$1,$3);
     }
     ;
 
@@ -421,7 +432,7 @@ FuncParam
         SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
         identifiers->install($2, se);
-        $$ = new FuncParam(new Id(se),nullptr);
+        $$ = new FuncParam(se, new Id(se),nullptr);
         delete []$2;
     }
     |
@@ -429,7 +440,7 @@ FuncParam
         SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
         identifiers->install($2, se);
-        $$ = new FuncParam(new Id(se),$4);
+        $$ = new FuncParam(se, new Id(se),$4);
         delete []$2;
     }
     ;

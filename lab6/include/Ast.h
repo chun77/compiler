@@ -226,25 +226,26 @@ public:
     void genCode();
 };
 
-class FuncParams : public StmtNode
+class FuncParams : public ExprNode
 {
 private:
-    StmtNode* funcParam,*funcParams;
+    ExprNode* funcParam,*funcParams;
 public:
-    FuncParams(StmtNode* funcParam, StmtNode* funcParams) : funcParam(funcParam), funcParams(funcParams) {};
-    void output(int level);   
-    StmtNode* getNext() {return this->funcParams;};
+    FuncParams(SymbolEntry* se,ExprNode* funcParam, ExprNode* funcParams) : ExprNode(se), funcParam(funcParam), funcParams(funcParams) {};
+    void output(int level);  
+    ExprNode* getParam() {return funcParam;};
+    ExprNode* getNext() {return this->funcParams;};
     void typeCheck();
     void genCode();
 };
 
-class FuncParam : public StmtNode
+class FuncParam : public ExprNode
 {
 private:
     Id* id;
     ExprNode* expr;
 public:
-    FuncParam(Id* id,ExprNode* expr) : id(id), expr(expr) {};
+    FuncParam(SymbolEntry* se, Id* id,ExprNode* expr) : ExprNode(se), id(id), expr(expr) {};
     void output(int level);
     void typeCheck();
     void genCode();
@@ -332,10 +333,10 @@ class FunctionDef : public StmtNode
 {
 private:
     SymbolEntry *se;
-    StmtNode *param;
+    ExprNode *param;
     StmtNode *stmt;
 public:
-    FunctionDef(SymbolEntry *se,StmtNode* param, StmtNode *stmt) : se(se), param(param),stmt(stmt){};
+    FunctionDef(SymbolEntry *se,ExprNode* param, StmtNode *stmt) : se(se), param(param),stmt(stmt){};
     void output(int level);
     void typeCheck();
     void genCode();
