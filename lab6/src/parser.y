@@ -120,11 +120,21 @@ WhileStmt
 ReturnStmt
     :
     RETURN Exp SEMICOLON{
-        $$ = new ReturnStmt($2);
+        Type* t= current->getType();
+        if(dynamic_cast<FunctionType*>(t)->getRetType()!=TypeSystem::intType){
+            fprintf(stderr,"error: return value's type and the function's type do not match\n");
+        }else{
+            $$ = new ReturnStmt($2);
+        }
     }
     |
     RETURN SEMICOLON{
-        $$ = new ReturnStmt(nullptr);
+        Type* t= current->getType();
+        if(dynamic_cast<FunctionType*>(t)->getRetType()==TypeSystem::intType){
+            fprintf(stderr,"lack return value\n");
+        }else{
+            $$ = new ReturnStmt(nullptr);
+        }        
     }
     ;
 BreakStmt
@@ -341,28 +351,49 @@ VarDecl
     :
     ID {
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
-        identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se),nullptr);
-        delete []$1;
+        se = identifiers->lookup($1);
+        if(se!=nullptr){
+            fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
+            delete [](char*)$1;
+            assert(se != nullptr);
+        }else{
+            se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+            identifiers->install($1, se);
+            $$ = new VarDecl(new Id(se),nullptr);
+            delete []$1;
+        }
     }
     |
     ID ASSIGN Exp{
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
-        identifiers->install($1, se);
-        $$ = new VarDecl(new Id(se),$3);
-        delete []$1;
+        se = identifiers->lookup($1);
+        if(se!=nullptr){
+            fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
+            delete [](char*)$1;
+            assert(se != nullptr);
+        }else{
+            se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+            identifiers->install($1, se);
+            $$ = new VarDecl(new Id(se),$3);
+            delete []$1;
+        }
     }
     ;
 ConstDecl
     :
     ID {
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
-        identifiers->install($1, se);
-        $$ = new ConstDecl(new Id(se),nullptr);
-        delete []$1;
+        se = identifiers->lookup($1);
+        if(se!=nullptr){
+            fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
+            delete [](char*)$1;
+            assert(se != nullptr);
+        }else{
+            se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+            identifiers->install($1, se);
+            $$ = new ConstDecl(new Id(se),nullptr);
+            delete []$1;
+        }
     }
     |
     ID ASSIGN Exp{
@@ -378,6 +409,7 @@ FuncDef
     :
     Type ID LPAREN FuncParams RPAREN 
     {
+
         Type *funcType;
         std::vector<Type*> vec;
         FuncParams* temp = (FuncParams*)$4;
@@ -386,10 +418,12 @@ FuncDef
             temp = (FuncParams*)(temp->getNext());
         }
         funcType = new FunctionType($1,vec);
+        dynamic_cast<FunctionType*>(funcType)->setRetType($1);
         SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
         $<se>$ = se;
+        current = se;
     }BlockStmt{
         $$ = new FunctionDef($<se>6, (FuncParams*)$4, $7);
         SymbolTable *top = identifiers;
@@ -402,11 +436,13 @@ FuncDef
     {
         Type *funcType;
         funcType = new FunctionType($1,{});
+        dynamic_cast<FunctionType*>(funcType)->setRetType($1);
         SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
         printf("fundef:%d%s",identifiers->getLevel(),"\n");
         $<se>$ = se;
+        current = se;
     }BlockStmt{
         $$ = new FunctionDef($<se>5, nullptr, $6);
         SymbolTable *top = identifiers;
@@ -474,19 +510,25 @@ FuncCallExp
     ID LPAREN RPAREN
     {
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
-        identifiers->install($1, se);
+        se = identifiers->lookup($1);
+        if(se==nullptr){
+            fprintf(stderr,"identifier \"%s\" is undefined\n", (char*)$1);
+            delete [](char*)$1;
+            assert(se != nullptr);
+        }
         $$=new FuncCallExp(se,nullptr);
-        delete []$1;
     }
     |
     ID LPAREN CallList RPAREN
     {
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
-        identifiers->install($1, se);
+        se = identifiers->lookup($1);
+        if(se==nullptr){
+            fprintf(stderr,"identifier \"%s\" is undefined\n", (char*)$1);
+            delete [](char*)$1;
+            assert(se != nullptr);
+        }
         $$=new FuncCallExp(se,$3);
-        delete[] $1;
     }
     |
     Istream{$$ = $1;}

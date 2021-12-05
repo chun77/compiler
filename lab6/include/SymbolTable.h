@@ -146,5 +146,5 @@ public:
 
 extern SymbolTable *identifiers;
 extern SymbolTable *globals;
-
+extern SymbolEntry *current;
 #endif

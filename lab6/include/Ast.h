@@ -200,6 +200,7 @@ private:
 public:
     CallList(SymbolEntry*se, ExprNode* expr, ExprNode* callList) : ExprNode(se),expr(expr), callList(callList) {};
     void output(int level);
+    ExprNode* getNext() {return callList;};
     void typeCheck();
     void genCode();
 };

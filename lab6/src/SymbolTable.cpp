@@ -105,3 +105,4 @@ int SymbolTable::counter = 0;
 static SymbolTable t;
 SymbolTable *identifiers = &t;
 SymbolTable *globals = &t;
+SymbolEntry *current = NULL;

@@ -39,12 +39,16 @@ class FunctionType : public Type
 private:
     Type *returnType;
     std::vector<Type*> paramsType;
+    bool isRet;
 public:
     FunctionType(Type* returnType, std::vector<Type*> paramsType) : 
     Type(Type::FUNC), returnType(returnType), paramsType(paramsType){};
     Type* getRetType() {return returnType;};
+    void setRetType(Type* type) {this->returnType=type;};
     void addParam(Type* type) {this->paramsType.push_back(type);};
     int getParamNum() {return this->paramsType.size();};
+    void setRet() {isRet=true;};
+    bool haveRet() {return isRet;};
     std::string toStr();
 };
 

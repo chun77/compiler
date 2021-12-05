@@ -318,10 +318,44 @@ void FunctionDef::typeCheck()
     if(stmt!=NULL){
         stmt->typeCheck();
     }
-    //Type *t=se->getType();
+    Type *t=se->getType();
     if(!dynamic_cast<IdentifierSymbolEntry*>(se)->isGlobal())
     {
-        printf("%s","error! function define at wrong scope");
+        fprintf(stderr,"%s","error! function define at wrong scope\n");
+    }
+    // if(dynamic_cast<FunctionType*>(t)->haveRet()==false){
+    //     fprintf(stderr,"%s","returnStmt loss\n");
+    // }
+
+    std::string name = dynamic_cast<IdentifierSymbolEntry*>(se)->getName();
+    SymbolEntry* se1 = identifiers->lookup(name);
+    if(se1 == nullptr)
+    {
+        printf("%s\n","function error 1");
+        return ;
+    }
+    Type* type1 = se->getType();
+    int num = dynamic_cast<FunctionType*>(type1)->getParamNum();
+    Type* type2 = se1->getType();
+    while(1)
+    {
+        int a =dynamic_cast<FunctionType*>(type2)->getParamNum();
+        if(a == num)
+        {
+            if(se != se1)
+            {
+                fprintf(stderr,"%s\n","error! function overloading with wrong num of param");
+                return ;
+            }
+            else
+            break;
+        }
+        else{
+            if(se1->next != nullptr)
+                se1 = se1->next;
+            else
+                break;
+        }
     }
 }
 
@@ -331,9 +365,19 @@ void BinaryExpr::typeCheck()
     printf("%s%d\n","BinaryExpr typecheck",this->getSeq());
     Type *type1 = expr1->getSymPtr()->getType();
     Type *type2 = expr2->getSymPtr()->getType();
+    if(type1->isVoid()){
+        fprintf(stderr, "type %s in BinaryExpr is void!\n",
+        type1->toStr().c_str());
+        exit(EXIT_FAILURE);
+    }
+    if(type2->isVoid()){
+        fprintf(stderr, "type %s in BinaryExpr is void!\n",
+        type2->toStr().c_str());
+        exit(EXIT_FAILURE);
+    }
     if(type1 != type2)
     {
-        fprintf(stderr, "type %s and %s mismatch in line xx",
+        fprintf(stderr, "type %s and %s mismatch\n",
         type1->toStr().c_str(), type2->toStr().c_str());
         exit(EXIT_FAILURE);
     }
@@ -420,12 +464,19 @@ void FuncCallExp::typeCheck()
     if(callList!=NULL){
         callList->typeCheck();
     }
+    Type *t=this->getSymPtr()->getType();
+    if(dynamic_cast<FunctionType*>(t)->getRetType()==TypeSystem::voidType){
+        this->symbolEntry->setType(TypeSystem::voidType);
+    }else{
+        this->symbolEntry->setType(TypeSystem::intType);
+    }
 }
 
 void CallList::typeCheck()
 {
     printf("%s%d\n","callList typecheck",this->getSeq());
     expr->typeCheck();
+
     if(callList!=NULL){
         callList->typeCheck();
     }
@@ -459,14 +510,17 @@ void FuncParams::typeCheck()
 void FuncParam::typeCheck()
 {
     printf("%s%d\n","funcParam typecheck",this->getSeq());
-    expr->typeCheck();
-    Type* type1=id->getSymPtr()->getType();
-    Type* type2=expr->getSymPtr()->getType();
-    if(!type2->isInt()){
-        fprintf(stderr, "functioncall type %s and %s mismatch in line xx",
-        type1->toStr().c_str(), type2->toStr().c_str());
-        exit(EXIT_FAILURE);
+    if(expr!=NULL){
+        expr->typeCheck();
+        Type* type1=id->getSymPtr()->getType();
+        Type* type2=expr->getSymPtr()->getType();
+        if(!type2->isInt()){
+            fprintf(stderr, "functioncall type %s and %s mismatch in line xx",
+            type1->toStr().c_str(), type2->toStr().c_str());
+            exit(EXIT_FAILURE);
+        }
     }
+    
 }
 
 void BreakStmt::typeCheck()
