@@ -165,7 +165,7 @@ NullStmt
     ;
 Exp
     :
-    AddExp {$$ = $1;}
+    RelExp {$$ = $1;}
     ;
 Cond
     :
