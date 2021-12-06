@@ -632,13 +632,17 @@ void AssignStmt::typeCheck()
     printf("%s%d\n","AssignStmt typecheck",this->getSeq());
     Type *type1 = lval->getSymPtr()->getType();
     Type *type2 = expr->getSymPtr()->getType();
+    if(lval->getSymPtr()->isConstant()){
+        fprintf(stderr, "constant %s in assignStmt is reinitialize!\n",lval->getSymPtr()->toStr().c_str());
+        exit(EXIT_FAILURE);
+    }
     if(type1->isVoid()){
-        fprintf(stderr, "type %s in BinaryExpr is void!\n",
+        fprintf(stderr, "type %s in assignStmt is void!\n",
         type1->toStr().c_str());
         exit(EXIT_FAILURE);
     }
     if(type2->isVoid()){
-        fprintf(stderr, "type %s in BinaryExpr is void!\n",
+        fprintf(stderr, "type %s in assignStmt is void!\n",
         type2->toStr().c_str());
         exit(EXIT_FAILURE);
     }

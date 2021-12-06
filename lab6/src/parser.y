@@ -393,7 +393,9 @@ ConstDecl
             assert(se != nullptr);
         }else{
             se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+            se->setConstant();
             identifiers->install($1, se);
+            
             $$ = new ConstDecl(new Id(se),nullptr);
             delete []$1;
         }
@@ -408,6 +410,7 @@ ConstDecl
             assert(se != nullptr);
         }else{
             se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+            se->setConstant();
             identifiers->install($1, se);
             $$ = new ConstDecl(new Id(se),$3);
             delete []$1;
