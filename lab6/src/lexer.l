@@ -196,6 +196,7 @@ BLOCKCOMMENTEND \*\/
         DEBUG_FOR_LAB4("GETINT\t,");
     return GETINT;
 }
+
 "putint" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("PUTINT\t,");

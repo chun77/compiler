@@ -375,12 +375,12 @@ void BinaryExpr::typeCheck()
         type2->toStr().c_str());
         exit(EXIT_FAILURE);
     }
-    if(type1 != type2)
-    {
-        fprintf(stderr, "type %s and %s mismatch\n",
-        type1->toStr().c_str(), type2->toStr().c_str());
-        exit(EXIT_FAILURE);
-    }
+    // if(type1->toStr() != type2->toStr())
+    // {
+    //     fprintf(stderr, "type %s and %s mismatch\n",
+    //     type1->toStr().c_str(), type2->toStr().c_str());
+    //     exit(EXIT_FAILURE);
+    // }
     symbolEntry->setType(type1);
 
 }
@@ -619,12 +619,22 @@ void AssignStmt::typeCheck()
     printf("%s%d\n","AssignStmt typecheck",this->getSeq());
     Type *type1 = lval->getSymPtr()->getType();
     Type *type2 = expr->getSymPtr()->getType();
-    if(type1 != type2)
-    {
-        fprintf(stderr, "type %s and %s mismatch in line xx",
-        type1->toStr().c_str(), type2->toStr().c_str());
+    if(type1->isVoid()){
+        fprintf(stderr, "type %s in BinaryExpr is void!\n",
+        type1->toStr().c_str());
         exit(EXIT_FAILURE);
     }
+    if(type2->isVoid()){
+        fprintf(stderr, "type %s in BinaryExpr is void!\n",
+        type2->toStr().c_str());
+        exit(EXIT_FAILURE);
+    }
+    // if(type1 != type2)
+    // {
+    //     fprintf(stderr, "Assign:type %s and %s mismatch in line xx",
+    //     type1->toStr().c_str(), type2->toStr().c_str());
+    //     exit(EXIT_FAILURE);
+    // }
 }
 
 void BinaryExpr::output(int level)

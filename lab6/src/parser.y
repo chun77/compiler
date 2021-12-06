@@ -352,7 +352,7 @@ VarDecl
     ID {
         SymbolEntry *se;
         se = identifiers->lookup($1);
-        if(se!=nullptr){
+        if(se!=nullptr&&dynamic_cast<IdentifierSymbolEntry*>(se)->getScope()==identifiers->getLevel()){
             fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
             delete [](char*)$1;
             assert(se != nullptr);
@@ -466,7 +466,7 @@ FuncParam
     :
     Type ID {
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel()+1);
         identifiers->install($2, se);
         $$ = new FuncParam(se, new Id(se),nullptr);
         delete []$2;
@@ -474,7 +474,7 @@ FuncParam
     |
     Type ID ASSIGN Exp{
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel()+1);
         identifiers->install($2, se);
         $$ = new FuncParam(se, new Id(se),$4);
         delete []$2;
@@ -483,18 +483,23 @@ FuncParam
 Istream
     :GETINT LPAREN RPAREN
     {
-        $$=new Istream(nullptr);
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$=new Istream(se);
     }
+    ;
 Ostream
     :PUTINT LPAREN Exp RPAREN
     {
-        $$=new Ostream(nullptr,$3);
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$=new Ostream(se,$3);
     }
     |
     PUTCH LPAREN Exp RPAREN
     {
-        $$=new Ostream(nullptr,$3);
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$=new Ostream(se,$3);
     }
+    ;
 CallList
     :
     Exp {$$=$1;}
