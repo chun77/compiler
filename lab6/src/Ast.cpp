@@ -312,6 +312,7 @@ void Ast::typeCheck()
 void FunctionDef::typeCheck()
 {
     // Todo
+    printf("%s\n","FunctionDef typecheck!");
     if(param!=NULL){
         param->typeCheck();
     }
@@ -321,17 +322,20 @@ void FunctionDef::typeCheck()
     Type *t=se->getType();
     if(!dynamic_cast<IdentifierSymbolEntry*>(se)->isGlobal())
     {
-        fprintf(stderr,"%s","error! function define at wrong scope\n");
+        fprintf(stderr,"%s","error: function define at wrong scope\n");
+        exit(EXIT_FAILURE);
     }
-    // if(dynamic_cast<FunctionType*>(t)->haveRet()==false){
-    //     fprintf(stderr,"%s","returnStmt loss\n");
-    // }
+    if(dynamic_cast<FunctionType*>(t)->getRetType()->isInt()&&dynamic_cast<FunctionType*>(t)->haveRet()==false){
+        fprintf(stderr,"%s","error: returnStmt loss\n");
+        exit(EXIT_FAILURE);
+    }
 
     std::string name = dynamic_cast<IdentifierSymbolEntry*>(se)->getName();
     SymbolEntry* se1 = identifiers->lookup(name);
     if(se1 == nullptr)
     {
-        printf("%s\n","function error 1");
+        fprintf(stderr,"%s\n","error: function error 1");
+        exit(EXIT_FAILURE);
         return ;
     }
     Type* type1 = se->getType();
@@ -344,7 +348,8 @@ void FunctionDef::typeCheck()
         {
             if(se != se1)
             {
-                fprintf(stderr,"%s\n","error! function overloading with wrong num of param");
+                fprintf(stderr,"%s\n","error: function overloading with wrong num of param");
+                exit(EXIT_FAILURE);
                 return ;
             }
             else
@@ -363,6 +368,8 @@ void BinaryExpr::typeCheck()
 {
     // Todo
     printf("%s%d\n","BinaryExpr typecheck",this->getSeq());
+    expr1->typeCheck();
+    expr2->typeCheck();
     Type *type1 = expr1->getSymPtr()->getType();
     Type *type2 = expr2->getSymPtr()->getType();
     if(type1->isVoid()){
@@ -375,12 +382,12 @@ void BinaryExpr::typeCheck()
         type2->toStr().c_str());
         exit(EXIT_FAILURE);
     }
-    // if(type1->toStr() != type2->toStr())
-    // {
-    //     fprintf(stderr, "type %s and %s mismatch\n",
-    //     type1->toStr().c_str(), type2->toStr().c_str());
-    //     exit(EXIT_FAILURE);
-    // }
+    if(type1 != type2)
+    {
+        fprintf(stderr, "type %s and %s mismatch\n",
+        type1->toStr().c_str(), type2->toStr().c_str());
+        exit(EXIT_FAILURE);
+    }
     symbolEntry->setType(type1);
 
 }
@@ -449,10 +456,9 @@ void ConstDecl::typeCheck()
     if(expr!=NULL){
         expr->typeCheck();
     }else{
-        printf("%s","error: const value has not been initialized!\n");
+        fprintf(stderr,"%s","error: const value has not been initialized!\n");
+        exit(EXIT_FAILURE);
     }
-
-
 }
 
 void FuncCallExp::typeCheck()
@@ -525,12 +531,12 @@ void FuncParam::typeCheck()
 
 void BreakStmt::typeCheck()
 {
-
+    printf("%s%d\n","breakStmt typecheck",this->getSeq());
 }
 
 void ContinueStmt::typeCheck()
 {
-
+    printf("%s%d\n","continueStmt typecheck",this->getSeq());
 }
 
 void WhileStmt::typeCheck()
@@ -546,12 +552,13 @@ void WhileStmt::typeCheck()
 
 void Ostream::typeCheck()
 {
+    printf("%s%d\n","Ostream typecheck",this->getSeq());
     exp->typeCheck();
 }
 
 void Istream::typeCheck()
 {
-
+    printf("%s%d\n","Istream typecheck",this->getSeq());
 }
 
 void Constant::typeCheck()
@@ -566,11 +573,13 @@ void Constant::typeCheck()
 void Id::typeCheck()
 {
     // Todo,scope ..
-
+    printf("%s%d\n","Id typecheck",this->getSeq());
+    this->getSymPtr()->setType(TypeSystem::intType);
 }
 
 void IfStmt::typeCheck()
 {
+    printf("%s%d\n","IfStmt typecheck",this->getSeq());
     cond->typeCheck();
     cond->getSymPtr()->setType(TypeSystem::boolType);
     // Todo
@@ -579,6 +588,7 @@ void IfStmt::typeCheck()
 void IfElseStmt::typeCheck()
 {
     // Todo
+    printf("%s%d\n","IfElseStmt typecheck",this->getSeq());
     cond->typeCheck();
     cond->getSymPtr()->setType(TypeSystem::boolType);
 }
@@ -617,6 +627,9 @@ void ReturnStmt::typeCheck()
 void AssignStmt::typeCheck()
 {
     printf("%s%d\n","AssignStmt typecheck",this->getSeq());
+    lval->typeCheck();
+    expr->typeCheck();
+    printf("%s%d\n","AssignStmt typecheck",this->getSeq());
     Type *type1 = lval->getSymPtr()->getType();
     Type *type2 = expr->getSymPtr()->getType();
     if(type1->isVoid()){
@@ -629,12 +642,12 @@ void AssignStmt::typeCheck()
         type2->toStr().c_str());
         exit(EXIT_FAILURE);
     }
-    // if(type1 != type2)
-    // {
-    //     fprintf(stderr, "Assign:type %s and %s mismatch in line xx",
-    //     type1->toStr().c_str(), type2->toStr().c_str());
-    //     exit(EXIT_FAILURE);
-    // }
+    if(type1 != type2)
+    {
+        fprintf(stderr, "Assign:type %s and %s mismatch in line xx",
+        type1->toStr().c_str(), type2->toStr().c_str());
+        exit(EXIT_FAILURE);
+    }
 }
 
 void BinaryExpr::output(int level)
@@ -761,15 +774,23 @@ void ConstDeclStmt::output(int level)
 void VarDecls::output(int level)
 {
     fprintf(yyout, "%*cVarDecls\n", level, ' ');
-    varDecl->output(level + 4);
-    varDecls->output(level + 4);
+    if(varDecl!=NULL){
+        varDecl->output(level + 4);
+    }
+    if(varDecls!=NULL){
+        varDecls->output(level + 4);
+    }
 }
 
 void ConstDecls::output(int level)
 {
     fprintf(yyout, "%*cConstDecls\n", level, ' ');
-    constDecl->output(level + 4);
-    constDecls->output(level + 4);
+    if(constDecl!=NULL){
+        constDecl->output(level + 4);
+    }
+    if(constDecls!=NULL){
+        constDecls->output(level + 4);
+    }
 }
 
 void VarDecl::output(int level)

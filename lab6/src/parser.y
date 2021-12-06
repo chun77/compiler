@@ -123,7 +123,9 @@ ReturnStmt
         Type* t= current->getType();
         if(dynamic_cast<FunctionType*>(t)->getRetType()!=TypeSystem::intType){
             fprintf(stderr,"error: return value's type and the function's type do not match\n");
+            exit(EXIT_FAILURE);
         }else{
+            dynamic_cast<FunctionType*>(t)->setRet();
             $$ = new ReturnStmt($2);
         }
     }
@@ -132,6 +134,7 @@ ReturnStmt
         Type* t= current->getType();
         if(dynamic_cast<FunctionType*>(t)->getRetType()==TypeSystem::intType){
             fprintf(stderr,"lack return value\n");
+            exit(EXIT_FAILURE);
         }else{
             $$ = new ReturnStmt(nullptr);
         }        
@@ -398,10 +401,17 @@ ConstDecl
     |
     ID ASSIGN Exp{
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
-        identifiers->install($1, se);
-        $$ = new ConstDecl(new Id(se),$3);
-        delete []$1;
+        se = identifiers->lookup($1);
+        if(se!=nullptr){
+            fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
+            delete [](char*)$1;
+            assert(se != nullptr);
+        }else{
+            se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+            identifiers->install($1, se);
+            $$ = new ConstDecl(new Id(se),$3);
+            delete []$1;
+        }
     }
     ;
 

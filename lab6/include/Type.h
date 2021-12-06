@@ -42,7 +42,7 @@ private:
     bool isRet;
 public:
     FunctionType(Type* returnType, std::vector<Type*> paramsType) : 
-    Type(Type::FUNC), returnType(returnType), paramsType(paramsType){};
+    Type(Type::FUNC), returnType(returnType), paramsType(paramsType){isRet=false;};
     Type* getRetType() {return returnType;};
     void setRetType(Type* type) {this->returnType=type;};
     void addParam(Type* type) {this->paramsType.push_back(type);};
