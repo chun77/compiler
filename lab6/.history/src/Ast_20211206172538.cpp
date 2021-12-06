@@ -47,7 +47,6 @@ void FunctionDef::genCode()
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
-    
 
     stmt->genCode();
 
@@ -55,7 +54,7 @@ void FunctionDef::genCode()
      * Construct control flow graph. You need do set successors and predecessors for each basic block.
      * Todo
     */
-   for(std::vector<BasicBlock *>::iterator it=func->begin();it!=func->end();it++)
+   for(std::vector<BasicBlock *>::iterator it=func->begin();it!=func->end()+1;it++)
    {
         BasicBlock*curBB=(*it);
         Instruction*end=(*it)->rend()->getPrev();
@@ -240,17 +239,41 @@ void IfElseStmt::genCode()
 void CompoundStmt::genCode()
 {
     // Todo
-    stmt->genCode();
 }
 
 void SeqNode::genCode()
 {
     // Todo
-    stmt1->genCode();
-    stmt2->genCode();
 }
 
-//deleted DeclStmt::genCode()
+// void DeclStmt::genCode()
+// {
+//     IdentifierSymbolEntry *se = dynamic_cast<IdentifierSymbolEntry *>(id->getSymPtr());
+//     if(se->isGlobal())
+//     {
+//         Operand *addr;
+//         SymbolEntry *addr_se;
+//         addr_se = new IdentifierSymbolEntry(*se);
+//         addr_se->setType(new PointerType(se->getType()));
+//         addr = new Operand(addr_se);
+//         se->setAddr(addr);
+//     }
+//     else if(se->isLocal())
+//     {
+//         Function *func = builder->getInsertBB()->getParent();
+//         BasicBlock *entry = func->getEntry();
+//         Instruction *alloca;
+//         Operand *addr;
+//         SymbolEntry *addr_se;
+//         Type *type;
+//         type = new PointerType(se->getType());
+//         addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
+//         addr = new Operand(addr_se);
+//         alloca = new AllocaInstruction(addr, se);                   // allocate space for local id in function stack.
+//         entry->insertFront(alloca);                                 // allocate instructions should be inserted into the begin of the entry block.
+//         se->setAddr(addr);                                          // set the addr operand in symbol entry so that we can use it in subsequent code generation.
+//     }
+// }
 
 void ReturnStmt::genCode()
 {
@@ -272,82 +295,32 @@ void AssignStmt::genCode()
 
 void VarDeclStmt::genCode()
 {
-    varDecls->genCode();
+
 }
 
 void ConstDeclStmt::genCode()
 {
-   constDecls->genCode();
+
 }
 
 void VarDecls::genCode()
 {
-    varDecl->genCode();
-    varDecls->genCode();
+
 }
 
 void ConstDecls::genCode()
 {
-    constDecl->genCode();
-    constDecls->genCode();
+
 }
 
 void VarDecl::genCode()
 {
-    IdentifierSymbolEntry *se = dynamic_cast<IdentifierSymbolEntry *>(id->getSymPtr());
-    if(se->isGlobal())
-    {
-        Operand *addr;
-        SymbolEntry *addr_se;
-        addr_se = new IdentifierSymbolEntry(*se);
-        addr_se->setType(new PointerType(se->getType()));
-        addr = new Operand(addr_se);
-        se->setAddr(addr);
-    }
-    else if(se->isLocal())
-    {
-        Function *func = builder->getInsertBB()->getParent();
-        BasicBlock *entry = func->getEntry();
-        Instruction *alloca;
-        Operand *addr;
-        SymbolEntry *addr_se;
-        Type *type;
-        type = new PointerType(se->getType());
-        addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
-        addr = new Operand(addr_se);
-        alloca = new AllocaInstruction(addr, se);                   // allocate space for local id in function stack.
-        entry->insertFront(alloca);                                 // allocate instructions should be inserted into the begin of the entry block.
-        se->setAddr(addr);                                          // set the addr operand in symbol entry so that we can use it in subsequent code generation.
-    }
+
 }
-//const to do
+
 void ConstDecl::genCode()
 {
-    IdentifierSymbolEntry *se = dynamic_cast<IdentifierSymbolEntry *>(id->getSymPtr());
-    if(se->isGlobal())
-    {
-        Operand *addr;
-        SymbolEntry *addr_se;
-        addr_se = new IdentifierSymbolEntry(*se);
-        addr_se->setType(new PointerType(se->getType()));
-        addr = new Operand(addr_se);
-        se->setAddr(addr);
-    }
-    else if(se->isLocal())
-    {
-        Function *func = builder->getInsertBB()->getParent();
-        BasicBlock *entry = func->getEntry();
-        Instruction *alloca;
-        Operand *addr;
-        SymbolEntry *addr_se;
-        Type *type;
-        type = new PointerType(se->getType());
-        addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
-        addr = new Operand(addr_se);
-        alloca = new AllocaInstruction(addr, se);                   // allocate space for local id in function stack.
-        entry->insertFront(alloca);                                 // allocate instructions should be inserted into the begin of the entry block.
-        se->setAddr(addr);                                          // set the addr operand in symbol entry so that we can use it in subsequent code generation.
-    }
+
 }
 
 void FuncCallExp::genCode()
@@ -434,7 +407,6 @@ void Ast::typeCheck()
 void FunctionDef::typeCheck()
 {
     // Todo
-    printf("%s\n","FunctionDef typecheck!");
     if(param!=NULL){
         param->typeCheck();
     }
@@ -444,20 +416,17 @@ void FunctionDef::typeCheck()
     Type *t=se->getType();
     if(!dynamic_cast<IdentifierSymbolEntry*>(se)->isGlobal())
     {
-        fprintf(stderr,"%s","error: function define at wrong scope\n");
-        exit(EXIT_FAILURE);
+        fprintf(stderr,"%s","error! function define at wrong scope\n");
     }
-    if(dynamic_cast<FunctionType*>(t)->getRetType()->isInt()&&dynamic_cast<FunctionType*>(t)->haveRet()==false){
-        fprintf(stderr,"%s","error: returnStmt loss\n");
-        exit(EXIT_FAILURE);
-    }
+    // if(dynamic_cast<FunctionType*>(t)->haveRet()==false){
+    //     fprintf(stderr,"%s","returnStmt loss\n");
+    // }
 
     std::string name = dynamic_cast<IdentifierSymbolEntry*>(se)->getName();
     SymbolEntry* se1 = identifiers->lookup(name);
     if(se1 == nullptr)
     {
-        fprintf(stderr,"%s\n","error: function error 1");
-        exit(EXIT_FAILURE);
+        printf("%s\n","function error 1");
         return ;
     }
     Type* type1 = se->getType();
@@ -470,8 +439,7 @@ void FunctionDef::typeCheck()
         {
             if(se != se1)
             {
-                fprintf(stderr,"%s\n","error: function overloading with wrong num of param");
-                exit(EXIT_FAILURE);
+                fprintf(stderr,"%s\n","error! function overloading with wrong num of param");
                 return ;
             }
             else
@@ -490,8 +458,6 @@ void BinaryExpr::typeCheck()
 {
     // Todo
     printf("%s%d\n","BinaryExpr typecheck",this->getSeq());
-    expr1->typeCheck();
-    expr2->typeCheck();
     Type *type1 = expr1->getSymPtr()->getType();
     Type *type2 = expr2->getSymPtr()->getType();
     if(type1->isVoid()){
@@ -504,12 +470,12 @@ void BinaryExpr::typeCheck()
         type2->toStr().c_str());
         exit(EXIT_FAILURE);
     }
-    if(type1 != type2)
-    {
-        fprintf(stderr, "type %s and %s mismatch\n",
-        type1->toStr().c_str(), type2->toStr().c_str());
-        exit(EXIT_FAILURE);
-    }
+    // if(type1->toStr() != type2->toStr())
+    // {
+    //     fprintf(stderr, "type %s and %s mismatch\n",
+    //     type1->toStr().c_str(), type2->toStr().c_str());
+    //     exit(EXIT_FAILURE);
+    // }
     symbolEntry->setType(type1);
 
 }
@@ -578,9 +544,10 @@ void ConstDecl::typeCheck()
     if(expr!=NULL){
         expr->typeCheck();
     }else{
-        fprintf(stderr,"%s","error: const value has not been initialized!\n");
-        exit(EXIT_FAILURE);
+        printf("%s","error: const value has not been initialized!\n");
     }
+
+
 }
 
 void FuncCallExp::typeCheck()
@@ -653,12 +620,12 @@ void FuncParam::typeCheck()
 
 void BreakStmt::typeCheck()
 {
-    printf("%s%d\n","breakStmt typecheck",this->getSeq());
+
 }
 
 void ContinueStmt::typeCheck()
 {
-    printf("%s%d\n","continueStmt typecheck",this->getSeq());
+
 }
 
 void WhileStmt::typeCheck()
@@ -674,13 +641,12 @@ void WhileStmt::typeCheck()
 
 void Ostream::typeCheck()
 {
-    printf("%s%d\n","Ostream typecheck",this->getSeq());
     exp->typeCheck();
 }
 
 void Istream::typeCheck()
 {
-    printf("%s%d\n","Istream typecheck",this->getSeq());
+
 }
 
 void Constant::typeCheck()
@@ -695,13 +661,11 @@ void Constant::typeCheck()
 void Id::typeCheck()
 {
     // Todo,scope ..
-    printf("%s%d\n","Id typecheck",this->getSeq());
-    this->getSymPtr()->setType(TypeSystem::intType);
+
 }
 
 void IfStmt::typeCheck()
 {
-    printf("%s%d\n","IfStmt typecheck",this->getSeq());
     cond->typeCheck();
     cond->getSymPtr()->setType(TypeSystem::boolType);
     // Todo
@@ -710,7 +674,6 @@ void IfStmt::typeCheck()
 void IfElseStmt::typeCheck()
 {
     // Todo
-    printf("%s%d\n","IfElseStmt typecheck",this->getSeq());
     cond->typeCheck();
     cond->getSymPtr()->setType(TypeSystem::boolType);
 }
@@ -749,31 +712,24 @@ void ReturnStmt::typeCheck()
 void AssignStmt::typeCheck()
 {
     printf("%s%d\n","AssignStmt typecheck",this->getSeq());
-    lval->typeCheck();
-    expr->typeCheck();
-    printf("%s%d\n","AssignStmt typecheck",this->getSeq());
     Type *type1 = lval->getSymPtr()->getType();
     Type *type2 = expr->getSymPtr()->getType();
-    if(lval->getSymPtr()->isConstant()){
-        fprintf(stderr, "constant %s in assignStmt is reinitialize!\n",lval->getSymPtr()->toStr().c_str());
-        exit(EXIT_FAILURE);
-    }
     if(type1->isVoid()){
-        fprintf(stderr, "type %s in assignStmt is void!\n",
+        fprintf(stderr, "type %s in BinaryExpr is void!\n",
         type1->toStr().c_str());
         exit(EXIT_FAILURE);
     }
     if(type2->isVoid()){
-        fprintf(stderr, "type %s in assignStmt is void!\n",
+        fprintf(stderr, "type %s in BinaryExpr is void!\n",
         type2->toStr().c_str());
         exit(EXIT_FAILURE);
     }
-    if(type1 != type2)
-    {
-        fprintf(stderr, "Assign:type %s and %s mismatch in line xx",
-        type1->toStr().c_str(), type2->toStr().c_str());
-        exit(EXIT_FAILURE);
-    }
+    // if(type1 != type2)
+    // {
+    //     fprintf(stderr, "Assign:type %s and %s mismatch in line xx",
+    //     type1->toStr().c_str(), type2->toStr().c_str());
+    //     exit(EXIT_FAILURE);
+    // }
 }
 
 void BinaryExpr::output(int level)
@@ -900,23 +856,15 @@ void ConstDeclStmt::output(int level)
 void VarDecls::output(int level)
 {
     fprintf(yyout, "%*cVarDecls\n", level, ' ');
-    if(varDecl!=NULL){
-        varDecl->output(level + 4);
-    }
-    if(varDecls!=NULL){
-        varDecls->output(level + 4);
-    }
+    varDecl->output(level + 4);
+    varDecls->output(level + 4);
 }
 
 void ConstDecls::output(int level)
 {
     fprintf(yyout, "%*cConstDecls\n", level, ' ');
-    if(constDecl!=NULL){
-        constDecl->output(level + 4);
-    }
-    if(constDecls!=NULL){
-        constDecls->output(level + 4);
-    }
+    constDecl->output(level + 4);
+    constDecls->output(level + 4);
 }
 
 void VarDecl::output(int level)

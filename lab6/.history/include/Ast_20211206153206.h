@@ -146,7 +146,6 @@ public:
     void typeCheck();
     void genCode();
 };
-
 class VarDecls : public StmtNode
 {
 private:

@@ -1,0 +1,13 @@
+int main()
+2 {
+3 int a;
+4 int b;
+5 int min;
+6 a = 1 + 2 + 3;
+7 b = 2 + 3 + 4;
+8 if (a < b)
+9 min = a;
+10 else
+11 min = b;
+12 return min;
+13 }
