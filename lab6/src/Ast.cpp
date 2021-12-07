@@ -14,7 +14,7 @@ Node::Node()
 {
     seq = counter++;
 }
-
+//设置它们跳转到哪里
 void Node::backPatch(std::vector<Instruction*> &list, BasicBlock*bb)
 {
     for(auto &inst:list)
@@ -48,9 +48,7 @@ void FunctionDef::genCode()
     // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
     
-
     stmt->genCode();
-
     /**
      * Construct control flow graph. You need do set successors and predecessors for each basic block.
      * Todo
@@ -58,17 +56,17 @@ void FunctionDef::genCode()
    for(std::vector<BasicBlock *>::iterator it=func->begin();it!=func->end();it++)
    {
         BasicBlock*curBB=(*it);
-        Instruction*end=(*it)->rend()->getPrev();
+        Instruction*end=(*it)->rbegin();
         if(end->isUncond())
         {
-            BasicBlock*branch=((UncondBrInstruction*)end)->getBranch();
+            BasicBlock*branch=dynamic_cast<UncondBrInstruction*>(end)->getBranch();
             curBB->addSucc(branch);
             branch->addPred(curBB);
         }
         else if (end->isCond())
         {
-            BasicBlock*trueBranch=((CondBrInstruction*)end)->getTrueBranch();
-            BasicBlock*falseBranch=((CondBrInstruction*)end)->getFalseBranch();
+            BasicBlock*trueBranch=dynamic_cast<CondBrInstruction*>(end)->getTrueBranch();
+            BasicBlock*falseBranch=dynamic_cast<CondBrInstruction*>(end)->getFalseBranch();
 
             curBB->addSucc(trueBranch);
             curBB->addSucc(falseBranch);
@@ -94,8 +92,6 @@ void BinaryExpr::genCode()
     }
     else if(op == OR)
     {
-        // Todo
-        // Todo
         //给子表达式2new 一个truebb
         BasicBlock *trueBB = new BasicBlock(func); // if the result of lhs is true, jump to the trueBB.
         expr1->genCode();
@@ -113,29 +109,76 @@ void BinaryExpr::genCode()
         expr2->genCode();
         Operand *src1 = expr1->getOperand();
         Operand *src2 = expr2->getOperand();
-        int opcode;
-        switch (op)
-        {
-        case LESS:
-            opcode = BinaryInstruction::LESS;
-            break;
-        case MORE:
-            opcode = BinaryInstruction::MORE;
-            break;
-        case LESSQ:
-            opcode = BinaryInstruction::LESSQ;
-            break;
-        case MOREQ:
-            opcode = BinaryInstruction::MOREQ;
-            break;
-        case EQ:
-            opcode = BinaryInstruction::EQ;
-            break;
-        case NOTEQ:
-            opcode = BinaryInstruction::NOTEQ;
-            break;
+        // int opcode;
+        // switch (op)
+        // {
+        // case LESS:
+        //     opcode = BinaryInstruction::LESS;
+        //     break;
+        // case MORE:
+        //     opcode = BinaryInstruction::MORE;
+        //     break;
+        // case LESSQ:
+        //     opcode = BinaryInstruction::LESSQ;
+        //     break;
+        // case MOREQ:
+        //     opcode = BinaryInstruction::MOREQ;
+        //     break;
+        // case EQ:
+        //     opcode = BinaryInstruction::EQ;
+        //     break;
+        // case NOTEQ:
+        //     opcode = BinaryInstruction::NOTEQ;
+        //     break;
+        // }
+        // if (src1->getType()->getSize() == 1) {
+        //     Operand* dst = new Operand(new TemporarySymbolEntry(
+        //         TypeSystem::intType, SymbolTable::getLabel()));
+        //     new ZextInstruction(dst, src1, bb);
+        //     src1 = dst;
+        // }
+        // if (src2->getType()->getSize() == 1) {
+        //     Operand* dst = new Operand(new TemporarySymbolEntry(
+        //         TypeSystem::intType, SymbolTable::getLabel()));
+        //     new ZextInstruction(dst, src2, bb);
+        //     src2 = dst;
+        // }
+        // new BinaryInstruction(opcode, dst, src1, src2, bb);
+        int cmpopcode;
+        switch (op) {
+            case LESS:
+                cmpopcode = CmpInstruction::L;
+                break;
+            case LESSQ:
+                cmpopcode = CmpInstruction::LE;
+                break;
+            case GREATER:
+                cmpopcode = CmpInstruction::G;
+                break;
+            case MOREQ:
+                cmpopcode = CmpInstruction::GE;
+                break;
+            case EQ:
+                cmpopcode = CmpInstruction::E;
+                break;
+            case NOTEQ:
+                cmpopcode = CmpInstruction::NE;
+                break;
         }
-        new BinaryInstruction(opcode, dst, src1, src2, bb);
+        new CmpInstruction(cmpopcode, dst, src1, src2, bb);
+        //这里先要准备好cond的trueList和FalseList，并且里面有空块，之后backPatch的时候填上
+        BasicBlock *truebb, *falsebb, *tempbb;
+
+        truebb = new BasicBlock(func);
+        falsebb = new BasicBlock(func);
+        tempbb = new BasicBlock(func);
+        //
+        //在后面这个cond要作为条件跳转和非条件跳转的指令，和后面的块相连
+        //instruction准备好了，但是要跳转的块还是空的，后面填
+        true_list.push_back(new CondBrInstruction(truebb, tempbb, dst, bb));
+
+        false_list.push_back(new UncondBrInstruction(falsebb, tempbb));
+
 
     }
     else if(op >= ADD && op <= SUB)
@@ -196,6 +239,7 @@ void IfStmt::genCode()
 
     //回填
     cond->genCode();
+    // new CondBrInstruction(then_bb,end_bb,cond->getOperand(),builder->getInsertBB());
     backPatch(cond->trueList(), then_bb);
     backPatch(cond->falseList(), end_bb);
 
@@ -220,6 +264,7 @@ void IfElseStmt::genCode()
     end_bb = new BasicBlock(func);
 
     cond->genCode();
+    //填上之前设置好List，List要有conditionalInstr还有unCondInstr，不然没办法和要跳转到的块连上
     backPatch(cond->trueList(), then_bb);
     backPatch(cond->falseList(), else_bb);
 
@@ -254,7 +299,14 @@ void SeqNode::genCode()
 
 void ReturnStmt::genCode()
 {
+    BasicBlock *bb = builder->getInsertBB();
     // Todo
+    if(retValue!=nullptr)
+    {
+        retValue->genCode();
+    }
+    Operand *src = retValue->getOperand();
+    new RetInstruction(src,bb);
 }
 
 void AssignStmt::genCode()
@@ -400,16 +452,20 @@ void WhileStmt::genCode()
     stmt_bb = builder->getInsertBB();
     new UncondBrInstruction(cond_bb, stmt_bb);
 
+    builder->setInsertBB(end_bb);
+
+
 }
 
 void BreakStmt::genCode()
 {
+    //break语句直接跳转到end
 
 }
 
 void ContinueStmt::genCode()
 {
-
+    //continue语句跳转到cond
 }
 
 void Ostream::genCode()

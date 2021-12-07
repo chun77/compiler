@@ -1,0 +1,8 @@
+Todo：
+1.隐式转换
+2.cmp指令生成块
+（假块不会backpatch,所谓falseblock都是一个中间快，会跳转到unconditional）
+3.while写得有问题
+4.每一个node有一个trueList，falseList
+5.instruction的dst存了子树的信息
+operand 是instuction用到的操作数

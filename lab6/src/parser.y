@@ -109,7 +109,6 @@ IfStmt
     | IF LPAREN Cond RPAREN Stmt ELSE Stmt {
         $$ = new IfElseStmt($3, $5, $7);
     }
-
     ;
 WhileStmt
     : WHILE LPAREN Cond RPAREN Stmt {
