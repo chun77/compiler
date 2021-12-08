@@ -433,7 +433,7 @@ FuncDef
         }
         funcType = new FunctionType($1,vec);
         dynamic_cast<FunctionType*>(funcType)->setRetType($1);
-        SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
+        SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getPrev()->getLevel());
         identifiers->getPrev()->install($2, se);       
         current = se;
     }BlockStmt{
@@ -466,7 +466,10 @@ FuncDef
 
 FuncParams 
     :
-    FuncParam {$$=$1;}
+    FuncParam {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$=new FuncParams(se,$1,nullptr);
+    }
     |
     FuncParam COMMA FuncParams {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());

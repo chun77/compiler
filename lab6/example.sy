@@ -1,9 +1,7 @@
-int a;
-int func(int p){
-	a=p;
-	return 0;
+void func(int a){
+    return;
 }
-int main(){
-
-	return 0;
+int main()
+{
+    return 0;
 }

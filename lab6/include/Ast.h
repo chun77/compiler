@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include "Operand.h"
-
+using namespace std;
 class SymbolEntry;
 class Unit;
 class Function;
@@ -248,6 +248,7 @@ private:
     ExprNode* expr;
 public:
     FuncParam(SymbolEntry* se, Id* id,ExprNode* expr) : ExprNode(se), id(id), expr(expr) {};
+    Id* getId() {return id;};
     void output(int level);
     void typeCheck();
     void genCode();

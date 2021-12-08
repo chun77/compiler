@@ -42,8 +42,18 @@ void Ast::genCode(Unit *unit)
 
 void FunctionDef::genCode()
 {
+    // put params in vector
+    vector<Operand *> *vec = new vector<Operand*>;
+    ExprNode *temp = this->param;
+    while(temp){
+        ExprNode *tempParam = dynamic_cast<FuncParams*>(temp)->getParam();
+        vec->push_back(dynamic_cast<FuncParam*>(tempParam)->getId()->getOperand());
+        temp = dynamic_cast<FuncParams*>(temp)->getNext();
+    }
+    
     Unit *unit = builder->getUnit();
     Function *func = new Function(unit, se);
+    func->setParams(vec);
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
@@ -301,11 +311,14 @@ void ReturnStmt::genCode()
 {
     BasicBlock *bb = builder->getInsertBB();
     // Todo
+    Operand *src;
     if(retValue!=nullptr)
     {
         retValue->genCode();
+        src = retValue->getOperand();
+    }else{
+        src = nullptr;
     }
-    Operand *src = retValue->getOperand();
     new RetInstruction(src,bb);
 }
 
@@ -422,22 +435,45 @@ void CallList::genCode()
 
 void CallStmt::genCode()
 {
-
+    callExp->genCode();
 }
 
 void NullStmt::genCode()
 {
-
+    if(expr!=NULL){
+        expr->genCode();
+    }
 }
 
 void FuncParams::genCode()
 {
-
+    if(funcParam!=NULL){
+        funcParam->genCode();
+    }
+    if(funcParams!=NULL){
+        funcParams->genCode();
+    }
 }
 
 void FuncParam::genCode()
 {
-
+    IdentifierSymbolEntry *se = dynamic_cast<IdentifierSymbolEntry *>(id->getSymPtr());
+    Function *func = builder->getInsertBB()->getParent();
+    BasicBlock *entry = func->getEntry();
+    Instruction *alloca;
+    Operand *addr;
+    SymbolEntry *addr_se;
+    Type *type;
+    type = new PointerType(se->getType());
+    addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
+    addr = new Operand(addr_se);
+    alloca = new AllocaInstruction(addr, se);               
+    entry->insertFront(alloca);      
+    se->setAddr(addr);
+    
+    BasicBlock *bb;
+    bb = builder->getInsertBB();
+    new StoreInstruction(se->getAddr(), id->getOperand(), bb);
 }
 
 void WhileStmt::genCode()
@@ -506,11 +542,11 @@ void FunctionDef::typeCheck()
         stmt->typeCheck();
     }
     Type *t=se->getType();
-    // if(!dynamic_cast<IdentifierSymbolEntry*>(se)->isGlobal())
-    // {
-    //     fprintf(stderr,"%s","error: function define at wrong scope\n");
-    //     exit(EXIT_FAILURE);
-    // }
+    if(!dynamic_cast<IdentifierSymbolEntry*>(se)->isGlobal())
+    {
+        fprintf(stderr,"%s","error: function define at wrong scope\n");
+        exit(EXIT_FAILURE);
+    }
     if(dynamic_cast<FunctionType*>(t)->getRetType()->isInt()&&dynamic_cast<FunctionType*>(t)->haveRet()==false){
         fprintf(stderr,"%s","error: returnStmt loss\n");
         exit(EXIT_FAILURE);
