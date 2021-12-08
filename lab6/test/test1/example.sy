@@ -1,9 +1,10 @@
 int a;
 int func(int p){
-	a=p;
-	return 0;
+	a = p;
+	return a;
 }
 int main(){
 
+	a=0;
 	return 0;
 }

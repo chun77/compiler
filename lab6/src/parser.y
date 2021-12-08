@@ -419,12 +419,14 @@ ConstDecl
 
 FuncDef
     :
-    Type ID LPAREN FuncParams RPAREN 
+    Type ID LPAREN{
+        identifiers = new SymbolTable(identifiers);
+    }
+    FuncParams RPAREN 
     {
-
         Type *funcType;
         std::vector<Type*> vec;
-        FuncParams* temp = (FuncParams*)$4;
+        FuncParams* temp = (FuncParams*)$5;
         while(temp){
             vec.push_back(temp->getParam()->getSymPtr()->getType());
             temp = (FuncParams*)(temp->getNext());
@@ -432,12 +434,10 @@ FuncDef
         funcType = new FunctionType($1,vec);
         dynamic_cast<FunctionType*>(funcType)->setRetType($1);
         SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
-        identifiers->install($2, se);
-        identifiers = new SymbolTable(identifiers);
-        $<se>$ = se;
+        identifiers->getPrev()->install($2, se);       
         current = se;
     }BlockStmt{
-        $$ = new FunctionDef($<se>6, (FuncParams*)$4, $7);
+        $$ = new FunctionDef(current, (FuncParams*)$5, $8);
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
@@ -478,7 +478,7 @@ FuncParam
     :
     Type ID {
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel()+1);
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
         identifiers->install($2, se);
         $$ = new FuncParam(se, new Id(se),nullptr);
         delete []$2;
@@ -486,7 +486,7 @@ FuncParam
     |
     Type ID ASSIGN Exp{
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel()+1);
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $2, identifiers->getLevel());
         identifiers->install($2, se);
         $$ = new FuncParam(se, new Id(se),$4);
         delete []$2;

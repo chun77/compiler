@@ -54,7 +54,7 @@ void FunctionDef::genCode()
      * Todo
     */
    for(std::vector<BasicBlock *>::iterator it=func->begin();it!=func->end();it++)
-   {
+    {
         BasicBlock*curBB=(*it);
         Instruction*end=(*it)->rbegin();
         if(end->isUncond())
@@ -73,7 +73,7 @@ void FunctionDef::genCode()
             trueBranch->addPred(curBB);
             falseBranch->addPred(curBB);
         }
-   }    
+    }    
 }
 
 void BinaryExpr::genCode()
@@ -222,9 +222,10 @@ void Constant::genCode()
 
 void Id::genCode()
 {
+    printf("%s%d\n","id gencode!",this->getSeq());
     BasicBlock *bb = builder->getInsertBB();
     Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getAddr();
-    new LoadInstruction(dst, addr, bb);
+    new LoadInstruction(dst, addr, bb);   // zhejvcuol
 }
 
 
@@ -254,7 +255,6 @@ void IfStmt::genCode()
 
 void IfElseStmt::genCode()
 {
-    
     // Todo
     Function *func;
     BasicBlock *then_bb, *else_bb, *end_bb;
@@ -329,19 +329,27 @@ void VarDeclStmt::genCode()
 
 void ConstDeclStmt::genCode()
 {
-   constDecls->genCode();
+    constDecls->genCode();
 }
 
 void VarDecls::genCode()
 {
-    varDecl->genCode();
-    varDecls->genCode();
+    if(varDecl!=NULL){
+        varDecl->genCode();
+    }
+    if(varDecls!=NULL){
+        varDecls->genCode();
+    }
 }
 
 void ConstDecls::genCode()
 {
-    constDecl->genCode();
-    constDecls->genCode();
+    if(constDecl!=NULL){
+        constDecl->genCode();
+    }
+    if(constDecls!=NULL){
+        constDecls->genCode();
+    }
 }
 
 void VarDecl::genCode()
@@ -498,11 +506,11 @@ void FunctionDef::typeCheck()
         stmt->typeCheck();
     }
     Type *t=se->getType();
-    if(!dynamic_cast<IdentifierSymbolEntry*>(se)->isGlobal())
-    {
-        fprintf(stderr,"%s","error: function define at wrong scope\n");
-        exit(EXIT_FAILURE);
-    }
+    // if(!dynamic_cast<IdentifierSymbolEntry*>(se)->isGlobal())
+    // {
+    //     fprintf(stderr,"%s","error: function define at wrong scope\n");
+    //     exit(EXIT_FAILURE);
+    // }
     if(dynamic_cast<FunctionType*>(t)->getRetType()->isInt()&&dynamic_cast<FunctionType*>(t)->haveRet()==false){
         fprintf(stderr,"%s","error: returnStmt loss\n");
         exit(EXIT_FAILURE);

@@ -1,6 +1,7 @@
 #include "SymbolTable.h"
 #include <iostream>
 #include <sstream>
+using namespace std;
 
 SymbolEntry::SymbolEntry(Type *type, int kind) 
 {
@@ -71,27 +72,41 @@ SymbolTable::SymbolTable(SymbolTable *prev)
 SymbolEntry* SymbolTable::lookup(std::string name)
 {
     // Todo
-    std::map<std::string, SymbolEntry*>::iterator it;
-    std::map<std::string, SymbolEntry*> prevSymbolTable;
+    // std::map<std::string, SymbolEntry*>::iterator it;
+    // std::map<std::string, SymbolEntry*> prevSymbolTable;
+    // SymbolTable*p=this;
+    // it = symbolTable.find(name);
+    // if(it!=symbolTable.end())
+    // {
+    //     return symbolTable[name];
+    // }
+    // else{
+    //     while(p->prev!=nullptr)
+    //     {
+    //         prevSymbolTable=p->prev->symbolTable;
+    //         it=prevSymbolTable.find(name);
+    //         if(it!=prevSymbolTable.end())
+    //         {
+    //             return prevSymbolTable[name];
+    //         }
+    //         p=p->prev;
+    //     }
+    // }
+    // return nullptr;
+    map<string,SymbolEntry*>::iterator it;
     SymbolTable*p=this;
-    it = symbolTable.find(name);
-    if(it!=symbolTable.end())
+    it=p->symbolTable.find(name);
+    while(it==p->symbolTable.end()&&p->level!=0)
     {
-        return symbolTable[name];
+        p=p->prev;
+        it=p->symbolTable.find(name);
     }
-    else{
-        while(p->prev!=nullptr)
-        {
-            prevSymbolTable=p->prev->symbolTable;
-            it=prevSymbolTable.find(name);
-            if(it!=prevSymbolTable.end())
-            {
-                return prevSymbolTable[name];
-            }
-            p=p->prev;
-        }
+    if(it!=p->symbolTable.end())
+    {
+        return it->second;
     }
-    return nullptr;
+    else
+        return nullptr;
 }
 
 // install the entry into current symbol table.
