@@ -109,41 +109,6 @@ void BinaryExpr::genCode()
         expr2->genCode();
         Operand *src1 = expr1->getOperand();
         Operand *src2 = expr2->getOperand();
-        // int opcode;
-        // switch (op)
-        // {
-        // case LESS:
-        //     opcode = BinaryInstruction::LESS;
-        //     break;
-        // case MORE:
-        //     opcode = BinaryInstruction::MORE;
-        //     break;
-        // case LESSQ:
-        //     opcode = BinaryInstruction::LESSQ;
-        //     break;
-        // case MOREQ:
-        //     opcode = BinaryInstruction::MOREQ;
-        //     break;
-        // case EQ:
-        //     opcode = BinaryInstruction::EQ;
-        //     break;
-        // case NOTEQ:
-        //     opcode = BinaryInstruction::NOTEQ;
-        //     break;
-        // }
-        // if (src1->getType()->getSize() == 1) {
-        //     Operand* dst = new Operand(new TemporarySymbolEntry(
-        //         TypeSystem::intType, SymbolTable::getLabel()));
-        //     new ZextInstruction(dst, src1, bb);
-        //     src1 = dst;
-        // }
-        // if (src2->getType()->getSize() == 1) {
-        //     Operand* dst = new Operand(new TemporarySymbolEntry(
-        //         TypeSystem::intType, SymbolTable::getLabel()));
-        //     new ZextInstruction(dst, src2, bb);
-        //     src2 = dst;
-        // }
-        // new BinaryInstruction(opcode, dst, src1, src2, bb);
         int cmpopcode;
         switch (op) {
             case LESS:
@@ -212,7 +177,27 @@ void BinaryExpr::genCode()
 
 void UnaryExpr::genCode()
 {
-
+    BasicBlock *bb = builder->getInsertBB();
+    Function *func = bb->getParent();
+    if(op >= ADD && op <= SUB)
+    {
+        expr->genCode();
+        Operand *src = expr->getOperand();
+        int opcode;
+        switch (op)
+        {
+        case ADD:
+            opcode = BinaryInstruction::ADD;
+            break;
+        case SUB:
+            opcode = BinaryInstruction::SUB;
+            break;
+        case NOT:
+            opcode = BinaryInstruction::DIV;
+            break;
+        }
+        //new BinaryInstruction(opcode, dst, src1, src2, bb);
+    }
 }
 
 void Constant::genCode()
@@ -355,6 +340,15 @@ void VarDecl::genCode()
         addr_se->setType(new PointerType(se->getType()));
         addr = new Operand(addr_se);
         se->setAddr(addr);
+        if (expr)
+        {
+            expr->genCode();
+            BasicBlock *bb = builder->getUnit()->getGlobalBB();
+            new StoreInstruction(dynamic_cast<IdentifierSymbolEntry*>(id->getSymPtr())->getAddr(), expr->getOperand(), bb);
+            // new AllocaInstruction(addr,se,bb);
+        }
+        // Unit *unit = builder->getUnit();
+        // unit->insertGlobal(se);
     }
     else if(se->isLocal())
     {
@@ -369,7 +363,8 @@ void VarDecl::genCode()
         addr = new Operand(addr_se);
         alloca = new AllocaInstruction(addr, se);                   // allocate space for local id in function stack.
         entry->insertFront(alloca);                                 // allocate instructions should be inserted into the begin of the entry block.
-        se->setAddr(addr);                                          // set the addr operand in symbol entry so that we can use it in subsequent code generation.
+        se->setAddr(addr);      
+                                       // set the addr operand in symbol entry so that we can use it in subsequent code generation.
     }
 }
 //const to do
@@ -384,6 +379,8 @@ void ConstDecl::genCode()
         addr_se->setType(new PointerType(se->getType()));
         addr = new Operand(addr_se);
         se->setAddr(addr);
+        Unit *unit = builder->getUnit();
+        unit->insertGlobal(se);     
     }
     else if(se->isLocal())
     {

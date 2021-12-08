@@ -18,6 +18,7 @@ private:
 
 public:
     BasicBlock(Function *);
+    BasicBlock();
     ~BasicBlock();
     void insertFront(Instruction *);
     void insertBack(Instruction *);

@@ -81,6 +81,14 @@ BasicBlock::BasicBlock(Function *f)
     head->setParent(this);
 }
 
+BasicBlock::BasicBlock()
+{
+    this->no = SymbolTable::getLabel();
+    parent = 0;
+    head = new DummyInstruction();
+    head->setParent(this);
+}
+
 BasicBlock::~BasicBlock()
 {
     Instruction *inst;
