@@ -4,7 +4,7 @@
 #include "Operand.h"
 #include <vector>
 #include <map>
-
+using namespace std;
 class BasicBlock;
 
 class Instruction
@@ -28,7 +28,7 @@ protected:
     Instruction *next;
     BasicBlock *parent;
     std::vector<Operand*> operands;
-    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA};
+    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA, FUNCCALL};
 };
 
 // meaningless instruction, used as the head node of the instruction list.
@@ -133,6 +133,15 @@ public:
     RetInstruction(Operand *src, BasicBlock *insert_bb = nullptr);
     ~RetInstruction();
     void output() const;
+};
+
+class FuncCallInstruction : public Instruction
+{
+public:
+    FuncCallInstruction(Operand* dst,vector<Operand *> params, SymbolEntry *se, BasicBlock *insert_bb = nullptr);
+    void output() const;
+private:
+    SymbolEntry *se;
 };
 
 #endif

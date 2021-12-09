@@ -49,8 +49,10 @@ class FuncCallExp : public ExprNode
 {
 private:
     ExprNode* callList;
+    SymbolEntry *funcse;
 public:
-    FuncCallExp(SymbolEntry* se, ExprNode* callList): ExprNode(se), callList(callList) {};
+    FuncCallExp(SymbolEntry* se, SymbolEntry* funcse, ExprNode* callList): ExprNode(se), funcse(funcse),callList(callList) {};
+    SymbolEntry* getFunc() {return funcse;};
     void output(int level);
     void typeCheck();
     void genCode();
@@ -202,6 +204,7 @@ public:
     CallList(SymbolEntry*se, ExprNode* expr, ExprNode* callList) : ExprNode(se),expr(expr), callList(callList) {};
     void output(int level);
     ExprNode* getNext() {return callList;};
+    ExprNode* getParam() {return expr;};
     void typeCheck();
     void genCode();
 };

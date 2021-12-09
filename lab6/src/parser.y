@@ -517,7 +517,10 @@ Ostream
     ;
 CallList
     :
-    Exp {$$=$1;}
+    Exp 
+    {
+        $$=new CallList(nullptr,$1,nullptr);
+    }
     |
     Exp COMMA CallList
     {
@@ -536,7 +539,8 @@ FuncCallExp
             delete [](char*)$1;
             assert(se != nullptr);
         }
-        $$=new FuncCallExp(se,nullptr);
+        SymbolEntry* thisSe= new IdentifierSymbolEntry(se->getType(), $1, identifiers->getLevel());
+        $$=new FuncCallExp(thisSe,se,nullptr);
     }
     |
     ID LPAREN CallList RPAREN
@@ -548,7 +552,8 @@ FuncCallExp
             delete [](char*)$1;
             assert(se != nullptr);
         }
-        $$=new FuncCallExp(se,$3);
+        SymbolEntry* thisSe= new IdentifierSymbolEntry(se->getType(), $1, identifiers->getLevel());
+        $$=new FuncCallExp(thisSe,se,$3);
     }
     |
     Istream{$$ = $1;}

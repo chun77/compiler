@@ -439,7 +439,19 @@ void ConstDecl::genCode()
 
 void FuncCallExp::genCode()
 {
-    
+    BasicBlock *bb = builder->getInsertBB();
+    vector<Operand* >vec;
+    ExprNode *temp = this->callList;
+    if(temp){
+        callList->genCode();
+    }
+    while(temp){
+        temp->genCode();
+        ExprNode *tempParam = dynamic_cast<CallList*>(temp)->getParam();
+        vec.push_back(tempParam->getOperand());
+        temp = dynamic_cast<CallList*>(temp)->getNext();
+    }
+    new FuncCallInstruction(dst,vec,this->getFunc(),bb);
 }
 
 void CallList::genCode()
@@ -706,11 +718,11 @@ void FuncCallExp::typeCheck()
     if(callList!=NULL){
         callList->typeCheck();
     }
-    Type *t=this->getSymPtr()->getType();
+    Type *t=this->getFunc()->getType();
     if(dynamic_cast<FunctionType*>(t)->getRetType()==TypeSystem::voidType){
-        this->symbolEntry->setType(TypeSystem::voidType);
+        this->getSymPtr()->setType(TypeSystem::voidType);
     }else{
-        this->symbolEntry->setType(TypeSystem::intType);
+        this->getSymPtr()->setType(TypeSystem::intType);
     }
 }
 

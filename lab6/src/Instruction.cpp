@@ -352,3 +352,34 @@ void GlobalDeclInstruction::output() const
     std::string dst_type = operands[0]->getType()->toStr();
     fprintf(yyout, "%s = common global %s %s, align 4\n", dst.c_str(),"i32", "0");
 }
+
+FuncCallInstruction::FuncCallInstruction(Operand* dst,vector<Operand *> params, SymbolEntry *se, BasicBlock *insert_bb): Instruction(FUNCCALL, insert_bb),se(se)
+{
+    if(dst!=NULL){
+        dst->setDef(this);
+    }
+    operands.push_back(dst);
+    for(auto it:params)
+    {
+        operands.push_back(it);
+        it->addUse(this);
+    }
+}
+
+void FuncCallInstruction::output() const
+{
+    if (operands[0])
+        fprintf(yyout, "  %s = ", operands[0]->toStr().c_str());
+    FunctionType* type = (FunctionType*)(se->getType());
+    fprintf(yyout, "  call %s %s(", type->getRetType()->toStr().c_str(),se->toStr().c_str());
+
+    for(int i=1;i<operands.size();i++)
+    {
+        if(i>1){
+            fprintf(yyout,", ");
+        }
+        fprintf(yyout, "%s %s",operands[i]->getType()->toStr().c_str(),operands[i]->toStr().c_str());
+    
+    }
+    fprintf(yyout,")\n");
+}
