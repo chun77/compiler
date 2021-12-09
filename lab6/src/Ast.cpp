@@ -9,6 +9,7 @@
 extern FILE *yyout;
 int Node::counter = 0;
 IRBuilder* Node::builder = nullptr;
+bool isCond=0;
 
 Node::Node()
 {
@@ -114,11 +115,12 @@ void BinaryExpr::genCode()
     }
     else if(op >= LESS && op <= GREATER)
     {
-        // Todo        
+        // Todo     
         expr1->genCode();
         expr2->genCode();
         Operand *src1 = expr1->getOperand();
         Operand *src2 = expr2->getOperand();
+
         int cmpopcode;
         switch (op) {
             case LESS:
@@ -217,10 +219,18 @@ void Constant::genCode()
 
 void Id::genCode()
 {
-    printf("%s%d\n","id gencode!",this->getSeq());
-    BasicBlock *bb = builder->getInsertBB();
-    Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getAddr();
-    new LoadInstruction(dst, addr, bb);   // zhejvcuol
+    if(isCond)
+    {
+        
+    }
+    else
+    {
+        printf("%s%d\n","id gencode!",this->getSeq());
+        BasicBlock *bb = builder->getInsertBB();
+        Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getAddr();
+        new LoadInstruction(dst, addr, bb);   // zhejvcuol
+    }
+    
 }
 
 
@@ -234,6 +244,10 @@ void IfStmt::genCode()
     end_bb = new BasicBlock(func);
 
     //回填
+    ConstantSymbolEntry*zeroSe=new ConstantSymbolEntry(TypeSystem::intType,0);
+    ExprNode *expr0=new Constant((SymbolEntry*)zeroSe);
+    SymbolEntry*se=new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel());
+    cond=new BinaryExpr(se,BinaryInstruction::OR,cond,expr0);
     cond->genCode();
     // new CondBrInstruction(then_bb,end_bb,cond->getOperand(),builder->getInsertBB());
     backPatch(cond->trueList(), then_bb);
@@ -361,15 +375,16 @@ void VarDecl::genCode()
         addr_se->setType(new PointerType(se->getType()));
         addr = new Operand(addr_se);
         se->setAddr(addr);
-        if (expr)
+        BasicBlock*bb=builder->getUnit()->getGlobalBB();
+        if(expr)
         {
-            expr->genCode();
-            BasicBlock *bb = builder->getUnit()->getGlobalBB();
-            new StoreInstruction(dynamic_cast<IdentifierSymbolEntry*>(id->getSymPtr())->getAddr(), expr->getOperand(), bb);
-            // new AllocaInstruction(addr,se,bb);
+            new GlobalDefInstruction(se->getAddr(), expr->getOperand(), bb);
         }
-        // Unit *unit = builder->getUnit();
-        // unit->insertGlobal(se);
+        else
+        {
+            new GlobalDeclInstruction(se->getAddr(),bb);
+        }
+       
     }
     else if(se->isLocal())
     {
@@ -384,8 +399,11 @@ void VarDecl::genCode()
         addr = new Operand(addr_se);
         alloca = new AllocaInstruction(addr, se);                   // allocate space for local id in function stack.
         entry->insertFront(alloca);                                 // allocate instructions should be inserted into the begin of the entry block.
-        se->setAddr(addr);      
-                                       // set the addr operand in symbol entry so that we can use it in subsequent code generation.
+        se->setAddr(addr);       // set the addr operand in symbol entry so that we can use it in subsequent code generation.
+        if (expr)
+        {
+            expr->genCode();
+        }
     }
 }
 //const to do
@@ -400,8 +418,6 @@ void ConstDecl::genCode()
         addr_se->setType(new PointerType(se->getType()));
         addr = new Operand(addr_se);
         se->setAddr(addr);
-        Unit *unit = builder->getUnit();
-        unit->insertGlobal(se);     
     }
     else if(se->isLocal())
     {

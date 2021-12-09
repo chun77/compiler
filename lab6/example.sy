@@ -1,7 +1,8 @@
 //test global var define
-int a = 3;
-int b = 5;
+int a=5;
+int b;
 
 int main(){
-    return a + b;
+    b=1;
+    return a+b;
 }

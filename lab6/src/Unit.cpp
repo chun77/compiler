@@ -21,18 +21,17 @@ void Unit::output() const
     //                 global->getType()->toStr().c_str(),
     //                 ((IdentifierSymbolEntry*)global)->getValue());
     // }
-    if(globalBB!=nullptr)
-    {
-        globalBB->output();
-    }
+    // for (auto &global:global_list)
+    // {
+    //     global->output();
+
+    // }
+    globalBB->output();
     for (auto &func : func_list)
         func->output();
 }
 
-void Unit::insertGlobal(SymbolEntry *se)
-{
-    global_list.push_back(se);
-}
+
 
 Unit::~Unit()
 {
@@ -40,7 +39,3 @@ Unit::~Unit()
         delete func;
 }
 
-BasicBlock* Unit::getGlobalBB()
-{
-    return globalBB;
-}

@@ -311,3 +311,44 @@ void StoreInstruction::output() const
 
     fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
 }
+
+GlobalDefInstruction::GlobalDefInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb) : Instruction(STORE, insert_bb)
+{
+    operands.push_back(dst_addr);
+    operands.push_back(src);
+    dst_addr->addUse(this);
+    src->addUse(this);
+}
+
+GlobalDefInstruction::~GlobalDefInstruction()
+{
+    operands[0]->removeUse(this);
+    operands[1]->removeUse(this);
+}
+
+void GlobalDefInstruction::output() const
+{
+    std::string dst = operands[0]->toStr();
+    std::string dst_type = operands[0]->getType()->toStr();
+    std::string src = operands[1]->toStr();
+    std::string src_type = operands[1]->getType()->toStr();
+    fprintf(yyout, "%s = global %s %s, align 4\n", dst.c_str(),src_type.c_str(), src.c_str());
+}
+
+GlobalDeclInstruction::GlobalDeclInstruction(Operand *dst_addr, BasicBlock *insert_bb) : Instruction(STORE, insert_bb)
+{
+    operands.push_back(dst_addr);
+    dst_addr->addUse(this);
+}
+
+GlobalDeclInstruction::~GlobalDeclInstruction()
+{
+    operands[0]->removeUse(this);
+}
+
+void GlobalDeclInstruction::output() const
+{
+    std::string dst = operands[0]->toStr();
+    std::string dst_type = operands[0]->getType()->toStr();
+    fprintf(yyout, "%s = common global %s %s, align 4\n", dst.c_str(),"i32", "0");
+}

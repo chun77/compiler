@@ -65,6 +65,22 @@ public:
     void output() const;
 };
 
+class GlobalDefInstruction : public Instruction
+{
+public:
+    GlobalDefInstruction(Operand *dst_addr, Operand *src,BasicBlock *insert_bb = nullptr);
+    ~GlobalDefInstruction();
+    void output() const;
+};
+
+class GlobalDeclInstruction : public Instruction
+{
+public:
+    GlobalDeclInstruction(Operand *dst_addr, BasicBlock *insert_bb = nullptr);
+    ~GlobalDeclInstruction();
+    void output() const;
+};
+
 class BinaryInstruction : public Instruction
 {
 public:

@@ -6,4 +6,7 @@ Todo：
 4.每一个node有一个trueList，falseList
 5.instruction的dst存了子树的信息
 operand 是instuction用到的操作数
-6.golbal值？ 问yy
+6.golbal值？ 问yy √
+7.load store? int a=1那个对了没 expr->gencode()?
+8.global的输出 @a @b
+9.unary
