@@ -446,7 +446,6 @@ void FuncCallExp::genCode()
         callList->genCode();
     }
     while(temp){
-        temp->genCode();
         ExprNode *tempParam = dynamic_cast<CallList*>(temp)->getParam();
         vec.push_back(tempParam->getOperand());
         temp = dynamic_cast<CallList*>(temp)->getNext();
@@ -456,7 +455,10 @@ void FuncCallExp::genCode()
 
 void CallList::genCode()
 {
-
+    expr->genCode();
+    if(callList!=NULL){
+        callList->genCode();
+    }
 }
 
 void CallStmt::genCode()
