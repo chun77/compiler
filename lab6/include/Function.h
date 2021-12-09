@@ -8,7 +8,7 @@
 #include <iostream>
 #include "BasicBlock.h"
 #include "SymbolTable.h"
-
+using namespace std;
 class Unit;
 
 class Function
@@ -21,6 +21,7 @@ private:
     SymbolEntry *sym_ptr;
     BasicBlock *entry;
     Unit *parent;
+    vector<Operand *> *params;
 
 public:
     Function(Unit *, SymbolEntry *);
@@ -35,6 +36,7 @@ public:
     reverse_iterator rbegin() { return block_list.rbegin(); };
     reverse_iterator rend() { return block_list.rend(); };
     SymbolEntry *getSymPtr() { return sym_ptr; };
+    void setParams(vector<Operand *>* p) {this->params = p;};
 };
 
 #endif

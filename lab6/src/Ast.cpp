@@ -42,8 +42,18 @@ void Ast::genCode(Unit *unit)
 
 void FunctionDef::genCode()
 {
+    // put params in vector
+    vector<Operand *> *vec = new vector<Operand*>;
+    ExprNode *temp = this->param;
+    while(temp){
+        ExprNode *tempParam = dynamic_cast<FuncParams*>(temp)->getParam();
+        vec->push_back(dynamic_cast<FuncParam*>(tempParam)->getId()->getOperand());
+        temp = dynamic_cast<FuncParams*>(temp)->getNext();
+    }
+    
     Unit *unit = builder->getUnit();
     Function *func = new Function(unit, se);
+    func->setParams(vec);
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
@@ -54,7 +64,7 @@ void FunctionDef::genCode()
      * Todo
     */
    for(std::vector<BasicBlock *>::iterator it=func->begin();it!=func->end();it++)
-   {
+    {
         BasicBlock*curBB=(*it);
         Instruction*end=(*it)->rbegin();
         if(end->isUncond())
@@ -73,7 +83,7 @@ void FunctionDef::genCode()
             trueBranch->addPred(curBB);
             falseBranch->addPred(curBB);
         }
-   }    
+    }    
 }
 
 void BinaryExpr::genCode()
@@ -207,9 +217,10 @@ void Constant::genCode()
 
 void Id::genCode()
 {
+    printf("%s%d\n","id gencode!",this->getSeq());
     BasicBlock *bb = builder->getInsertBB();
     Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getAddr();
-    new LoadInstruction(dst, addr, bb);
+    new LoadInstruction(dst, addr, bb);   // zhejvcuol
 }
 
 
@@ -239,7 +250,6 @@ void IfStmt::genCode()
 
 void IfElseStmt::genCode()
 {
-    
     // Todo
     Function *func;
     BasicBlock *then_bb, *else_bb, *end_bb;
@@ -286,11 +296,14 @@ void ReturnStmt::genCode()
 {
     BasicBlock *bb = builder->getInsertBB();
     // Todo
+    Operand *src;
     if(retValue!=nullptr)
     {
         retValue->genCode();
+        src = retValue->getOperand();
+    }else{
+        src = nullptr;
     }
-    Operand *src = retValue->getOperand();
     new RetInstruction(src,bb);
 }
 
@@ -314,19 +327,27 @@ void VarDeclStmt::genCode()
 
 void ConstDeclStmt::genCode()
 {
-   constDecls->genCode();
+    constDecls->genCode();
 }
 
 void VarDecls::genCode()
 {
-    varDecl->genCode();
-    varDecls->genCode();
+    if(varDecl!=NULL){
+        varDecl->genCode();
+    }
+    if(varDecls!=NULL){
+        varDecls->genCode();
+    }
 }
 
 void ConstDecls::genCode()
 {
-    constDecl->genCode();
-    constDecls->genCode();
+    if(constDecl!=NULL){
+        constDecl->genCode();
+    }
+    if(constDecls!=NULL){
+        constDecls->genCode();
+    }
 }
 
 void VarDecl::genCode()
@@ -411,22 +432,45 @@ void CallList::genCode()
 
 void CallStmt::genCode()
 {
-
+    callExp->genCode();
 }
 
 void NullStmt::genCode()
 {
-
+    if(expr!=NULL){
+        expr->genCode();
+    }
 }
 
 void FuncParams::genCode()
 {
-
+    if(funcParam!=NULL){
+        funcParam->genCode();
+    }
+    if(funcParams!=NULL){
+        funcParams->genCode();
+    }
 }
 
 void FuncParam::genCode()
 {
-
+    IdentifierSymbolEntry *se = dynamic_cast<IdentifierSymbolEntry *>(id->getSymPtr());
+    Function *func = builder->getInsertBB()->getParent();
+    BasicBlock *entry = func->getEntry();
+    Instruction *alloca;
+    Operand *addr;
+    SymbolEntry *addr_se;
+    Type *type;
+    type = new PointerType(se->getType());
+    addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
+    addr = new Operand(addr_se);
+    alloca = new AllocaInstruction(addr, se);               
+    entry->insertFront(alloca);      
+    se->setAddr(addr);
+    
+    BasicBlock *bb;
+    bb = builder->getInsertBB();
+    new StoreInstruction(se->getAddr(), id->getOperand(), bb);
 }
 
 void WhileStmt::genCode()
