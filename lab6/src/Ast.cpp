@@ -403,6 +403,7 @@ void VarDecl::genCode()
         if (expr)
         {
             expr->genCode();
+            new StoreInstruction(se->getAddr(), expr->getOperand(), entry);
         }
     }
 }
