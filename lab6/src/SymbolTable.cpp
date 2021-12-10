@@ -1,4 +1,5 @@
 #include "SymbolTable.h"
+#include "Type.h"
 #include <iostream>
 #include <sstream>
 using namespace std;
@@ -48,6 +49,17 @@ SymbolTable::SymbolTable()
 {
     prev = nullptr;
     level = 0;
+
+    Type* funcType = new FunctionType(TypeSystem::intType,{});
+    dynamic_cast<FunctionType*>(funcType)->setRetType(TypeSystem::intType);
+    SymbolEntry *se1 = new IdentifierSymbolEntry(funcType, "getint", 0);
+    this->install("getint",se1);
+    vector<Type*> vec;
+    vec.push_back(TypeSystem::intType);
+    funcType= new FunctionType(TypeSystem::voidType,vec);
+    dynamic_cast<FunctionType*>(funcType)->setRetType(TypeSystem::voidType);
+    SymbolEntry *se2 = new IdentifierSymbolEntry(funcType, "putint", 0);
+    this->install("putint",se2);
 }
 
 SymbolTable::SymbolTable(SymbolTable *prev)

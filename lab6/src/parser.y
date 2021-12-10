@@ -498,20 +498,24 @@ FuncParam
 Istream
     :GETINT LPAREN RPAREN
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$=new Istream(se);
+        SymbolEntry *se;
+        se = identifiers->lookup("getint");
+        SymbolEntry* thisSe= new IdentifierSymbolEntry(dynamic_cast<FunctionType*>(se->getType())->getRetType(), "getint", identifiers->getLevel());
+        $$=new FuncCallExp(thisSe,se,nullptr);
     }
     ;
 Ostream
-    :PUTINT LPAREN Exp RPAREN
+    :PUTINT LPAREN CallList RPAREN
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
-        $$=new Ostream(se,$3);
+        SymbolEntry *se;
+        se = identifiers->lookup("putint");
+        SymbolEntry* thisSe= new IdentifierSymbolEntry(dynamic_cast<FunctionType*>(se->getType())->getRetType(), "putint", identifiers->getLevel());
+        $$=new FuncCallExp(thisSe,se,$3);
     }
     |
     PUTCH LPAREN Exp RPAREN
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::voidType, SymbolTable::getLabel());
         $$=new Ostream(se,$3);
     }
     ;
@@ -541,6 +545,7 @@ FuncCallExp
         }
         
         SymbolEntry* thisSe= new IdentifierSymbolEntry(dynamic_cast<FunctionType*>(se->getType())->getRetType(), $1, identifiers->getLevel());
+
         $$=new FuncCallExp(thisSe,se,nullptr);
     }
     |
