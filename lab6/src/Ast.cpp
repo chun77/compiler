@@ -46,6 +46,7 @@ void FunctionDef::genCode()
     // put params in vector
     vector<Operand *> *vec = new vector<Operand*>;
     ExprNode *temp = this->param;
+
     while(temp){
         ExprNode *tempParam = dynamic_cast<FuncParams*>(temp)->getParam();
         vec->push_back(dynamic_cast<FuncParam*>(tempParam)->getId()->getOperand());
@@ -58,7 +59,9 @@ void FunctionDef::genCode()
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
-    
+    if(param!=NULL){
+        param->genCode();
+    }
     stmt->genCode();
     /**
      * Construct control flow graph. You need do set successors and predecessors for each basic block.

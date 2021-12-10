@@ -339,10 +339,10 @@ class FunctionDef : public StmtNode
 {
 private:
     SymbolEntry *se;
-    ExprNode *param;
+    FuncParams *param;
     StmtNode *stmt;
 public:
-    FunctionDef(SymbolEntry *se,ExprNode* param, StmtNode *stmt) : se(se), param(param),stmt(stmt){};
+    FunctionDef(SymbolEntry *se,FuncParams* param, StmtNode *stmt) : se(se), param(param),stmt(stmt){};
     void output(int level);
     void typeCheck();
     void genCode();
