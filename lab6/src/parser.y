@@ -539,7 +539,8 @@ FuncCallExp
             delete [](char*)$1;
             assert(se != nullptr);
         }
-        SymbolEntry* thisSe= new IdentifierSymbolEntry(se->getType(), $1, identifiers->getLevel());
+        
+        SymbolEntry* thisSe= new IdentifierSymbolEntry(dynamic_cast<FunctionType*>(se->getType())->getRetType(), $1, identifiers->getLevel());
         $$=new FuncCallExp(thisSe,se,nullptr);
     }
     |
@@ -552,7 +553,7 @@ FuncCallExp
             delete [](char*)$1;
             assert(se != nullptr);
         }
-        SymbolEntry* thisSe= new IdentifierSymbolEntry(se->getType(), $1, identifiers->getLevel());
+        SymbolEntry* thisSe= new IdentifierSymbolEntry(dynamic_cast<FunctionType*>(se->getType())->getRetType(), $1, identifiers->getLevel());
         $$=new FuncCallExp(thisSe,se,$3);
     }
     |

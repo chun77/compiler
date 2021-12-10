@@ -45,18 +45,7 @@ public:
     SymbolEntry* getSymPtr() {return symbolEntry;};
 };
 
-class FuncCallExp : public ExprNode
-{
-private:
-    ExprNode* callList;
-    SymbolEntry *funcse;
-public:
-    FuncCallExp(SymbolEntry* se, SymbolEntry* funcse, ExprNode* callList): ExprNode(se), funcse(funcse),callList(callList) {};
-    SymbolEntry* getFunc() {return funcse;};
-    void output(int level);
-    void typeCheck();
-    void genCode();
-};
+
 
 class BinaryExpr : public ExprNode
 {
@@ -100,6 +89,23 @@ public:
     void output(int level);
     void typeCheck();
     void genCode();
+};
+
+class FuncCallExp : public ExprNode
+{
+private:
+    ExprNode* callList;
+    SymbolEntry *funcse;
+    Id* id;
+public:
+    FuncCallExp(SymbolEntry* se, SymbolEntry* funcse, ExprNode* callList): ExprNode(se), funcse(funcse),callList(callList) {dst=new Operand(se); id=new Id(se);};
+    SymbolEntry* getFunc() {return funcse;};
+    void output(int level);
+    void typeCheck();
+    void genCode();
+    Operand* getOperand(){
+        return id->getOperand();
+    };
 };
 
 class StmtNode : public Node

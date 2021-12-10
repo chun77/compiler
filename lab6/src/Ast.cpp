@@ -327,9 +327,18 @@ void ReturnStmt::genCode()
 void AssignStmt::genCode()
 {
     BasicBlock *bb = builder->getInsertBB();
-    expr->genCode();
+    if(expr!=NULL){
+        expr->genCode();
+    }
     Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(lval->getSymPtr())->getAddr();
-    Operand *src = expr->getOperand();
+    Operand *src;
+    if(dynamic_cast<FuncCallExp*>(expr))
+    {
+        src=dynamic_cast<FuncCallExp*>(expr)->getOperand();
+        
+    }else{
+        src = expr->getOperand();
+    }
     /***
      * We haven't implemented array yet, the lval can only be ID. So we just store the result of the `expr` to the addr of the id.
      * If you want to implement array, you have to caculate the address first and then store the result into it.
@@ -453,7 +462,7 @@ void FuncCallExp::genCode()
         vec.push_back(tempParam->getOperand());
         temp = dynamic_cast<CallList*>(temp)->getNext();
     }
-    new FuncCallInstruction(dst,vec,this->getFunc(),bb);
+    new FuncCallInstruction(id->getOperand(),vec,this->getFunc(),bb);
 }
 
 void CallList::genCode()
