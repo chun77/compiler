@@ -536,7 +536,7 @@ void FuncCallExp::genCode()
     }else{
         new FuncCallInstruction(id->getOperand(),vec,this->getFunc(),bb);
     }
-    
+    dst=id->getOperand();
 }
 
 void CallList::genCode()
