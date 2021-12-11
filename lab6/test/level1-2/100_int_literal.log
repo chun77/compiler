@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 test/level1-2/100_int_literal.ll:80:3: error: multiple definition of local value named 't44'
   %t44 = xor i1 %t213, true
+=======
+test/level1-2/100_int_literal.ll:78:3: error: expected ',' in arithmetic operation
+  store i32 %t44, i32* %t212, align 4
+>>>>>>> b637afa6885e610eb544cd4e1f40c2b1ad3f22c9
   ^
 1 error generated.

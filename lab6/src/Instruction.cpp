@@ -95,10 +95,57 @@ void BinaryInstruction::output() const
         break;
     case SREM:
         op = "srem";
+        break;
+    case AND:
+        op= "and";
+        break;
+    case OR:
+        op= "or";
+        break;
     default:
         break;
     }
     fprintf(yyout, "  %s = %s %s %s, %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str(), s3.c_str());
+}
+
+UnaryInstruction::UnaryInstruction(unsigned opcode, Operand *dst, Operand *src, BasicBlock *insert_bb):Instruction(UNARY, insert_bb)
+{
+    this->opcode = opcode;
+    operands.push_back(dst);
+    operands.push_back(src);
+    dst->setDef(this);
+    src->addUse(this);
+}
+
+UnaryInstruction::~UnaryInstruction()
+{
+    operands[0]->setDef(nullptr);
+    if(operands[0]->usersNum() == 0)
+        delete operands[0];
+    operands[1]->removeUse(this);
+}
+
+void UnaryInstruction::output() const
+{
+    std::string s1, s2,op, type;
+    s1 = operands[0]->toStr();
+    s2 = operands[1]->toStr();
+    type = operands[0]->getType()->toStr();
+    switch (opcode)
+    {
+    case ADD:
+        op = "add";
+        break;
+    case SUB:
+        op = "sub";
+        break;
+    case NOT:
+        op = "not";
+        break;
+    default:
+        break;
+    }
+    fprintf(yyout, "  %s = %s %s %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
 }
 
 CmpInstruction::CmpInstruction(unsigned opcode, Operand *dst, Operand *src1, Operand *src2, BasicBlock *insert_bb): Instruction(CMP, insert_bb){
@@ -320,12 +367,13 @@ void StoreInstruction::output() const
     fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
 }
 
-GlobalDefInstruction::GlobalDefInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb) : Instruction(STORE, insert_bb)
+GlobalDefInstruction::GlobalDefInstruction(Operand *dst_addr, Operand *src,bool isConst, BasicBlock *insert_bb) : Instruction(GLOBALDEF, insert_bb)
 {
     operands.push_back(dst_addr);
     operands.push_back(src);
     dst_addr->addUse(this);
     src->addUse(this);
+    this->isConst=isConst;
 }
 
 GlobalDefInstruction::~GlobalDefInstruction()
@@ -340,10 +388,17 @@ void GlobalDefInstruction::output() const
     std::string dst_type = operands[0]->getType()->toStr();
     std::string src = operands[1]->toStr();
     std::string src_type = operands[1]->getType()->toStr();
-    fprintf(yyout, "%s = global %s %s, align 4\n", dst.c_str(),src_type.c_str(), src.c_str());
+    if(!isConst)
+    {
+        fprintf(yyout, "%s = global %s %s, align 4\n", dst.c_str(),src_type.c_str(), src.c_str());
+    }
+    else
+    {
+        fprintf(yyout, "%s = constant %s %s, align 4\n", dst.c_str(),src_type.c_str(), src.c_str());
+    }
 }
 
-GlobalDeclInstruction::GlobalDeclInstruction(Operand *dst_addr, BasicBlock *insert_bb) : Instruction(STORE, insert_bb)
+GlobalDeclInstruction::GlobalDeclInstruction(Operand *dst_addr, BasicBlock *insert_bb) : Instruction(GLOBALDECL, insert_bb)
 {
     operands.push_back(dst_addr);
     dst_addr->addUse(this);
@@ -407,7 +462,7 @@ void XorInstruction::output() const
     fprintf(yyout, "  %s = xor %s %s, true\n",dst->toStr().c_str(),src->getType()->toStr().c_str(), src->toStr().c_str());
 }
 
-ZextInstruction::ZextInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb):Instruction(XOR, insert_bb)
+ZextInstruction::ZextInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb):Instruction(ZEXT, insert_bb)
 {
     operands.push_back(dst);
     operands.push_back(src);

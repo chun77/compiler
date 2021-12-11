@@ -1,4 +1,4 @@
-test/level1-1/049_unary_op.ll:13:20: error: '%t6' defined with type 'i1' but expected 'i32'
-  %t7 = sub i32 0, %t6
-                   ^
+test/level1-1/049_unary_op.ll:12:1: error: expected instruction opcode
+}
+^
 1 error generated.

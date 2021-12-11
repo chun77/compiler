@@ -1,4 +1,4 @@
-test/level1-1/051_logi_assign.ll:13:10: error: '%t10' defined with type 'i1' but expected 'i32'
-  br i32 %t10, label %B22, label %B25
-         ^
+test/level1-1/051_logi_assign.ll:15:21: error: use of undefined value '%B23'
+  br i1 %t24, label %B23, label %B30
+                    ^
 1 error generated.

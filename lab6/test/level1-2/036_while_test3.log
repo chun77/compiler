@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 test/level1-2/036_while_test3.ll:83:1: error: expected instruction opcode
 B124:                                   ; preds = %B118
 ^
+=======
+test/level1-2/036_while_test3.ll:164:11: error: global variable reference must have pointer type
+  ret i32 @EightWhile
+          ^
+>>>>>>> b637afa6885e610eb544cd4e1f40c2b1ad3f22c9
 1 error generated.

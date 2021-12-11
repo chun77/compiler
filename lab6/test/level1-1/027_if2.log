@@ -1,4 +1,4 @@
-test/level1-1/027_if2.ll:10:12: error: use of undefined value '%B8'
-  br label %B8
-           ^
+test/level1-1/027_if2.ll:7:20: error: use of undefined value '%B10'
+  br i1 %t4, label %B10, label %B12
+                   ^
 1 error generated.

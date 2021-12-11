@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 test/level1-2/040_while_if_test2.ll:14:10: error: '%t8' defined with type 'i1' but expected 'i32'
   br i32 %t8, label %B35, label %B39
          ^
+=======
+test/level1-2/040_while_if_test2.ll:55:11: error: global variable reference must have pointer type
+  ret i32 @ifWhile
+          ^
+>>>>>>> b637afa6885e610eb544cd4e1f40c2b1ad3f22c9
 1 error generated.

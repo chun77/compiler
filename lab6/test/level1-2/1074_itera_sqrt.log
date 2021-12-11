@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 test/level1-2/1074_itera_sqrt.ll:33:1: error: expected instruction opcode
 B42:                                    ; preds = %B45
 ^
+=======
+test/level1-2/1074_itera_sqrt.ll:9:9: error: expected instruction opcode
+  %t7 = div i32 %t6, 2
+        ^
+>>>>>>> b637afa6885e610eb544cd4e1f40c2b1ad3f22c9
 1 error generated.

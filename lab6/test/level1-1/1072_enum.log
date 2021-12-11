@@ -1,4 +1,4 @@
-test/level1-1/1072_enum.ll:58:12: error: use of undefined value '%B49'
+test/level1-1/1072_enum.ll:60:12: error: use of undefined value '%B49'
   br label %B49
            ^
 1 error generated.

@@ -1,4 +1,4 @@
-test/level1-1/047_op_priority5.ll:19:10: error: '%t15' defined with type 'i1' but expected 'i32'
-  br i32 %t15, label %B49, label %B52
-         ^
+test/level1-1/047_op_priority5.ll:21:21: error: use of undefined value '%B51'
+  br i1 %t52, label %B51, label %B58
+                    ^
 1 error generated.

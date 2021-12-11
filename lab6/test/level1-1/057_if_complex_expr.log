@@ -1,4 +1,4 @@
-test/level1-1/057_if_complex_expr.ll:18:10: error: '%t15' defined with type 'i1' but expected 'i32'
-  br i32 %t15, label %B51, label %B56
-         ^
+test/level1-1/057_if_complex_expr.ll:18:21: error: use of undefined value '%B56'
+  br i1 %t15, label %B56, label %B58
+                    ^
 1 error generated.

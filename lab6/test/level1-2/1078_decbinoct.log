@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 test/level1-2/1078_decbinoct.ll:19:11: error: expected instruction opcode
   %t15 =  i32 %t14, 2
           ^
+=======
+test/level1-2/1078_decbinoct.ll:20:10: error: expected instruction opcode
+  %t15 = mod i32 %t14, 2
+         ^
+>>>>>>> b637afa6885e610eb544cd4e1f40c2b1ad3f22c9
 1 error generated.

@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 test/level1-2/029_if_test2.ll:10:10: error: '%t6' defined with type 'i1' but expected 'i32'
   br i32 %t6, label %B36, label %B42
          ^
+=======
+test/level1-2/029_if_test2.ll:49:3: error: expected ',' in arithmetic operation
+  %t21 = icmp eq i32 %t19, %t20
+  ^
+>>>>>>> b637afa6885e610eb544cd4e1f40c2b1ad3f22c9
 1 error generated.
