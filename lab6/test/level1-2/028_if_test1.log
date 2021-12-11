@@ -1,8 +1,0 @@
-<<<<<<< HEAD
-test/level1-2/028_if_test1.ll:26:11: error: global variable reference must have pointer type
-=======
-test/level1-2/028_if_test1.ll:25:11: error: global variable reference must have pointer type
->>>>>>> b637afa6885e610eb544cd4e1f40c2b1ad3f22c9
-  ret i32 @ifElse
-          ^
-1 error generated.

@@ -222,72 +222,36 @@ void UnaryExpr::genCode()
 {
     BasicBlock *bb = builder->getInsertBB();
     Function *func = bb->getParent();
-    if(op >= ADD && op <= NOT)
-    {
-        expr->genCode();
-        Operand *src = expr->getOperand();
-        int opcode;
-        ConstantSymbolEntry* zerose=new ConstantSymbolEntry(TypeSystem::intType,0);
-        Operand* zero=new Operand(zerose);
-        if(op==SUB){
-            opcode = BinaryInstruction::SUB;
-            if(dynamic_cast<IntType*>(expr->getSymPtr()->getType())->isBool()){   // is a bool expr
-                Operand* temp = new Operand(new TemporarySymbolEntry(
-                    TypeSystem::intType, SymbolTable::getLabel()));
-                new ZextInstruction(temp, src, bb);
-                src=temp;
-            }
-            new BinaryInstruction(opcode, dst, zero, expr->getOperand(), bb);
-        }
-        if(op== NOT){
-            opcode = CmpInstruction::NE;
-            if (expr->getSymPtr()->getType()->isInt()) {   // not a bool expr
-                Operand* temp = new Operand(new TemporarySymbolEntry(
-                    TypeSystem::boolType, SymbolTable::getLabel()));
-                new CmpInstruction(opcode, temp, src, zero, bb);
-                src=temp;
-            }
-            new XorInstruction(dst, src, bb);
-            this->getSymPtr()->setType(TypeSystem::boolType);
-        }
-        // else
-        // {
-            
-        //     expr->genCode();
-        //     auto temp_list=expr->trueList();
-        //     expr->trueList()=expr->falseList();
-        //     expr->falseList()=temp_list;
-            
-        // }
-        // if(firstUnary)
-        // {
-        //     BasicBlock *truebb, *falsebb, *tempbb;
 
-        //     truebb = new BasicBlock(func);
-        //     falsebb = new BasicBlock(func);
-        //     tempbb = new BasicBlock(func);
-        //     //
-        //     //在后面这个cond要作为条件跳转和非条件跳转的指令，和后面的块相连
-        //     //instruction准备好了，但是要跳转的块还是空的，后面填
-        //     true_list.push_back(new CondBrInstruction(truebb, tempbb, dst, bb));
-
-        //     false_list.push_back(new UncondBrInstruction(falsebb, tempbb));
-        //     firstUnary=0;
-        // }
-            
+    expr->genCode();
+    Operand *src = expr->getOperand();
+    int opcode;
+    ConstantSymbolEntry* zerose=new ConstantSymbolEntry(TypeSystem::intType,0);
+    Operand* zero=new Operand(zerose);
+    if(op==SUB){
+        opcode = BinaryInstruction::SUB;
+        if(dynamic_cast<IntType*>(expr->getSymPtr()->getType())->isBool()){   // is a bool expr
+            Operand* temp = new Operand(new TemporarySymbolEntry(
+                TypeSystem::intType, SymbolTable::getLabel()));
+            new ZextInstruction(temp, src, bb);
+            src=temp;
+        }
+        new BinaryInstruction(opcode, dst, zero, src, bb);
     }
-    // if(op==SUB)
-    // {
-    //     expr->genCode();
-    //     Operand *src = expr->getOperand();
-    //     int opcode=UnaryInstruction::SUB;
-    //     // if(this->getSymPtr()->getType()!=TypeSystem::intType)
-    //     // {
-    //     //     this->getSymPtr()->setType(TypeSystem::intType);
-    //     //     dst=new Operand(this->getSymPtr());
-    //     // }
-    //     new UnaryInstruction(opcode, dst, src, bb);
-    // }
+    if(op== NOT){
+        opcode = CmpInstruction::NE;
+        if (!dynamic_cast<IntType*>(expr->getSymPtr()->getType())->isBool()) {   // not a bool expr
+            Operand* temp = new Operand(new TemporarySymbolEntry(
+                TypeSystem::boolType, SymbolTable::getLabel()));
+            new CmpInstruction(opcode, temp, src, zero, bb);
+            src=temp;
+        }
+        new XorInstruction(dst, src, bb);
+        this->getSymPtr()->setType(TypeSystem::boolType);
+    }
+    if(op==ADD){
+        dst=expr->getOperand();
+    }
 }
 
 void Constant::genCode()
@@ -769,6 +733,8 @@ void BinaryExpr::typeCheck()
     }
     if(op>=AND){
         iscond=true;
+    }else{
+        this->getSymPtr()->setType(TypeSystem::intType);
     }
     symbolEntry->setType(type1);
 
@@ -785,6 +751,7 @@ void UnaryExpr::typeCheck()
     }else{
         this->symbolEntry->setType(TypeSystem::intType);
     }
+    iscond=false;
 }
 
 void VarDeclStmt::typeCheck()

@@ -1,4 +1,3 @@
-test/level1-1/049_unary_op.ll:12:1: error: expected instruction opcode
-}
-^
-1 error generated.
+warning: overriding the module target triple with x86_64-pc-linux-gnu [-Woverride-module]
+1 warning generated.
+TOTAL: 0H-0M-0S-0us
