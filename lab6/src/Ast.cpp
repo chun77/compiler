@@ -257,7 +257,9 @@ void IfStmt::genCode()
     backPatch(cond->falseList(), end_bb);
 
     builder->setInsertBB(then_bb);
-    thenStmt->genCode();
+    if(thenStmt){
+        thenStmt->genCode();
+    }
     then_bb = builder->getInsertBB();
     new UncondBrInstruction(end_bb, then_bb);
 
