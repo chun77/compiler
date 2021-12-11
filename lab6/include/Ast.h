@@ -44,7 +44,7 @@ protected:
 public:
     ExprNode(SymbolEntry *symbolEntry) : symbolEntry(symbolEntry){};
     Operand* getOperand() {return dst;};
-    bool isCond(){return iscond;};
+    bool IsCond(){return iscond;};
     SymbolEntry* getSymPtr() {return symbolEntry;};
     bool IsId(){return isId;};
 };
@@ -58,7 +58,13 @@ private:
     ExprNode *expr1, *expr2;
 public:
     enum {ADD, DIV, MUL,MOD, SUB, AND, OR, LESS, MORE, LESSQ,MOREQ,EQ, NOTEQ};
-    BinaryExpr(SymbolEntry *se, int op, ExprNode*expr1, ExprNode*expr2) : ExprNode(se), op(op), expr1(expr1), expr2(expr2){dst = new Operand(se);};
+    BinaryExpr(SymbolEntry *se, int op, ExprNode*expr1, ExprNode*expr2) : ExprNode(se), op(op), expr1(expr1), expr2(expr2)
+    {
+        dst = new Operand(se);
+        if(op>=AND){
+            iscond=true;
+        }
+    };
     void output(int level);
     void typeCheck();
     void genCode();
