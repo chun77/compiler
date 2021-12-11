@@ -1,0 +1,4 @@
+test/level1-2/1078_decbinoct.ll:20:10: error: expected instruction opcode
+  %t15 = mod i32 %t14, 2
+         ^
+1 error generated.

@@ -1,0 +1,4 @@
+test/level1-2/1074_itera_sqrt.ll:9:9: error: expected instruction opcode
+  %t7 = div i32 %t6, 2
+        ^
+1 error generated.

@@ -1,0 +1,4 @@
+test/level1-2/031_if_test4.ll:35:11: error: global variable reference must have pointer type
+  ret i32 @if_ifElse_
+          ^
+1 error generated.

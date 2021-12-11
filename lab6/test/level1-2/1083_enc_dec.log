@@ -1,0 +1,4 @@
+test/level1-2/1083_enc_dec.ll:59:3: error: instructions returning void cannot have a name
+  %t33 =   call void @putint(i32 %t32)
+  ^
+1 error generated.

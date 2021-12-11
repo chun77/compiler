@@ -1,0 +1,4 @@
+test/level1-2/036_while_test3.ll:164:11: error: global variable reference must have pointer type
+  ret i32 @EightWhile
+          ^
+1 error generated.

@@ -1,0 +1,4 @@
+test/level1-2/1080_lcm.ll:33:10: error: expected instruction opcode
+  %t26 = mod i32 %t24, %t25
+         ^
+1 error generated.

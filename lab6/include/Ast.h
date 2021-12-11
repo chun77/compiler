@@ -39,10 +39,14 @@ class ExprNode : public Node
 protected:
     SymbolEntry *symbolEntry;
     Operand *dst;   // The result of the subtree is stored into dst.
+    bool iscond=0;
+    bool isId=0;
 public:
     ExprNode(SymbolEntry *symbolEntry) : symbolEntry(symbolEntry){};
     Operand* getOperand() {return dst;};
+    bool isCond(){return iscond;};
     SymbolEntry* getSymPtr() {return symbolEntry;};
+    bool IsId(){return isId;};
 };
 
 
@@ -54,7 +58,7 @@ private:
     ExprNode *expr1, *expr2;
 public:
     enum {ADD, DIV, MUL,MOD, SUB, AND, OR, LESS, MORE, LESSQ,MOREQ,EQ, NOTEQ,GREATER};
-    BinaryExpr(SymbolEntry *se, int op, ExprNode*expr1, ExprNode*expr2) : ExprNode(se), op(op), expr1(expr1), expr2(expr2){dst = new Operand(se);};
+    BinaryExpr(SymbolEntry *se, int op, ExprNode*expr1, ExprNode*expr2) : ExprNode(se), op(op), expr1(expr1), expr2(expr2){dst = new Operand(se);if(op>=AND){iscond=1;}};
     void output(int level);
     void typeCheck();
     void genCode();
@@ -67,10 +71,11 @@ private:
     ExprNode *expr;
 public:
     enum {ADD,SUB,NOT};
-    UnaryExpr(SymbolEntry *se,int op, ExprNode* expr) : ExprNode(se),op(op),expr(expr) {dst = new Operand(se);};
+    UnaryExpr(SymbolEntry *se,int op, ExprNode* expr) : ExprNode(se),op(op),expr(expr) {dst = new Operand(se);if(op==NOT)iscond=1;};
     void output(int level);
     void typeCheck();
     void genCode();
+    
 };
 
 class Constant : public ExprNode
@@ -85,7 +90,7 @@ public:
 class Id : public ExprNode
 {
 public:
-    Id(SymbolEntry *se) : ExprNode(se) {SymbolEntry *temp = new TemporarySymbolEntry(se->getType(), SymbolTable::getLabel()); dst = new Operand(temp);};
+    Id(SymbolEntry *se) : ExprNode(se) {SymbolEntry *temp = new TemporarySymbolEntry(se->getType(), SymbolTable::getLabel()); dst = new Operand(temp);isId=1;};
     void output(int level);
     void typeCheck();
     void genCode();

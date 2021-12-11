@@ -1,0 +1,4 @@
+test/level1-2/100_int_literal.ll:78:3: error: expected ',' in arithmetic operation
+  store i32 %t44, i32* %t212, align 4
+  ^
+1 error generated.

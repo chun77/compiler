@@ -1,0 +1,4 @@
+test/level1-2/029_if_test2.ll:49:3: error: expected ',' in arithmetic operation
+  %t21 = icmp eq i32 %t19, %t20
+  ^
+1 error generated.

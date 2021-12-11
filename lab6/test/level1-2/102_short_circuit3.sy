@@ -1,17 +1,18 @@
-int a, b, d;
+/*int a, b, d;
 
 int set_a(int val) { a = val; return a; }
 int set_b(int val) { b = val; return b; }
-int set_d(int val) { d = val; return d; }
+int set_d(int val) { d = val; return d; }*/
 
 int main()
 {
-    a = 2; b = 3;
-    if (set_a(0) && set_b(1)) {}
-    putint(a); putch(32);
-    putint(b); putch(32);
+    int ab, bb, db;
+    ab = 2; bb = 3;
+    if (ab && bb) {}
+    //putint(a); putch(32);
+    //putint(b); putch(32);
 
-    a = 2; b = 3;
+    /*a = 2; b = 3;
     if (set_a(0) && set_b(1)) ;
     putint(a); putch(32);
     putint(b); putch(10);
@@ -38,7 +39,7 @@ int main()
     if (i2 >= i1 && i4 != i3) { putch(73); }
     if (i0 == !i1 && i3 < i3 || i4 >= i4) { putch(74); }
     if (i0 == !i1 || i3 < i3 && i4 >= i4) putch(75);
-    putch(10);
+    putch(10);*/
 
     return 0;
 }

@@ -28,7 +28,7 @@ protected:
     Instruction *next;
     BasicBlock *parent;
     std::vector<Operand*> operands;
-    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA, FUNCCALL};
+    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,GLOBALDEF,GLOBALDECL,UNARY, FUNCCALL};
 };
 
 // meaningless instruction, used as the head node of the instruction list.
@@ -68,9 +68,10 @@ public:
 class GlobalDefInstruction : public Instruction
 {
 public:
-    GlobalDefInstruction(Operand *dst_addr, Operand *src,BasicBlock *insert_bb = nullptr);
+    GlobalDefInstruction(Operand *dst_addr, Operand *src,bool isConst,BasicBlock *insert_bb = nullptr);
     ~GlobalDefInstruction();
     void output() const;
+    bool isConst;
 };
 
 class GlobalDeclInstruction : public Instruction
@@ -88,6 +89,15 @@ public:
     ~BinaryInstruction();
     void output() const;
     enum {ADD, DIV, MUL,MOD, SUB, AND, OR, LESS, MORE, LESSQ,MOREQ,EQ, NOTEQ};
+};
+
+class UnaryInstruction : public Instruction
+{
+public:
+    UnaryInstruction(unsigned opcode, Operand *dst, Operand *src, BasicBlock *insert_bb = nullptr);
+    ~UnaryInstruction();
+    void output() const;
+    enum {ADD, SUB,NOT};
 };
 
 class CmpInstruction : public Instruction

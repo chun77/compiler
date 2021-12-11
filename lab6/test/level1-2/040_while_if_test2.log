@@ -1,0 +1,4 @@
+test/level1-2/040_while_if_test2.ll:55:11: error: global variable reference must have pointer type
+  ret i32 @ifWhile
+          ^
+1 error generated.
