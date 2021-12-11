@@ -434,8 +434,9 @@ FuncDef
         }
         funcType = new FunctionType($1,vec);
         dynamic_cast<FunctionType*>(funcType)->setRetType($1);
-        SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getPrev()->getLevel());
-        identifiers->getPrev()->install($2, se);       
+        string name = $2+to_string(vec.size());
+        SymbolEntry *se = new IdentifierSymbolEntry(funcType, name, identifiers->getPrev()->getLevel());
+        identifiers->getPrev()->install(name, se);       
         current = se;
     }BlockStmt{
         $$ = new FunctionDef(current, (FuncParams*)$5, $8);
@@ -450,14 +451,17 @@ FuncDef
         Type *funcType;
         funcType = new FunctionType($1,{});
         dynamic_cast<FunctionType*>(funcType)->setRetType($1);
-        SymbolEntry *se = new IdentifierSymbolEntry(funcType, $2, identifiers->getLevel());
-        identifiers->install($2, se);
+        string zero="0";
+        string name=$2;
+        if(name!="main"){
+            name = $2+zero;
+        }
+        SymbolEntry *se = new IdentifierSymbolEntry(funcType, name, identifiers->getLevel());
+        identifiers->install(name, se);
         identifiers = new SymbolTable(identifiers);
-        printf("fundef:%d%s",identifiers->getLevel(),"\n");
-        $<se>$ = se;
         current = se;
     }BlockStmt{
-        $$ = new FunctionDef($<se>5, nullptr, $6);
+        $$ = new FunctionDef(current, nullptr, $6);
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
@@ -538,7 +542,9 @@ FuncCallExp
     ID LPAREN RPAREN
     {
         SymbolEntry *se;
-        se = identifiers->lookup($1);
+        string zero="0";
+        string name=$1+zero;
+        se = identifiers->lookup(name);
         if(se==nullptr){
             fprintf(stderr,"identifier \"%s\" is undefined\n", (char*)$1);
             delete [](char*)$1;
@@ -553,9 +559,17 @@ FuncCallExp
     ID LPAREN CallList RPAREN
     {
         SymbolEntry *se;
-        se = identifiers->lookup($1);
+        std::vector<ExprNode*> vec;
+        ExprNode* temp = $3;
+        while(temp){
+            ExprNode *tempParam = dynamic_cast<CallList*>(temp)->getParam();
+            vec.push_back(tempParam);
+            temp = dynamic_cast<CallList*>(temp)->getNext();
+        }
+        string name=$1+to_string(vec.size());
+        se = identifiers->lookup(name);
         if(se==nullptr){
-            fprintf(stderr,"identifier \"%s\" is undefined\n", (char*)$1);
+            fprintf(stderr,"identifier \"%s\" with %dparam(s) is undefined\n", (char*)$1,vec.size());
             delete [](char*)$1;
             assert(se != nullptr);
         }

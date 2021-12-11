@@ -734,16 +734,7 @@ void FuncCallExp::typeCheck()
     if(temp){
         callList->typeCheck();
     }
-    while(temp){
-        ExprNode *tempParam = dynamic_cast<CallList*>(temp)->getParam();
-        vec.push_back(tempParam->getOperand());
-        temp = dynamic_cast<CallList*>(temp)->getNext();
-    }
-    Type *funcType=this->getFunc()->getType();
-    if(vec.size()!=dynamic_cast<FunctionType*>(funcType)->getParamNum()){
-        fprintf(stderr,"function with %d params is not defined",vec.size());
-        exit(EXIT_FAILURE);
-    }
+
 }
 
 void CallList::typeCheck()
