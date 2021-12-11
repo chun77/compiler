@@ -247,10 +247,10 @@ void IfStmt::genCode()
     end_bb = new BasicBlock(func);
 
     //回填
-    ConstantSymbolEntry*zeroSe=new ConstantSymbolEntry(TypeSystem::intType,0);
-    ExprNode *expr0=new Constant((SymbolEntry*)zeroSe);
-    SymbolEntry*se=new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel());
-    cond=new BinaryExpr(se,BinaryInstruction::OR,cond,expr0);
+    // ConstantSymbolEntry*zeroSe=new ConstantSymbolEntry(TypeSystem::intType,0);
+    // ExprNode *expr0=new Constant((SymbolEntry*)zeroSe);
+    // SymbolEntry*se=new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel());
+    // cond=new BinaryExpr(se,BinaryInstruction::OR,cond,expr0);
     cond->genCode();
     // new CondBrInstruction(then_bb,end_bb,cond->getOperand(),builder->getInsertBB());
     backPatch(cond->trueList(), then_bb);
@@ -729,14 +729,20 @@ void FuncCallExp::typeCheck()
     if(symbolEntry==NULL){
         printf("%s\n","error: function not define!");
     }
-    if(callList!=NULL){
+    vector<Operand* >vec;
+    ExprNode *temp = this->callList;
+    if(temp){
         callList->typeCheck();
     }
-    Type *t=this->getFunc()->getType();
-    if(dynamic_cast<FunctionType*>(t)->getRetType()==TypeSystem::voidType){
-        this->getSymPtr()->setType(TypeSystem::voidType);
-    }else{
-        this->getSymPtr()->setType(TypeSystem::intType);
+    while(temp){
+        ExprNode *tempParam = dynamic_cast<CallList*>(temp)->getParam();
+        vec.push_back(tempParam->getOperand());
+        temp = dynamic_cast<CallList*>(temp)->getNext();
+    }
+    Type *funcType=this->getFunc()->getType();
+    if(vec.size()!=dynamic_cast<FunctionType*>(funcType)->getParamNum()){
+        fprintf(stderr,"function with %d params is not defined",vec.size());
+        exit(EXIT_FAILURE);
     }
 }
 

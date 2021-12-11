@@ -356,6 +356,7 @@ VarDecl
         se = identifiers->lookup($1);
         if(se!=nullptr&&dynamic_cast<IdentifierSymbolEntry*>(se)->getScope()==identifiers->getLevel()){
             fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
+            exit(EXIT_FAILURE);
             delete [](char*)$1;
             assert(se != nullptr);
         }else{
