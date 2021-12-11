@@ -1,0 +1,4 @@
+test/level1-2/1074_itera_sqrt.ll:33:1: error: expected instruction opcode
+B42:                                    ; preds = %B45
+^
+1 error generated.

@@ -1,0 +1,4 @@
+test/level1-2/1076_int_factor_sum.ll:20:11: error: expected instruction opcode
+  %t15 =  i32 %t13, %t14
+          ^
+1 error generated.

@@ -87,6 +87,14 @@ void BinaryInstruction::output() const
     case SUB:
         op = "sub";
         break;
+    case DIV:
+        op = "sdiv";
+        break;
+    case MUL:
+        op = "mul";
+        break;
+    case SREM:
+        op = "srem";
     default:
         break;
     }
@@ -382,4 +390,34 @@ void FuncCallInstruction::output() const
     
     }
     fprintf(yyout,")\n");
+}
+
+XorInstruction::XorInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb):Instruction(XOR, insert_bb)
+{
+    operands.push_back(dst);
+    operands.push_back(src);
+    dst->setDef(this);
+    src->addUse(this);
+}
+
+void XorInstruction::output() const
+{
+    Operand* dst=operands[0];
+    Operand* src=operands[1];
+    fprintf(yyout, "  %s = xor %s %s, true\n",dst->toStr().c_str(),src->getType()->toStr().c_str(), src->toStr().c_str());
+}
+
+ZextInstruction::ZextInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb):Instruction(XOR, insert_bb)
+{
+    operands.push_back(dst);
+    operands.push_back(src);
+    dst->setDef(this);
+    src->addUse(this);
+}
+
+void ZextInstruction::output() const
+{
+    Operand* dst=operands[0];
+    Operand* src=operands[1];
+    fprintf(yyout, "  %s = zext %s %s to i32\n",dst->toStr().c_str(),src->getType()->toStr().c_str(), src->toStr().c_str());
 }

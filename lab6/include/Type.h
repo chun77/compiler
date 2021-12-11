@@ -24,6 +24,7 @@ private:
     int size;
 public:
     IntType(int size) : Type(Type::INT), size(size){};
+    bool isBool() {return size==1;};
     std::string toStr();
 };
 
@@ -40,15 +41,18 @@ private:
     Type *returnType;
     std::vector<Type*> paramsType;
     bool isRet;
+    bool sysy;
 public:
     FunctionType(Type* returnType, std::vector<Type*> paramsType) : 
-    Type(Type::FUNC), returnType(returnType), paramsType(paramsType){isRet=false;};
+    Type(Type::FUNC), returnType(returnType), paramsType(paramsType){isRet=false; sysy=false;};
     Type* getRetType() {return returnType;};
     void setRetType(Type* type) {this->returnType=type;};
     void addParam(Type* type) {this->paramsType.push_back(type);};
     int getParamNum() {return this->paramsType.size();};
     void setRet() {isRet=true;};
     bool haveRet() {return isRet;};
+    void setSysy() {sysy=true;};
+    bool isSysy() {return sysy;};
     std::string toStr();
 };
 

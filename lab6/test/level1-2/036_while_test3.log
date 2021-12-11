@@ -1,0 +1,4 @@
+test/level1-2/036_while_test3.ll:83:1: error: expected instruction opcode
+B124:                                   ; preds = %B118
+^
+1 error generated.

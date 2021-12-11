@@ -1,0 +1,4 @@
+test/level1-1/027_if2.ll:10:12: error: use of undefined value '%B8'
+  br label %B8
+           ^
+1 error generated.

@@ -1,7 +1,10 @@
-//test global var define
-int a = 3;
-int b = 5;
+/* Implicit conversion*/
 
-int main(){
-    return a + b;
+int main()
+{
+  
+    int sum=0;
+    int i=1;
+
+    return 0;
 }

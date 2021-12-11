@@ -1,0 +1,4 @@
+test/level1-1/046_op_priority4.ll:31:10: error: '%t27' defined with type 'i1' but expected 'i32'
+  br i32 %t27, label %B52, label %B58
+         ^
+1 error generated.

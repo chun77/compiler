@@ -1,0 +1,4 @@
+test/level1-1/1068_accumulate.ll:18:12: error: use of undefined value '%B19'
+  br label %B19
+           ^
+1 error generated.

@@ -1,0 +1,4 @@
+test/level1-2/039_while_if_test1.ll:33:10: error: '%t11' defined with type 'i1' but expected 'i32'
+  br i32 %t11, label %B36, label %B41
+         ^
+1 error generated.

@@ -12,11 +12,13 @@ class Unit
 private:
     std::vector<Function *> func_list;
     BasicBlock* globalBB;
+    std::vector<SymbolEntry*> sysy_list;
 public:
     Unit(){globalBB=new BasicBlock;};
     ~Unit() ;
     void insertFunc(Function *);
     void removeFunc(Function *);
+    void insertDecl(SymbolEntry *);
     void output() const;
     BasicBlock* getGlobalBB(){return globalBB;};
     iterator begin() { return func_list.begin(); };

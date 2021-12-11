@@ -1,0 +1,4 @@
+test/level1-2/100_int_literal.ll:80:3: error: multiple definition of local value named 't44'
+  %t44 = xor i1 %t213, true
+  ^
+1 error generated.

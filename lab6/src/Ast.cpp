@@ -116,7 +116,7 @@ void BinaryExpr::genCode()
         true_list = merge(expr1->trueList(), expr2->trueList()); //子表达式1和2为真时跳到哪还不知道,放到当前节点的true_List里,交给父节点去填
         false_list = expr2->falseList();
     }
-    else if(op >= LESS && op <= GREATER)
+    else if(op >= LESS && op <= NOTEQ)
     {
         // Todo     
         expr1->genCode();
@@ -132,7 +132,7 @@ void BinaryExpr::genCode()
             case LESSQ:
                 cmpopcode = CmpInstruction::LE;
                 break;
-            case GREATER:
+            case MORE:
                 cmpopcode = CmpInstruction::G;
                 break;
             case MOREQ:
@@ -183,7 +183,7 @@ void BinaryExpr::genCode()
             opcode = BinaryInstruction::MUL;
             break;
         case MOD:
-            opcode = BinaryInstruction::MOD;
+            opcode = BinaryInstruction::SREM;
             break;
         }
         new BinaryInstruction(opcode, dst, src1, src2, bb);
@@ -194,22 +194,33 @@ void UnaryExpr::genCode()
 {
     BasicBlock *bb = builder->getInsertBB();
     Function *func = bb->getParent();
-    if(op >= ADD && op <= SUB)
+    if(op >= ADD && op <= NOT)
     {
         expr->genCode();
         Operand *src = expr->getOperand();
         int opcode;
-        switch (op)
-        {
-        case ADD:
-            opcode = BinaryInstruction::ADD;
-            break;
-        case SUB:
+        ConstantSymbolEntry* zerose=new ConstantSymbolEntry(TypeSystem::intType,0);
+        Operand* zero=new Operand(zerose);
+        if(op==SUB){
             opcode = BinaryInstruction::SUB;
-            break;
-        case NOT:
-            opcode = BinaryInstruction::DIV;
-            break;
+            if(dynamic_cast<IntType*>(expr->getSymPtr()->getType())->isBool()){   // is a bool expr
+                Operand* temp = new Operand(new TemporarySymbolEntry(
+                    TypeSystem::intType, SymbolTable::getLabel()));
+                new ZextInstruction(temp, src, bb);
+                src=temp;
+            }
+            new BinaryInstruction(opcode, dst, zero, expr->getOperand(), bb);
+        }
+        if(op== NOT){
+            opcode = CmpInstruction::NE;
+            if (expr->getSymPtr()->getType()->isInt()) {   // not a bool expr
+                Operand* temp = new Operand(new TemporarySymbolEntry(
+                    TypeSystem::boolType, SymbolTable::getLabel()));
+                new CmpInstruction(opcode, temp, src, zero, bb);
+                src=temp;
+            }
+            new XorInstruction(dst, src, bb);
+            this->getSymPtr()->setType(TypeSystem::boolType);
         }
         //new BinaryInstruction(opcode, dst, src1, src2, bb);
     }
@@ -228,10 +239,10 @@ void Id::genCode()
     }
     else
     {
-        printf("%s%d\n","id gencode!",this->getSeq());
+        // printf("%s%d\n","id gencode!",this->getSeq());
         BasicBlock *bb = builder->getInsertBB();
         Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(symbolEntry)->getAddr();
-        new LoadInstruction(dst, addr, bb);   // zhejvcuol
+        new LoadInstruction(dst, addr, bb);   // zhejvcuol!!!!!new 1211
     }
     
 }
@@ -433,6 +444,16 @@ void ConstDecl::genCode()
         addr_se->setType(new PointerType(se->getType()));
         addr = new Operand(addr_se);
         se->setAddr(addr);
+        BasicBlock*bb=builder->getUnit()->getGlobalBB();
+        if(expr)
+        {
+            new GlobalDefInstruction(se->getAddr(), expr->getOperand(), bb);
+        }
+        else
+        {
+            new GlobalDeclInstruction(se->getAddr(),bb);
+        }
+    
     }
     else if(se->isLocal())
     {
@@ -447,7 +468,12 @@ void ConstDecl::genCode()
         addr = new Operand(addr_se);
         alloca = new AllocaInstruction(addr, se);                   // allocate space for local id in function stack.
         entry->insertFront(alloca);                                 // allocate instructions should be inserted into the begin of the entry block.
-        se->setAddr(addr);                                          // set the addr operand in symbol entry so that we can use it in subsequent code generation.
+        se->setAddr(addr);       // set the addr operand in symbol entry so that we can use it in subsequent code generation.
+        if (expr)
+        {
+            expr->genCode();
+            new StoreInstruction(se->getAddr(), expr->getOperand(), entry);
+        }
     }
 }
 
@@ -464,7 +490,16 @@ void FuncCallExp::genCode()
         vec.push_back(tempParam->getOperand());
         temp = dynamic_cast<CallList*>(temp)->getNext();
     }
-    new FuncCallInstruction(id->getOperand(),vec,this->getFunc(),bb);
+
+    if(dynamic_cast<FunctionType*>(this->getFunc()->getType())->isSysy()){
+        builder->getUnit()->insertDecl(this->getFunc());
+    }
+    if(dynamic_cast<FunctionType*>(this->getFunc()->getType())->getRetType()->isVoid()){
+        new FuncCallInstruction(NULL,vec,this->getFunc(),bb);
+    }else{
+        new FuncCallInstruction(id->getOperand(),vec,this->getFunc(),bb);
+    }
+    
 }
 
 void CallList::genCode()
@@ -528,8 +563,9 @@ void WhileStmt::genCode()
     cond_bb = new BasicBlock(func);
     stmt_bb = new BasicBlock(func);
     end_bb = new BasicBlock(func);
-
+    if(cond){
     cond->genCode();
+    }
     backPatch(cond->trueList(), stmt_bb);
     backPatch(cond->falseList(), end_bb);
 
@@ -567,8 +603,8 @@ void Istream::genCode()
 void Ast::typeCheck()
 {
     if(root != nullptr){
-        printf("%s","begintypecheck!");
-        printf("%d\n",root->getSeq());
+        // printf("%s","begintypecheck!");
+        // printf("%d\n",root->getSeq());
         root->typeCheck();
     }
 }
@@ -576,7 +612,7 @@ void Ast::typeCheck()
 void FunctionDef::typeCheck()
 {
     // Todo
-    printf("%s\n","FunctionDef typecheck!");
+    // printf("%s\n","FunctionDef typecheck!");
     if(param!=NULL){
         param->typeCheck();
     }
@@ -631,7 +667,7 @@ void FunctionDef::typeCheck()
 void BinaryExpr::typeCheck()
 {
     // Todo
-    printf("%s%d\n","BinaryExpr typecheck",this->getSeq());
+    // printf("%s%d\n","BinaryExpr typecheck",this->getSeq());
     expr1->typeCheck();
     expr2->typeCheck();
     Type *type1 = expr1->getSymPtr()->getType();
@@ -658,7 +694,7 @@ void BinaryExpr::typeCheck()
 
 void UnaryExpr::typeCheck()
 {
-    printf("%s%d\n","UnaryExpr typecheck",this->getSeq());
+    // printf("%s%d\n","UnaryExpr typecheck",this->getSeq());
     expr->typeCheck();
     Type *type=expr->getSymPtr()->getType();
     if(type==TypeSystem::voidType)
@@ -671,19 +707,19 @@ void UnaryExpr::typeCheck()
 
 void VarDeclStmt::typeCheck()
 {
-    printf("%s%d\n","varDeclstmt typecheck",this->getSeq());
+    // printf("%s%d\n","varDeclstmt typecheck",this->getSeq());
     varDecls->typeCheck();
 }
 
 void ConstDeclStmt::typeCheck()
 {
-    printf("%s%d\n","constDeclstmt typecheck",this->getSeq());
+    // printf("%s%d\n","constDeclstmt typecheck",this->getSeq());
     constDecls->typeCheck();
 }
 
 void VarDecls::typeCheck()
 {
-    printf("%s%d\n","varDecls typecheck",this->getSeq());
+    // printf("%s%d\n","varDecls typecheck",this->getSeq());
     if(varDecls!=NULL){
         varDecls->typeCheck();
     }
@@ -694,7 +730,7 @@ void VarDecls::typeCheck()
 
 void ConstDecls::typeCheck()
 {
-    printf("%s%d\n","constDecls typecheck",this->getSeq());
+    // printf("%s%d\n","constDecls typecheck",this->getSeq());
     if(constDecls!=NULL){
         constDecls->typeCheck();
     }
@@ -705,7 +741,7 @@ void ConstDecls::typeCheck()
 
 void VarDecl::typeCheck()
 {
-    printf("%s%d\n","varDecl typecheck",this->getSeq());
+    // printf("%s%d\n","varDecl typecheck",this->getSeq());
     id->typeCheck();
     if(expr!=NULL){
         expr->typeCheck();
@@ -715,7 +751,7 @@ void VarDecl::typeCheck()
 
 void ConstDecl::typeCheck()
 {
-    printf("%s%d\n","constDecl typecheck",this->getSeq());
+    // printf("%s%d\n","constDecl typecheck",this->getSeq());
     id->typeCheck();
     if(expr!=NULL){
         expr->typeCheck();
@@ -727,7 +763,7 @@ void ConstDecl::typeCheck()
 
 void FuncCallExp::typeCheck()
 {
-    printf("%s%d\n","funcCallexp typecheck",this->getSeq());
+    // printf("%s%d\n","funcCallexp typecheck",this->getSeq());
     if(symbolEntry==NULL){
         printf("%s\n","error: function not define!");
     }
@@ -741,7 +777,7 @@ void FuncCallExp::typeCheck()
 
 void CallList::typeCheck()
 {
-    printf("%s%d\n","callList typecheck",this->getSeq());
+    // printf("%s%d\n","callList typecheck",this->getSeq());
     expr->typeCheck();
 
     if(callList!=NULL){
@@ -751,13 +787,13 @@ void CallList::typeCheck()
 
 void CallStmt::typeCheck()
 {
-    printf("%s%d\n","CallStmt typecheck",this->getSeq());
+    // printf("%s%d\n","CallStmt typecheck",this->getSeq());
     callExp->typeCheck();
 }
 
 void NullStmt::typeCheck()
 {
-    printf("%s%d\n","NullStmt typecheck",this->getSeq());
+    // printf("%s%d\n","NullStmt typecheck",this->getSeq());
     if(expr!=NULL){
         expr->typeCheck();
     }
@@ -765,7 +801,7 @@ void NullStmt::typeCheck()
 
 void FuncParams::typeCheck()
 {
-    printf("%s%d\n","funcParams typecheck",this->getSeq());
+    // printf("%s%d\n","funcParams typecheck",this->getSeq());
     if(funcParam!=NULL){
         funcParam->typeCheck();
     }
@@ -776,7 +812,7 @@ void FuncParams::typeCheck()
 
 void FuncParam::typeCheck()
 {
-    printf("%s%d\n","funcParam typecheck",this->getSeq());
+    // printf("%s%d\n","funcParam typecheck",this->getSeq());
     if(expr!=NULL){
         expr->typeCheck();
         Type* type1=id->getSymPtr()->getType();
@@ -792,17 +828,17 @@ void FuncParam::typeCheck()
 
 void BreakStmt::typeCheck()
 {
-    printf("%s%d\n","breakStmt typecheck",this->getSeq());
+    // printf("%s%d\n","breakStmt typecheck",this->getSeq());
 }
 
 void ContinueStmt::typeCheck()
 {
-    printf("%s%d\n","continueStmt typecheck",this->getSeq());
+    // printf("%s%d\n","continueStmt typecheck",this->getSeq());
 }
 
 void WhileStmt::typeCheck()
 {
-    printf("%s%d\n","WhileStmt typecheck",this->getSeq());
+    // printf("%s%d\n","WhileStmt typecheck",this->getSeq());
     cond->typeCheck();
     if(Stmt!=NULL){
         Stmt->typeCheck();
@@ -813,19 +849,19 @@ void WhileStmt::typeCheck()
 
 void Ostream::typeCheck()
 {
-    printf("%s%d\n","Ostream typecheck",this->getSeq());
+    // printf("%s%d\n","Ostream typecheck",this->getSeq());
     exp->typeCheck();
 }
 
 void Istream::typeCheck()
 {
-    printf("%s%d\n","Istream typecheck",this->getSeq());
+    // printf("%s%d\n","Istream typecheck",this->getSeq());
 }
 
 void Constant::typeCheck()
 {
     // Todo
-    printf("%s%d\n","Constant typecheck",this->getSeq());
+    // printf("%s%d\n","Constant typecheck",this->getSeq());
     if(!this->getSymPtr()->getType()->isInt()){
         printf("%s\n","error: constant type error!");
     }
@@ -834,13 +870,13 @@ void Constant::typeCheck()
 void Id::typeCheck()
 {
     // Todo,scope ..
-    printf("%s%d\n","Id typecheck",this->getSeq());
+    // printf("%s%d\n","Id typecheck",this->getSeq());
     this->getSymPtr()->setType(TypeSystem::intType);
 }
 
 void IfStmt::typeCheck()
 {
-    printf("%s%d\n","IfStmt typecheck",this->getSeq());
+    // printf("%s%d\n","IfStmt typecheck",this->getSeq());
     cond->typeCheck();
     cond->getSymPtr()->setType(TypeSystem::boolType);
     // Todo
@@ -849,7 +885,7 @@ void IfStmt::typeCheck()
 void IfElseStmt::typeCheck()
 {
     // Todo
-    printf("%s%d\n","IfElseStmt typecheck",this->getSeq());
+    // printf("%s%d\n","IfElseStmt typecheck",this->getSeq());
     cond->typeCheck();
     cond->getSymPtr()->setType(TypeSystem::boolType);
 }
@@ -857,7 +893,7 @@ void IfElseStmt::typeCheck()
 void CompoundStmt::typeCheck()
 {
     // Todo
-    printf("%s%d\n","CompoundStmt typecheck",this->getSeq());
+    // printf("%s%d\n","CompoundStmt typecheck",this->getSeq());
     if(stmt!=NULL){
         stmt->typeCheck();
     }
@@ -866,7 +902,7 @@ void CompoundStmt::typeCheck()
 void SeqNode::typeCheck()
 {
     // Todo
-    printf("%s%d\n","SeqNode typecheck",this->getSeq());
+    // printf("%s%d\n","SeqNode typecheck",this->getSeq());
     stmt1->typeCheck();
     stmt2->typeCheck();
 }
@@ -874,7 +910,7 @@ void SeqNode::typeCheck()
 void ReturnStmt::typeCheck()
 {
     // Todo
-    printf("%s%d\n","returnStmt typecheck",this->getSeq());
+    // printf("%s%d\n","returnStmt typecheck",this->getSeq());
     Type *type2;
     if(retValue!=NULL){
         retValue->typeCheck();
@@ -887,10 +923,10 @@ void ReturnStmt::typeCheck()
 
 void AssignStmt::typeCheck()
 {
-    printf("%s%d\n","AssignStmt typecheck",this->getSeq());
+    // printf("%s%d\n","AssignStmt typecheck",this->getSeq());
     lval->typeCheck();
     expr->typeCheck();
-    printf("%s%d\n","AssignStmt typecheck",this->getSeq());
+    // printf("%s%d\n","AssignStmt typecheck",this->getSeq());
     Type *type1 = lval->getSymPtr()->getType();
     Type *type2 = expr->getSymPtr()->getType();
     if(lval->getSymPtr()->isConstant()){

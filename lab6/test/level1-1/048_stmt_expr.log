@@ -1,0 +1,4 @@
+test/level1-1/048_stmt_expr.ll:23:12: error: use of undefined value '%B23'
+  br label %B23
+           ^
+1 error generated.

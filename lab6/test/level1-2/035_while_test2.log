@@ -1,0 +1,4 @@
+test/level1-2/035_while_test2.ll:69:1: error: expected instruction opcode
+B69:                                    ; preds = %B70
+^
+1 error generated.

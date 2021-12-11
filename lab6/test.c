@@ -1,5 +1,5 @@
 //test global var define
-int a=1;
+const int a=1;
 int b=6;
 
 int main(){

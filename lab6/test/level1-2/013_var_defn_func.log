@@ -1,0 +1,4 @@
+test/level1-2/013_var_defn_func.ll:10:13: error: global variable reference must have pointer type
+  store i32 @defn, i32* %t6, align 4
+            ^
+1 error generated.

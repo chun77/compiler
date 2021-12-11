@@ -1,0 +1,4 @@
+test/level1-1/050_unary_op2.ll:21:21: error: '%t15' defined with type 'i1' but expected 'i32'
+  %t16 = sub i32 0, %t15
+                    ^
+1 error generated.

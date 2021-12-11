@@ -1,0 +1,4 @@
+test/level1-1/049_unary_op.ll:13:20: error: '%t6' defined with type 'i1' but expected 'i32'
+  %t7 = sub i32 0, %t6
+                   ^
+1 error generated.

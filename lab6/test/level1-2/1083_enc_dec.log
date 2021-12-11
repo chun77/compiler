@@ -1,0 +1,4 @@
+test/level1-2/1083_enc_dec.ll:66:14: error: expected function name
+declare void putint(i32)
+             ^
+1 error generated.

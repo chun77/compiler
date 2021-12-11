@@ -1,0 +1,4 @@
+test/level1-1/047_op_priority5.ll:19:10: error: '%t15' defined with type 'i1' but expected 'i32'
+  br i32 %t15, label %B49, label %B52
+         ^
+1 error generated.

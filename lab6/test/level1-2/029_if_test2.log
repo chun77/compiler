@@ -1,0 +1,4 @@
+test/level1-2/029_if_test2.ll:10:10: error: '%t6' defined with type 'i1' but expected 'i32'
+  br i32 %t6, label %B36, label %B42
+         ^
+1 error generated.

@@ -50,16 +50,21 @@ SymbolTable::SymbolTable()
     prev = nullptr;
     level = 0;
 
-    Type* funcType = new FunctionType(TypeSystem::intType,{});
-    dynamic_cast<FunctionType*>(funcType)->setRetType(TypeSystem::intType);
-    SymbolEntry *se1 = new IdentifierSymbolEntry(funcType, "getint", 0);
+    Type* funcType1 = new FunctionType(TypeSystem::intType,{});
+    dynamic_cast<FunctionType*>(funcType1)->setRetType(TypeSystem::intType);
+    dynamic_cast<FunctionType*>(funcType1)->setSysy();
+    SymbolEntry *se1 = new IdentifierSymbolEntry(funcType1, "getint", 0);
     this->install("getint",se1);
     vector<Type*> vec;
     vec.push_back(TypeSystem::intType);
-    funcType= new FunctionType(TypeSystem::voidType,vec);
-    dynamic_cast<FunctionType*>(funcType)->setRetType(TypeSystem::voidType);
-    SymbolEntry *se2 = new IdentifierSymbolEntry(funcType, "putint", 0);
+    Type* funcType2= new FunctionType(TypeSystem::voidType,vec);
+    dynamic_cast<FunctionType*>(funcType2)->setRetType(TypeSystem::voidType);
+    dynamic_cast<FunctionType*>(funcType2)->setSysy();
+    SymbolEntry *se2 = new IdentifierSymbolEntry(funcType2, "putint", 0);
     this->install("putint",se2);
+    SymbolEntry *se3 = new IdentifierSymbolEntry(funcType2, "putch", 0);
+    this->install("putch",se3);
+
 }
 
 SymbolTable::SymbolTable(SymbolTable *prev)

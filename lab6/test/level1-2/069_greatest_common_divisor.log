@@ -1,0 +1,4 @@
+test/level1-2/069_greatest_common_divisor.ll:15:11: error: expected instruction opcode
+  %t11 =  i32 %t9, %t10
+          ^
+1 error generated.

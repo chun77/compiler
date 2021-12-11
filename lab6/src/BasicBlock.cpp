@@ -37,10 +37,11 @@ void BasicBlock::remove(Instruction *inst)
 
 void BasicBlock::output() const
 {
-    if(parent!=0)
+    // empty block no output
+    if(parent!=0&&!this->empty())
     {
         fprintf(yyout, "B%d:", no);
-        if (!pred.empty())
+            if (!pred.empty())
         {
             fprintf(yyout, "%*c; preds = %%B%d", 32, '\t', pred[0]->getNo());
             for (auto i = pred.begin() + 1; i != pred.end(); i++)

@@ -518,10 +518,12 @@ Ostream
         $$=new FuncCallExp(thisSe,se,$3);
     }
     |
-    PUTCH LPAREN Exp RPAREN
+    PUTCH LPAREN CallList RPAREN
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::voidType, SymbolTable::getLabel());
-        $$=new Ostream(se,$3);
+        se = identifiers->lookup("putch");
+        SymbolEntry* thisSe= new IdentifierSymbolEntry(dynamic_cast<FunctionType*>(se->getType())->getRetType(), "putch", identifiers->getLevel());
+        $$=new FuncCallExp(thisSe,se,$3);
     }
     ;
 CallList
