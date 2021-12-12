@@ -230,26 +230,27 @@ BLOCKCOMMENTEND \*\/
 }
 {HEXADECIMAL} {
     int num = 0; 
-    string s(yytext);
-    int siz=s.size();
-    int a=0;
-    for (int i=0;i<siz;i++) {
-            if(i<2){
+    // string s(yytext);
+    // int siz=s.size();
+    // int a=0;
+    // for (int i=0;i<siz;i++) {
+    //         if(i<2){
 
-            }
-            else{
-                if('A'<=yytext[i]&&yytext[i]<='F'){
-                    a= (yytext[i]-'A')+10;
-                }
-                if('a'<=yytext[i]&&yytext[i]<='f'){
-                    a= (yytext[i]-'a')+10;
-                }
-                else{
-                    a= yytext[i]-'0';
-                }
-                num = num*16 +a ; 
-            }
-    }
+    //         }
+    //         else{
+    //             if('A'<=yytext[i]&&yytext[i]<='F'){
+    //                 a= (yytext[i]-'A')+10;
+    //             }
+    //             if('a'<=yytext[i]&&yytext[i]<='f'){
+    //                 a= (yytext[i]-'a')+10;
+    //             }
+    //             else{
+    //                 a= yytext[i]-'0';
+    //             }
+    //             num = num*16 +a ; 
+    //         }
+    // }
+    sscanf(yytext, "%x", &num);
     yylval.itype=num;
     return INTEGER;
 
