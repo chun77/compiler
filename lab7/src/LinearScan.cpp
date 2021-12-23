@@ -7,7 +7,10 @@ LinearScan::LinearScan(MachineUnit *unit)
 {
     this->unit = unit;
     for (int i = 4; i < 11; i++)
+    {
         regs.push_back(i);
+        interval_reg[i]=nullptr;
+    }
 }
 
 void LinearScan::allocateRegisters()
@@ -113,9 +116,41 @@ void LinearScan::computeLiveIntervals()
 
 bool LinearScan::linearScanRegisterAllocation()
 {
-    // Todo
-
-    return true;
+    // Todo 
+    bool helper=true;
+    for (auto &interval : intervals)
+    {
+        for (vector<Interval*>::iterator it=actives.begin();it!=actives.end();it++)
+        {
+            if((*it)->end < interval->start)
+            // have time ealier than unhandled interval
+            {
+                // erase for reuse register
+                allocReg(nullptr,(*it)->rreg);
+                actives.erase(it);
+            }
+        }
+        if(actives.size()==regs.size())
+        {
+            Interval* last=actives[actives.size()-1];  // the last active interval
+            if(last->end < interval->end)
+            {
+                interval->spill=true;
+            }else{
+                last->spill=true;
+                allocReg(interval,last->rreg);
+                actives.pop_back();   // erase the last active
+                insertActive(interval);
+            }
+            helper=false;
+        }else{
+            int free=getFreeReg();
+            allocReg(interval,free);
+            insertActive(interval);
+        }
+        
+    }
+    return helper;
 }
 
 void LinearScan::modifyCode()
@@ -158,4 +193,43 @@ void LinearScan::spillAtInterval(Interval *interval)
 bool LinearScan::compareStart(Interval *a, Interval *b)
 {
     return a->start < b->start;
+}
+
+void LinearScan::allocReg(Interval* interval, int regno)
+{
+    interval_reg[regno]=interval;
+    if(interval!=NULL)
+    {
+        interval->rreg=regno;
+    }
+}
+
+int LinearScan::getFreeReg()
+{
+    for (int i = 4; i < 11; i++)
+    {
+        if(interval_reg[i]==nullptr)
+        {
+            return i;
+        }
+    }
+    
+}
+
+void LinearScan::insertActive(Interval* interval)
+{
+    if(actives.size()==0)
+    {
+        actives.push_back(interval);
+        return;
+    }
+    for (vector<Interval*>::iterator it=actives.begin();it!=actives.end();it++)
+    {
+        if((*it)->end>interval->end)
+        {
+            actives.insert(it,1,interval);
+            return;
+        }
+    }
+    actives.push_back(interval);
 }

@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 #include <list>
-
+using namespace std;
 class MachineUnit;
 class MachineOperand;
 class MachineFunction;
@@ -31,7 +31,8 @@ private:
     MachineFunction *func;
     std::vector<int> regs;
     std::map<MachineOperand *, std::set<MachineOperand *>> du_chains;
-    std::vector<Interval*> intervals;
+    map<int,Interval*> interval_reg;
+    std::vector<Interval*> intervals, actives;
     static bool compareStart(Interval*a, Interval*b);
     void expireOldIntervals(Interval *interval);
     void spillAtInterval(Interval *interval);
@@ -40,6 +41,9 @@ private:
     bool linearScanRegisterAllocation();
     void modifyCode();
     void genSpillCode();
+    void allocReg(Interval* interval,int regno);
+    int getFreeReg();
+    void insertActive(Interval* interval);
 public:
     LinearScan(MachineUnit *unit);
     void allocateRegisters();
