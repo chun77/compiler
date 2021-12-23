@@ -348,7 +348,14 @@ void MachineFunction::output()
     *  2. fp = sp
     *  3. Save callee saved register
     *  4. Allocate stack space for local variable */
-    
+    fprintf(yyout, "\tpush {");
+    if(isLeaf()){
+        fprintf(yyout, "fp}\n");
+    }else{
+        fprintf(yyout, "fp, lr}\n");
+    }
+    fprintf(yyout, "\tmov fp,sp\n");
+    fprintf(yyout, "\tsub sp, sp, #%d\n", this->stack_size);
     // Traverse all the block in block_list to print assembly code.
     for(auto iter : block_list)
         iter->output();

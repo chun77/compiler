@@ -155,6 +155,7 @@ private:
     std::vector<MachineInstruction*> inst_list;
     std::set<MachineOperand*> live_in;
     std::set<MachineOperand*> live_out;
+    
 public:
     std::vector<MachineInstruction*>& getInsts() {return inst_list;};
     std::vector<MachineInstruction*>::iterator begin() { return inst_list.begin(); };
@@ -178,6 +179,7 @@ private:
     int stack_size;
     std::set<int> saved_regs;
     SymbolEntry* sym_ptr;
+    bool leaf=true;
 public:
     std::vector<MachineBlock*>& getBlocks() {return block_list;};
     std::vector<MachineBlock*>::iterator begin() { return block_list.begin(); };
@@ -192,6 +194,8 @@ public:
     void InsertBlock(MachineBlock* block) { this->block_list.push_back(block); };
     void addSavedRegs(int regno) {saved_regs.insert(regno);};
     void output();
+    void setNotLeaf(){leaf=false;};
+    bool isLeaf(){return leaf;};
 };
 
 class MachineUnit
