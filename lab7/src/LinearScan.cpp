@@ -177,6 +177,7 @@ void LinearScan::genSpillCode()
          * 1. insert ldr inst before the use of vreg
          * 2. insert str inst after the def of vreg
          */ 
+        spillAtInterval(interval);
     }
 }
 
@@ -187,7 +188,43 @@ void LinearScan::expireOldIntervals(Interval *interval)
 
 void LinearScan::spillAtInterval(Interval *interval)
 {
-    // Todo
+    // Todo:insert ldr and str
+    auto cur_func=func;
+    MachineInstruction* cur_inst=nullptr;
+    MachineBlock* cur_block;
+    int offset = cur_func->AllocSpace(4);
+    for(auto use : interval->uses)
+    {
+        // add ldr
+        cur_block=use->getParent()->getParent();
+        auto parent = use->getParent();
+        MachineOperand *src1= new MachineOperand(MachineOperand::REG,11);
+        MachineOperand *src2= new MachineOperand(MachineOperand::IMM, -offset);
+        cur_inst=new LoadMInstruction(cur_block,new MachineOperand(*use),src1,src2);
+        for(auto it=cur_block->getInsts().begin();it!=cur_block->getInsts().end();it++)
+        {
+            if(*it==parent){
+                cur_block->getInsts().insert(it,1,cur_inst);
+                break;
+            }
+        }
+    }
+    for(auto def : interval->defs)
+    {
+        // add str
+        cur_block=def->getParent()->getParent();
+        auto parent=def->getParent();
+        MachineOperand *src1=new MachineOperand(MachineOperand::REG,11);
+        MachineOperand *src2= new MachineOperand(MachineOperand::IMM, -offset);
+        cur_inst=new StoreMInstruction(cur_block,new MachineOperand(*def),src1,src2);
+        for(auto it=cur_block->getInsts().begin();it!=cur_block->getInsts().end();it++)
+        {
+            if(*it==parent){
+                cur_block->getInsts().insert(it,1,cur_inst);
+                break;
+            }
+        }
+    }
 }
 
 bool LinearScan::compareStart(Interval *a, Interval *b)
