@@ -79,7 +79,7 @@ public:
 class BinaryMInstruction : public MachineInstruction
 {
 public:
-    enum opType { ADD, SUB, MUL, DIV, AND, OR };
+    enum opType {ADD, DIV, MUL,SREM, SUB, AND, OR};
     BinaryMInstruction(MachineBlock* p, int op, 
                     MachineOperand* dst, MachineOperand* src1, MachineOperand* src2, 
                     int cond = MachineInstruction::NONE);
@@ -100,7 +100,7 @@ class StoreMInstruction : public MachineInstruction
 {
 public:
     StoreMInstruction(MachineBlock* p,
-                    MachineOperand* src1, MachineOperand* src2, MachineOperand* src3 = nullptr, 
+                    MachineOperand* dst, MachineOperand* src1, MachineOperand* src2 = nullptr, 
                     int cond = MachineInstruction::NONE);
     void output();
 };

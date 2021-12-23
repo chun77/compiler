@@ -139,6 +139,37 @@ void BinaryMInstruction::output()
         fprintf(yyout, "\n");
         break;
     case BinaryMInstruction::SUB:
+        fprintf(yyout, "\tsub ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::MUL:
+        fprintf(yyout, "\tmul ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::DIV:
+        fprintf(yyout, "\tdiv ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::SREM:
+        // no mod instruction
         break;
     default:
         break;
@@ -193,15 +224,52 @@ void LoadMInstruction::output()
 }
 
 StoreMInstruction::StoreMInstruction(MachineBlock* p,
-    MachineOperand* src1, MachineOperand* src2, MachineOperand* src3, 
+    MachineOperand* dst, MachineOperand* src1, MachineOperand* src2, 
     int cond)
 {
     // TODO
+    this->parent = p;
+    this->type = MachineInstruction::LOAD;
+    this->op = -1;
+    this->cond = cond;
+    this->def_list.push_back(dst);
+    this->use_list.push_back(src1);
+    if (src2)
+        this->use_list.push_back(src2);
+    dst->setParent(this);
+    src1->setParent(this);
+    if (src2)
+        src2->setParent(this);
 }
 
 void StoreMInstruction::output()
 {
     // TODO
+    fprintf(yyout, "\tstr ");
+    this->def_list[0]->output();
+    fprintf(yyout, ", ");
+
+    // Load immediate num, eg: str r1, =8
+    if(this->use_list[0]->isImm())
+    {
+        fprintf(yyout, "=%d\n", this->use_list[0]->getVal());
+        return;
+    }
+
+    // Load address
+    if(this->use_list[0]->isReg()||this->use_list[0]->isVReg())
+        fprintf(yyout, "[");
+
+    this->use_list[0]->output();
+    if( this->use_list.size() > 1 )
+    {
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+    }
+
+    if(this->use_list[0]->isReg()||this->use_list[0]->isVReg())
+        fprintf(yyout, "]");
+    fprintf(yyout, "\n");
 }
 
 MovMInstruction::MovMInstruction(MachineBlock* p, int op, 

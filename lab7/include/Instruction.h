@@ -104,7 +104,7 @@ public:
     ~BinaryInstruction();
     void output() const;
     void genMachineCode(AsmBuilder*);
-    enum {ADD, DIV, MUL,SREM, SUB, AND, OR, LESS, MORE, LESSQ,MOREQ,EQ, NOTEQ};
+    enum {ADD, DIV, MUL,SREM, SUB, AND, OR};
 };
 
 class UnaryInstruction : public Instruction
