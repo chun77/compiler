@@ -277,11 +277,36 @@ MovMInstruction::MovMInstruction(MachineBlock* p, int op,
     int cond)
 {
     // TODO
+    this->parent=p;
+    this->op=op;
+    this->cond=cond;
+    this->def_list.push_back(dst);
+    this->use_list.push_back(src);
+    dst->setParent(this);
+    src->setParent(this);
 }
 
 void MovMInstruction::output() 
 {
     // TODO
+    switch (op)
+    {
+    case MOV:
+        fprintf(yyout,"\tmov ");
+        break;
+    case MVN:
+        fprintf(yyout,"\tmvn ");
+        break;
+    case MOVS:
+        fprintf(yyout,"\tmovs ");
+        break;
+    default:
+        break;
+    }
+    this->def_list[0]->output();
+    fprintf(yyout, ", ");
+    this->use_list[0]->output();
+    fprintf(yyout, "\n");
 }
 
 BranchMInstruction::BranchMInstruction(MachineBlock* p, int op, 
@@ -289,11 +314,32 @@ BranchMInstruction::BranchMInstruction(MachineBlock* p, int op,
     int cond)
 {
     // TODO
+    this->parent=p;
+    this->op=op;
+    this->cond=cond;
+    this->def_list.push_back(dst);
+    dst->setParent(this);
 }
 
 void BranchMInstruction::output()
 {
     // TODO
+    switch (op)
+    {
+    case BX:
+        fprintf(yyout,"\tbx ");
+        break;
+    case B:
+        fprintf(yyout,"\tb ");
+        break;
+    case BL:
+        fprintf(yyout,"\tbl ");
+        break;
+    default:
+        break;
+    }
+    this->def_list[0]->output();
+    fprintf(yyout, "\n");
 }
 
 CmpMInstruction::CmpMInstruction(MachineBlock* p, 
@@ -315,11 +361,29 @@ StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op,
     int cond)
 {
     // TODO
+    this->parent=p;
+    this->op=op;
+    this->cond=cond;
+    this->use_list.push_back(src);
+    src->setParent(this);
 }
 
 void StackMInstrcuton::output()
 {
     // TODO
+    switch (op)
+    {
+    case POP:
+        fprintf(yyout, "\tpop {");
+        break;
+    case PUSH:
+        fprintf(yyout, "\tpush ");
+        break;
+    default:
+        break;
+    }
+    this->use_list[0]->output();
+    fprintf(yyout, "}\n");
 }
 
 MachineFunction::MachineFunction(MachineUnit* p, SymbolEntry* sym_ptr) 
@@ -358,7 +422,10 @@ void MachineFunction::output()
     fprintf(yyout, "\tsub sp, sp, #%d\n", this->stack_size);
     // Traverse all the block in block_list to print assembly code.
     for(auto iter : block_list)
-        iter->output();
+    {
+        if((*iter).empty()==false)
+            iter->output();
+    }
 }
 
 void MachineUnit::PrintGlobalDecl()

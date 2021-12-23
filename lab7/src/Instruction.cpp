@@ -681,6 +681,24 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
     * 1. Generate mov instruction to save return value in r0
     * 2. Restore callee saved registers and sp, fp
     * 3. Generate bx instruction */
+    auto cur_block = builder->getBlock();
+    auto cur_fun = builder->getFunction();
+    auto reg=new MachineOperand(MachineOperand::REG,0);
+    auto src=genMachineOperand(operands[0]);
+    cur_block->InsertInst(new MovMInstruction(cur_block,MovMInstruction::MOV,reg,src));
+    cur_block->InsertInst(new BinaryMInstruction(cur_block,BinaryMInstruction::SUB,new MachineOperand(MachineOperand::REG,13),new MachineOperand(MachineOperand::REG,11),new MachineOperand(MachineOperand::IMM,0)));
+    // 13:sp 11:fp sub sp, fp, offset
+    // 14:lr link register
+    // pop fp
+    cur_block->InsertInst(new StackMInstrcuton(cur_block,StackMInstrcuton::POP,new MachineOperand(MachineOperand::REG,11)));
+    if(cur_fun->isLeaf())
+    {
+        // bx lr
+        cur_block->InsertInst(new BranchMInstruction(cur_block,BranchMInstruction::BX,new MachineOperand(MachineOperand::REG,14)));
+    }else{
+        // pop pc
+        cur_block->InsertInst(new StackMInstrcuton(cur_block,StackMInstrcuton::POP, new MachineOperand(MachineOperand::REG,15)));
+    }
 }
 
 void XorInstruction::genMachineCode(AsmBuilder* builder)

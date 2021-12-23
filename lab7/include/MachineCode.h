@@ -109,7 +109,7 @@ public:
 class MovMInstruction : public MachineInstruction
 {
 public:
-    enum opType { MOV, MVN };
+    enum opType { MOV, MVN ,MOVS};
     MovMInstruction(MachineBlock* p, int op, 
                 MachineOperand* dst, MachineOperand* src,
                 int cond = MachineInstruction::NONE);
@@ -168,6 +168,7 @@ public:
     std::set<MachineOperand*>& getLiveOut() {return live_out;};
     std::vector<MachineBlock*>& getPreds() {return pred;};
     std::vector<MachineBlock*>& getSuccs() {return succ;};
+    bool empty() {return inst_list.size()==0;};
     void output();
 };
 
