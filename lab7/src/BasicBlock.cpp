@@ -20,7 +20,11 @@ void BasicBlock::insertBack(Instruction *inst)
 void BasicBlock::insertBefore(Instruction *dst, Instruction *src)
 {
     // Todo
-
+    Instruction *prev=src->getPrev();
+    prev->setNext(dst);
+    dst->setPrev(prev);
+    dst->setNext(src);
+    src->setPrev(dst);
     dst->setParent(this);
 }
 
@@ -33,15 +37,19 @@ void BasicBlock::remove(Instruction *inst)
 
 void BasicBlock::output() const
 {
-    fprintf(yyout, "B%d:", no);
-
-    if (!pred.empty())
+    // empty block no output
+    if(parent!=0&&!this->empty())
     {
-        fprintf(yyout, "%*c; preds = %%B%d", 32, '\t', pred[0]->getNo());
-        for (auto i = pred.begin() + 1; i != pred.end(); i++)
-            fprintf(yyout, ", %%B%d", (*i)->getNo());
+        fprintf(yyout, "B%d:", no);
+            if (!pred.empty())
+        {
+            fprintf(yyout, "%*c; preds = %%B%d", 32, '\t', pred[0]->getNo());
+            for (auto i = pred.begin() + 1; i != pred.end(); i++)
+                fprintf(yyout, ", %%B%d", (*i)->getNo());
+        }
+        fprintf(yyout, "\n");
     }
-    fprintf(yyout, "\n");
+    
     for (auto i = head->getNext(); i != head; i = i->getNext())
         i->output();
 }
@@ -85,6 +93,14 @@ BasicBlock::BasicBlock(Function *f)
     this->no = SymbolTable::getLabel();
     f->insertBlock(this);
     parent = f;
+    head = new DummyInstruction();
+    head->setParent(this);
+}
+
+BasicBlock::BasicBlock()
+{
+    this->no = SymbolTable::getLabel();
+    parent = 0;
     head = new DummyInstruction();
     head->setParent(this);
 }

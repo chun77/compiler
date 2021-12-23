@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 #include <sstream>
-
+using namespace std;
 class BasicBlock;
 
 class Instruction
@@ -37,7 +37,7 @@ protected:
     Instruction *next;
     BasicBlock *parent;
     std::vector<Operand*> operands;
-    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA};
+    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,GLOBALDEF,GLOBALDECL,UNARY, FUNCCALL,ZEXT,XOR};
 };
 
 // meaningless instruction, used as the head node of the instruction list.
@@ -78,6 +78,25 @@ public:
     void genMachineCode(AsmBuilder*);
 };
 
+class GlobalDefInstruction : public Instruction
+{
+public:
+    GlobalDefInstruction(Operand *dst_addr, Operand *src,bool isConst,BasicBlock *insert_bb = nullptr);
+    ~GlobalDefInstruction();
+    void output() const;
+    void genMachineCode(AsmBuilder*);
+    bool isConst;
+};
+
+class GlobalDeclInstruction : public Instruction
+{
+public:
+    GlobalDeclInstruction(Operand *dst_addr, BasicBlock *insert_bb = nullptr);
+    ~GlobalDeclInstruction();
+    void genMachineCode(AsmBuilder*);
+    void output() const;
+};
+
 class BinaryInstruction : public Instruction
 {
 public:
@@ -85,7 +104,17 @@ public:
     ~BinaryInstruction();
     void output() const;
     void genMachineCode(AsmBuilder*);
-    enum {SUB, ADD, AND, OR};
+    enum {ADD, DIV, MUL,SREM, SUB, AND, OR, LESS, MORE, LESSQ,MOREQ,EQ, NOTEQ};
+};
+
+class UnaryInstruction : public Instruction
+{
+public:
+    UnaryInstruction(unsigned opcode, Operand *dst, Operand *src, BasicBlock *insert_bb = nullptr);
+    ~UnaryInstruction();
+    void output() const;
+    void genMachineCode(AsmBuilder*);
+    enum {ADD, SUB,NOT};
 };
 
 class CmpInstruction : public Instruction
@@ -135,6 +164,30 @@ public:
     ~RetInstruction();
     void output() const;
     void genMachineCode(AsmBuilder*);
+};
+
+class FuncCallInstruction : public Instruction
+{
+public:
+    FuncCallInstruction(Operand* dst,vector<Operand *> params, SymbolEntry *se, BasicBlock *insert_bb = nullptr);
+    void output() const;
+    void genMachineCode(AsmBuilder*);
+private:
+    SymbolEntry *se;
+};
+
+class XorInstruction : public Instruction {
+public:
+    XorInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb = nullptr);
+    void genMachineCode(AsmBuilder*);
+    void output() const;
+};
+
+class ZextInstruction: public Instruction {
+public:
+    ZextInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb = nullptr);
+    void genMachineCode(AsmBuilder*);
+    void output() const;
 };
 
 #endif

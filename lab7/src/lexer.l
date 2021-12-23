@@ -19,10 +19,19 @@
 %}
 
 DECIMIAL ([1-9][0-9]*|0)
+OCTADECIMAL ([0][1-7][0-7]*)
+HEXADECIMAL (0[xX][1-9a-fA-F][0-9a-fA-F]*)
 ID [[:alpha:]_][[:alpha:][:digit:]_]*
 EOL (\r\n|\n|\r)
 WHITE [\t ]
-%x BLOCKCOMMENT
+
+LINECOMMENT \/\/([^\n])*
+
+BLOCKCOMMENTBEGIN \/\*
+BLOCKCOMMENT1 \n
+BLOCKCOMMENT2 .
+BLOCKCOMMENTEND \*\/
+%x COMMENT
 
 %%
 
@@ -55,28 +64,102 @@ WHITE [\t ]
     if(dump_tokens)
         DEBUG_FOR_LAB4("RETURN\treturn");
     return RETURN;
-}
-
-"&&" {
+};
+"while" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4("AND\t=");
-    return AND;
+        DEBUG_FOR_LAB4("WHILE\twhile");
+    return WHILE;
 }
-
+"const" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("CONST\tconst");
+    return CONST;
+}
+"break" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("BREAK\tbreak");
+    return BREAK;
+}
+"continue" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("CONTINUE\tcontinue");
+    return CONTINUE;
+}
 "=" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("ASSIGN\t=");
     return ASSIGN;
 }
+"==" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("EQ\t==");
+    return EQ;
+}
+"!=" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("NOTEQ\t!=");
+    return NOTEQ;
+}
+"<=" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("LESSQ\t<=");
+    return LESSQ;
+}
+">=" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("MOREQ\t>=");
+    return MOREQ;
+}
+
 "<" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("LESS\t<");
     return LESS;
 }
+">" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("MORE\t<");
+    return MORE;
+}
 "+" {
     if(dump_tokens)
         DEBUG_FOR_LAB4("ADD\t+");
     return ADD;
+}
+"-" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("SUB\t-");
+    return SUB;
+}
+"*" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("MUL\t*");
+    return MUL;
+}
+"/" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("DIV\t/");
+    return DIV;
+}
+"%" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("DIV\t%");
+    return MOD;
+}
+"&&" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("AND\t<");
+    return AND;
+}
+"||" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("OR\t<");
+    return OR;
+}
+"!" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("NOT\t<");
+    return NOT;
 }
 ";" {
     if(dump_tokens)
@@ -103,14 +186,75 @@ WHITE [\t ]
         DEBUG_FOR_LAB4("RBRACE\t}");
     return RBRACE;
 }
+"," {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("COMMA\t,");
+    return COMMA;
+}
+"getint" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("GETINT\t,");
+    return GETINT;
+}
 
+"putint" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("PUTINT\t,");
+    return PUTINT;
+}
+"putch" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4("PUTCH\t");
+    return PUTCH;
+}
 {DECIMIAL} {
     if(dump_tokens)
         DEBUG_FOR_LAB4(yytext);
     yylval.itype = atoi(yytext);
     return INTEGER;
 }
+{OCTADECIMAL} {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4(yytext);
+    int num = 0; 
+    string s(yytext);
+    int siz=s.size();
+    int a=0;
+    for (int i=0;i<siz;i++) {
+            a= yytext[i]-'0';
+            num = num*8 +a ;
+        }
+    yylval.itype=num;
+    return INTEGER;
+    
+}
+{HEXADECIMAL} {
+    int num = 0; 
+    // string s(yytext);
+    // int siz=s.size();
+    // int a=0;
+    // for (int i=0;i<siz;i++) {
+    //         if(i<2){
 
+    //         }
+    //         else{
+    //             if('A'<=yytext[i]&&yytext[i]<='F'){
+    //                 a= (yytext[i]-'A')+10;
+    //             }
+    //             if('a'<=yytext[i]&&yytext[i]<='f'){
+    //                 a= (yytext[i]-'a')+10;
+    //             }
+    //             else{
+    //                 a= yytext[i]-'0';
+    //             }
+    //             num = num*16 +a ; 
+    //         }
+    // }
+    sscanf(yytext, "%x", &num);
+    yylval.itype=num;
+    return INTEGER;
+
+}
 {ID} {
     if(dump_tokens)
         DEBUG_FOR_LAB4(yytext);
@@ -120,6 +264,15 @@ WHITE [\t ]
     yylval.strtype = lexeme;
     return ID;
 }
+
 {EOL} yylineno++;
 {WHITE}
+
+{LINECOMMENT} 
+{BLOCKCOMMENTBEGIN} {BEGIN COMMENT;}
+<COMMENT>{BLOCKCOMMENT1} {
+    yylineno++;
+}       
+<COMMENT>{BLOCKCOMMENT2} {}
+<COMMENT>{BLOCKCOMMENTEND} {BEGIN INITIAL;}
 %%

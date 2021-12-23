@@ -16,6 +16,13 @@ void Unit::output() const
         func->output();
 }
 
+void Unit::insertDecl(SymbolEntry* se){
+    auto it = find(sysy_list.begin(),sysy_list.end(),se);
+    if(it==sysy_list.end()){
+        sysy_list.push_back(se);
+    }
+}
+
 void Unit::genMachineCode(MachineUnit* munit) 
 {
     AsmBuilder* builder = new AsmBuilder();

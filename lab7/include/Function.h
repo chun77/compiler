@@ -9,7 +9,7 @@
 #include "BasicBlock.h"
 #include "SymbolTable.h"
 #include "AsmBuilder.h"
-
+using namespace std;
 class Unit;
 
 class Function
@@ -22,6 +22,7 @@ private:
     SymbolEntry *sym_ptr;
     BasicBlock *entry;
     Unit *parent;
+    vector<Operand *> *params;
 
 public:
     Function(Unit *, SymbolEntry *);
@@ -37,6 +38,7 @@ public:
     reverse_iterator rend() { return block_list.rend(); };
     SymbolEntry *getSymPtr() { return sym_ptr; };
     void genMachineCode(AsmBuilder*);
+    void setParams(vector<Operand *>* p) {this->params = p;};
 };
 
 #endif

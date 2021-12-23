@@ -87,10 +87,65 @@ void BinaryInstruction::output() const
     case SUB:
         op = "sub";
         break;
+    case DIV:
+        op = "sdiv";
+        break;
+    case MUL:
+        op = "mul";
+        break;
+    case SREM:
+        op = "srem";
+        break;
+    case AND:
+        op= "and";
+        break;
+    case OR:
+        op= "or";
+        break;
     default:
         break;
     }
     fprintf(yyout, "  %s = %s %s %s, %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str(), s3.c_str());
+}
+
+UnaryInstruction::UnaryInstruction(unsigned opcode, Operand *dst, Operand *src, BasicBlock *insert_bb):Instruction(UNARY, insert_bb)
+{
+    this->opcode = opcode;
+    operands.push_back(dst);
+    operands.push_back(src);
+    dst->setDef(this);
+    src->addUse(this);
+}
+
+UnaryInstruction::~UnaryInstruction()
+{
+    operands[0]->setDef(nullptr);
+    if(operands[0]->usersNum() == 0)
+        delete operands[0];
+    operands[1]->removeUse(this);
+}
+
+void UnaryInstruction::output() const
+{
+    std::string s1, s2,op, type;
+    s1 = operands[0]->toStr();
+    s2 = operands[1]->toStr();
+    type = operands[0]->getType()->toStr();
+    switch (opcode)
+    {
+    case ADD:
+        op = "add";
+        break;
+    case SUB:
+        op = "sub";
+        break;
+    case NOT:
+        op = "not";
+        break;
+    default:
+        break;
+    }
+    fprintf(yyout, "  %s = %s %s %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
 }
 
 CmpInstruction::CmpInstruction(unsigned opcode, Operand *dst, Operand *src1, Operand *src2, BasicBlock *insert_bb): Instruction(CMP, insert_bb){
@@ -312,6 +367,116 @@ void StoreInstruction::output() const
     fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
 }
 
+GlobalDefInstruction::GlobalDefInstruction(Operand *dst_addr, Operand *src,bool isConst, BasicBlock *insert_bb) : Instruction(GLOBALDEF, insert_bb)
+{
+    operands.push_back(dst_addr);
+    operands.push_back(src);
+    dst_addr->addUse(this);
+    src->addUse(this);
+    this->isConst=isConst;
+}
+
+GlobalDefInstruction::~GlobalDefInstruction()
+{
+    operands[0]->removeUse(this);
+    operands[1]->removeUse(this);
+}
+
+void GlobalDefInstruction::output() const
+{
+    std::string dst = operands[0]->toStr();
+    std::string dst_type = operands[0]->getType()->toStr();
+    std::string src = operands[1]->toStr();
+    std::string src_type = operands[1]->getType()->toStr();
+    if(!isConst)
+    {
+        fprintf(yyout, "%s = global %s %s, align 4\n", dst.c_str(),src_type.c_str(), src.c_str());
+    }
+    else
+    {
+        fprintf(yyout, "%s = constant %s %s, align 4\n", dst.c_str(),src_type.c_str(), src.c_str());
+    }
+}
+
+GlobalDeclInstruction::GlobalDeclInstruction(Operand *dst_addr, BasicBlock *insert_bb) : Instruction(GLOBALDECL, insert_bb)
+{
+    operands.push_back(dst_addr);
+    dst_addr->addUse(this);
+}
+
+GlobalDeclInstruction::~GlobalDeclInstruction()
+{
+    operands[0]->removeUse(this);
+}
+
+void GlobalDeclInstruction::output() const
+{
+    std::string dst = operands[0]->toStr();
+    std::string dst_type = operands[0]->getType()->toStr();
+    fprintf(yyout, "%s = common global %s %s, align 4\n", dst.c_str(),"i32", "0");
+}
+
+FuncCallInstruction::FuncCallInstruction(Operand* dst,vector<Operand *> params, SymbolEntry *se, BasicBlock *insert_bb): Instruction(FUNCCALL, insert_bb),se(se)
+{
+    if(dst!=NULL){
+        dst->setDef(this);
+    }
+    operands.push_back(dst);
+    for(auto it:params)
+    {
+        operands.push_back(it);
+        it->addUse(this);
+    }
+}
+
+void FuncCallInstruction::output() const
+{
+    if (operands[0])
+        fprintf(yyout, "  %s = ", operands[0]->toStr().c_str());
+    FunctionType* type = (FunctionType*)(se->getType());
+    fprintf(yyout, "  call %s %s(", type->getRetType()->toStr().c_str(),se->toStr().c_str());
+
+    for(int i=1;i<operands.size();i++)
+    {
+        if(i>1){
+            fprintf(yyout,", ");
+        }
+        fprintf(yyout, "%s %s",operands[i]->getType()->toStr().c_str(),operands[i]->toStr().c_str());
+    
+    }
+    fprintf(yyout,")\n");
+}
+
+XorInstruction::XorInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb):Instruction(XOR, insert_bb)
+{
+    operands.push_back(dst);
+    operands.push_back(src);
+    dst->setDef(this);
+    src->addUse(this);
+}
+
+void XorInstruction::output() const
+{
+    Operand* dst=operands[0];
+    Operand* src=operands[1];
+    fprintf(yyout, "  %s = xor %s %s, true\n",dst->toStr().c_str(),src->getType()->toStr().c_str(), src->toStr().c_str());
+}
+
+ZextInstruction::ZextInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb):Instruction(ZEXT, insert_bb)
+{
+    operands.push_back(dst);
+    operands.push_back(src);
+    dst->setDef(this);
+    src->addUse(this);
+}
+
+void ZextInstruction::output() const
+{
+    Operand* dst=operands[0];
+    Operand* src=operands[1];
+    fprintf(yyout, "  %s = zext %s %s to i32\n",dst->toStr().c_str(),src->getType()->toStr().c_str(), src->toStr().c_str());
+}
+
 MachineOperand* Instruction::genMachineOperand(Operand* ope)
 {
     auto se = ope->getEntry();
@@ -465,4 +630,34 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
     * 1. Generate mov instruction to save return value in r0
     * 2. Restore callee saved registers and sp, fp
     * 3. Generate bx instruction */
+}
+
+void XorInstruction::genMachineCode(AsmBuilder* builder)
+{
+
+}
+
+void ZextInstruction::genMachineCode(AsmBuilder* builder)
+{
+
+}
+
+void FuncCallInstruction::genMachineCode(AsmBuilder* builder)
+{
+
+}
+
+void GlobalDeclInstruction::genMachineCode(AsmBuilder* builder)
+{
+
+}
+
+void GlobalDefInstruction::genMachineCode(AsmBuilder* builder)
+{
+
+}
+
+void UnaryInstruction::genMachineCode(AsmBuilder* builder)
+{
+
 }

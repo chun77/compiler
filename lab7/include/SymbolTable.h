@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 
+
 class Type;
 class Operand;
 
@@ -16,6 +17,7 @@ protected:
     Type *type;
 
 public:
+    SymbolEntry *next;
     SymbolEntry(Type *type, int kind);
     virtual ~SymbolEntry() {};
     bool isConstant() const {return kind == CONSTANT;};
@@ -23,6 +25,7 @@ public:
     bool isVariable() const {return kind == VARIABLE;};
     Type* getType() {return type;};
     void setType(Type *type) {this->type = type;};
+    void setConstant() {this->kind = CONSTANT;};
     virtual std::string toStr() = 0;
     // You can add any function you need here.
 };
@@ -77,6 +80,7 @@ private:
     enum {GLOBAL, PARAM, LOCAL};
     std::string name;
     int scope;
+    int value;
     Operand *addr;  // The address of the identifier.
     // You can add any field you need here.
 
@@ -90,6 +94,9 @@ public:
     int getScope() const {return scope;};
     void setAddr(Operand *addr) {this->addr = addr;};
     Operand* getAddr() {return addr;};
+    std::string getName() {return name;};
+    int getValue(){return value;};
+    void setValue(int){this->value=value;};
     // You can add any function you need here.
 };
 
@@ -147,5 +154,5 @@ public:
 
 extern SymbolTable *identifiers;
 extern SymbolTable *globals;
-
+extern SymbolEntry *current;
 #endif

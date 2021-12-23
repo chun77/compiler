@@ -1,6 +1,8 @@
 #include "SymbolTable.h"
+#include "Type.h"
 #include <iostream>
 #include <sstream>
+using namespace std;
 
 SymbolEntry::SymbolEntry(Type *type, int kind) 
 {
@@ -47,6 +49,22 @@ SymbolTable::SymbolTable()
 {
     prev = nullptr;
     level = 0;
+
+    Type* funcType1 = new FunctionType(TypeSystem::intType,{});
+    dynamic_cast<FunctionType*>(funcType1)->setRetType(TypeSystem::intType);
+    dynamic_cast<FunctionType*>(funcType1)->setSysy();
+    SymbolEntry *se1 = new IdentifierSymbolEntry(funcType1, "getint", 0);
+    this->install("getint",se1);
+    vector<Type*> vec;
+    vec.push_back(TypeSystem::intType);
+    Type* funcType2= new FunctionType(TypeSystem::voidType,vec);
+    dynamic_cast<FunctionType*>(funcType2)->setRetType(TypeSystem::voidType);
+    dynamic_cast<FunctionType*>(funcType2)->setSysy();
+    SymbolEntry *se2 = new IdentifierSymbolEntry(funcType2, "putint", 0);
+    this->install("putint",se2);
+    SymbolEntry *se3 = new IdentifierSymbolEntry(funcType2, "putch", 0);
+    this->install("putch",se3);
+
 }
 
 SymbolTable::SymbolTable(SymbolTable *prev)
@@ -71,7 +89,41 @@ SymbolTable::SymbolTable(SymbolTable *prev)
 SymbolEntry* SymbolTable::lookup(std::string name)
 {
     // Todo
-    return nullptr;
+    // std::map<std::string, SymbolEntry*>::iterator it;
+    // std::map<std::string, SymbolEntry*> prevSymbolTable;
+    // SymbolTable*p=this;
+    // it = symbolTable.find(name);
+    // if(it!=symbolTable.end())
+    // {
+    //     return symbolTable[name];
+    // }
+    // else{
+    //     while(p->prev!=nullptr)
+    //     {
+    //         prevSymbolTable=p->prev->symbolTable;
+    //         it=prevSymbolTable.find(name);
+    //         if(it!=prevSymbolTable.end())
+    //         {
+    //             return prevSymbolTable[name];
+    //         }
+    //         p=p->prev;
+    //     }
+    // }
+    // return nullptr;
+    map<string,SymbolEntry*>::iterator it;
+    SymbolTable*p=this;
+    it=p->symbolTable.find(name);
+    while(it==p->symbolTable.end()&&p->level!=0)
+    {
+        p=p->prev;
+        it=p->symbolTable.find(name);
+    }
+    if(it!=p->symbolTable.end())
+    {
+        return it->second;
+    }
+    else
+        return nullptr;
 }
 
 // install the entry into current symbol table.
@@ -84,3 +136,4 @@ int SymbolTable::counter = 0;
 static SymbolTable t;
 SymbolTable *identifiers = &t;
 SymbolTable *globals = &t;
+SymbolEntry *current = NULL;
