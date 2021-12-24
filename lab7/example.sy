@@ -1,6 +1,5 @@
-//test global var define
-const int a = 10;
-
+//test mulc
+const int a = 5;
 int main(){
-    return a;
+    return a * 5;
 }

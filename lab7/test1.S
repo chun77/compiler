@@ -11,7 +11,14 @@
 	.eabi_attribute 18, 4
 	.file	"test1.c"
 	.text
-	.global	__aeabi_idivmod
+	.global	a
+	.section	.rodata
+	.align	2
+	.type	a, %object
+	.size	a, 4
+a:
+	.word	5
+	.text
 	.align	1
 	.global	main
 	.arch armv7-a
@@ -21,27 +28,20 @@
 	.fpu vfpv3-d16
 	.type	main, %function
 main:
-	@ args = 0, pretend = 0, frame = 16
+	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 1, uses_anonymous_args = 0
-	push	{r7, lr}
-	sub	sp, sp, #16
+	@ link register save eliminated.
+	push	{r7}
 	add	r7, sp, #0
-	movs	r3, #10
-	str	r3, [r7, #4]
-	movs	r3, #3
-	str	r3, [r7, #8]
-	ldr	r3, [r7, #4]
-	ldr	r1, [r7, #8]
+	movs	r2, #5
+	mov	r3, r2
+	lsls	r3, r3, #2
+	add	r3, r3, r2
 	mov	r0, r3
-	bl	__aeabi_idivmod(PLT)
-	mov	r3, r1
-	str	r3, [r7, #12]
-	ldr	r3, [r7, #12]
-	mov	r0, r3
-	adds	r7, r7, #16
 	mov	sp, r7
 	@ sp needed
-	pop	{r7, pc}
+	ldr	r7, [sp], #4
+	bx	lr
 	.size	main, .-main
 	.ident	"GCC: (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0"
 	.section	.note.GNU-stack,"",%progbits
