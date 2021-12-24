@@ -85,7 +85,9 @@ void BasicBlock::genMachineCode(AsmBuilder* builder)
     {
         i->genMachineCode(builder);
     }
-    cur_func->InsertBlock(cur_block);
+    if(cur_func!=NULL){
+        cur_func->InsertBlock(cur_block);
+    }
 }
 
 BasicBlock::BasicBlock(Function *f)

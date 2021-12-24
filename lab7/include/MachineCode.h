@@ -45,6 +45,7 @@ public:
     int getReg() {return this->reg_no; };
     void setReg(int regno) {this->type = REG; this->reg_no = regno;};
     std::string getLabel() {return this->label; };
+    std::string getName() {return this->label.substr(1,label.size());};
     void setParent(MachineInstruction* p) { this->parent = p; };
     MachineInstruction* getParent() { return this->parent;};
     void PrintReg();
@@ -146,6 +147,14 @@ public:
     void output();
 };
 
+class GlobalMInstruction : public MachineInstruction
+{
+public:
+    GlobalMInstruction(MachineBlock* p,MachineOperand* dst, MachineOperand* src, int cond= MachineInstruction::NONE);
+    void output();
+    void outputAddr();
+};
+
 class MachineBlock
 {
 private:
@@ -203,13 +212,16 @@ class MachineUnit
 {
 private:
     std::vector<MachineFunction*> func_list;
+    std::vector<MachineInstruction*> global_inst;
     void PrintGlobalDecl();
+    void PrintBridge();
 public:
     std::vector<MachineFunction*>& getFuncs() {return func_list;};
     std::vector<MachineFunction*>::iterator begin() { return func_list.begin(); };
     std::vector<MachineFunction*>::iterator end() { return func_list.end(); };
     void InsertFunc(MachineFunction* func) { func_list.push_back(func);};
     void output();
+    void InsertGlobal(MachineInstruction* inst) { global_inst.push_back(inst);};
 };
 
 #endif

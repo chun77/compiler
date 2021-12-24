@@ -128,6 +128,9 @@ bool LinearScan::linearScanRegisterAllocation()
                 // erase for reuse register
                 allocReg(nullptr,(*it)->rreg);
                 actives.erase(it);
+                if(actives.empty()){
+                    break;
+                }
             }
         }
         if(actives.size()==regs.size())

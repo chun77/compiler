@@ -84,9 +84,9 @@ void MachineOperand::output()
         break;
     case LABEL:
         if (this->label.substr(0, 2) == ".L")
-            fprintf(yyout, "%s", this->label.c_str());
+            fprintf(yyout, "%s", this->getName().c_str());
         else
-            fprintf(yyout, "addr_%s", this->label.c_str());
+            fprintf(yyout, "addr_%s", this->getName().c_str());
     default:
         break;
     }
@@ -428,10 +428,47 @@ void MachineFunction::output()
     }
 }
 
+GlobalMInstruction::GlobalMInstruction(MachineBlock* p,MachineOperand* dst, MachineOperand* src, int cond)
+{
+    this->parent=p;
+    def_list.push_back(dst);
+    use_list.push_back(src);
+    dst->setParent(this);
+    src->setParent(this);
+}
+
+void GlobalMInstruction::outputAddr()
+{
+    fprintf(yyout, "addr_%s:\n", def_list[0]->getName().c_str());
+    fprintf(yyout, "\t.word %s\n",def_list[0]->getName().c_str());
+}
+
+void GlobalMInstruction::output()
+{
+    fprintf(yyout,"\t.global %s\n",def_list[0]->getName().c_str());
+    fprintf(yyout,"\t.align 4\n");
+    fprintf(yyout,"\t.size %s, 4\n",def_list[0]->getName().c_str());
+    fprintf(yyout,"%s:\n",def_list[0]->getName().c_str());
+    fprintf(yyout,"\t.word %d\n",use_list[0]->getVal());
+}
+
 void MachineUnit::PrintGlobalDecl()
 {
     // TODO:
     // You need to print global variable/const declarition code;
+    for( auto it= global_inst.begin();it!=global_inst.end();it++)
+    {
+        (*it)->output();
+    }
+    // fprintf(yyout,"output head");
+}
+
+void MachineUnit::PrintBridge()
+{
+    for( auto it= global_inst.begin();it!=global_inst.end();it++)
+    {
+        dynamic_cast<GlobalMInstruction* >(*it)->outputAddr();
+    }
 }
 
 void MachineUnit::output()
@@ -447,4 +484,5 @@ void MachineUnit::output()
     PrintGlobalDecl();
     for(auto iter : func_list)
         iter->output();
+    PrintBridge();
 }

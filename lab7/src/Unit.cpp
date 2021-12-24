@@ -1,5 +1,7 @@
 #include "Unit.h"
-
+#include "SymbolTable.h"
+#include "Type.h"
+extern FILE* yyout;
 void Unit::insertFunc(Function *f)
 {
     func_list.push_back(f);
@@ -12,8 +14,19 @@ void Unit::removeFunc(Function *func)
 
 void Unit::output() const
 {
+    globalBB->output();
     for (auto &func : func_list)
         func->output();
+    for (auto it=sysy_list.begin();it!=sysy_list.end();it++){
+        FunctionType* type=dynamic_cast<FunctionType*>((*it)->getType());
+        string str=type->toStr();
+        string name=dynamic_cast<IdentifierSymbolEntry*>(*it)->getName();
+        fprintf(yyout,"declare %s @%s(",type->getRetType()->toStr().c_str(),name.c_str());
+        if(type->getParamNum()!=0){
+            fprintf(yyout,"i32");
+        }
+        fprintf(yyout,")\n");
+    }
 }
 
 void Unit::insertDecl(SymbolEntry* se){
@@ -27,6 +40,7 @@ void Unit::genMachineCode(MachineUnit* munit)
 {
     AsmBuilder* builder = new AsmBuilder();
     builder->setUnit(munit);
+    globalBB->genMachineCode(builder);
     for (auto &func : func_list)
         func->genMachineCode(builder);
 }
