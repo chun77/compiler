@@ -456,6 +456,10 @@ void MachineUnit::PrintGlobalDecl()
 {
     // TODO:
     // You need to print global variable/const declarition code;
+    if(!global_inst.empty())
+    {
+        fprintf(yyout, "\t.data\n");
+    }
     for( auto it= global_inst.begin();it!=global_inst.end();it++)
     {
         (*it)->output();
@@ -482,6 +486,7 @@ void MachineUnit::output()
     fprintf(yyout, "\t.arch_extension crc\n");
     fprintf(yyout, "\t.arm\n");
     PrintGlobalDecl();
+    fprintf(yyout, "\t.text\n");
     for(auto iter : func_list)
         iter->output();
     PrintBridge();
