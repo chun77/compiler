@@ -176,6 +176,50 @@ void BinaryMInstruction::output()
     }
 }
 
+UxtbMInstruction::UxtbMInstruction(MachineBlock* p,MachineOperand* dst, MachineOperand* src, int cond)
+{
+    this->parent=p;
+    this->type=MachineInstruction::UXTB;
+    this->op=-1;
+    this->cond=cond;
+    this->def_list.push_back(dst);
+    this->use_list.push_back(src);
+    dst->setParent(this);
+    src->setParent(this);
+}
+
+void UxtbMInstruction::output()
+{
+    fprintf(yyout, "\tuxtb ");
+    this->def_list[0]->output();
+    fprintf(yyout, ", ");
+    this->use_list[0]->output();
+    fprintf(yyout, "\n");
+
+}
+
+EorMInstruction::EorMInstruction(MachineBlock* p,MachineOperand* dst, MachineOperand* src, int cond)
+{
+    this->parent=p;
+    this->type=MachineInstruction::EOR;
+    this->op=-1;
+    this->cond=cond;
+    this->def_list.push_back(dst);
+    this->use_list.push_back(src);
+    dst->setParent(this);
+    src->setParent(this);
+}
+
+void EorMInstruction::output()
+{
+    fprintf(yyout, "\teor ");
+    this->def_list[0]->output();
+    fprintf(yyout, ", ");
+    this->use_list[0]->output();
+    fprintf(yyout, "\n");
+
+}
+
 LoadMInstruction::LoadMInstruction(MachineBlock* p,
     MachineOperand* dst, MachineOperand* src1, MachineOperand* src2,
     int cond)

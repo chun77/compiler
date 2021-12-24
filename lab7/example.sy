@@ -1,5 +1,7 @@
-//test mulc
-const int a = 5;
+//test add
 int main(){
-    return a * 5;
+    int a, b;
+    a = 10;
+    b = -1;
+    return a + b;
 }

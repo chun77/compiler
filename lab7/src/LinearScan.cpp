@@ -120,17 +120,25 @@ bool LinearScan::linearScanRegisterAllocation()
     bool helper=true;
     for (auto &interval : intervals)
     {
-        for (vector<Interval*>::iterator it=actives.begin();it!=actives.end();it++)
+        for (auto it: actives)
         {
-            if((*it)->end < interval->start)
+            if(it->end < interval->start)
             // have time ealier than unhandled interval
             {
                 // erase for reuse register
-                allocReg(nullptr,(*it)->rreg);
-                actives.erase(it);
-                if(actives.empty()){
-                    break;
+                for (auto i = actives.begin(); i != actives.end(); i++)
+                {
+                    if (*i == it)
+                    {
+                        actives.erase(i);
+                        break;
+                    }
                 }
+                allocReg(nullptr,it->rreg);
+                // }
+                /*f(actives.empty()){
+                    break;
+                }*/
             }
         }
         if(actives.size()==regs.size())
@@ -144,6 +152,7 @@ bool LinearScan::linearScanRegisterAllocation()
                 allocReg(interval,last->rreg);
                 actives.pop_back();   // erase the last active
                 insertActive(interval);
+                break;
             }
             helper=false;
         }else{
@@ -253,7 +262,7 @@ int LinearScan::getFreeReg()
             return i;
         }
     }
-    
+    return 0;
 }
 
 void LinearScan::insertActive(Interval* interval)

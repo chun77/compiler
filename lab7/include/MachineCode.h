@@ -67,7 +67,7 @@ protected:
     void addUse(MachineOperand* ope) { use_list.push_back(ope); };
     // Print execution code after printing opcode
     void PrintCond();
-    enum instType { BINARY, LOAD, STORE, MOV, BRANCH, CMP, STACK };
+    enum instType { BINARY, LOAD, STORE, MOV, BRANCH, CMP, STACK,GLOBAL,UXTB,EOR };
 public:
     enum condType { EQ, NE, LT, LE , GT, GE, NONE };
     virtual void output() = 0;
@@ -153,6 +153,20 @@ public:
     GlobalMInstruction(MachineBlock* p,MachineOperand* dst, MachineOperand* src, int cond= MachineInstruction::NONE);
     void output();
     void outputAddr();
+};
+
+class UxtbMInstruction : public MachineInstruction
+{
+public:
+    UxtbMInstruction(MachineBlock* p,MachineOperand* dst, MachineOperand* src, int cond= MachineInstruction::NONE);
+    void output();
+};
+
+class EorMInstruction : public MachineInstruction
+{
+public:
+    EorMInstruction(MachineBlock* p,MachineOperand* dst, MachineOperand* src, int cond= MachineInstruction::NONE);
+    void output();
 };
 
 class MachineBlock
