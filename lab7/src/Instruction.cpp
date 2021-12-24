@@ -583,7 +583,7 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
     {
         auto dst = genMachineOperand(operands[0]);
         auto internal_reg1 = genMachineVReg();
-        auto internal_reg2 = new MachineOperand(*dst);
+        auto internal_reg2 = new MachineOperand(*internal_reg1);
         auto src = genMachineOperand(operands[1]);
         if(src->isImm()){
             auto internal_reg=genMachineVReg();
@@ -592,10 +592,10 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
             src=new MachineOperand(*internal_reg);
         }
         // example: str r0, addr_a
-        cur_inst = new StoreMInstruction(cur_block, internal_reg1, src);
+        cur_inst = new StoreMInstruction(cur_block, internal_reg1, dst);
         cur_block->InsertInst(cur_inst);
         // example: str r1, [r0]
-        cur_inst = new StoreMInstruction(cur_block, dst, internal_reg2);
+        cur_inst = new StoreMInstruction(cur_block, src, internal_reg2);
         cur_block->InsertInst(cur_inst);
     }
     // store local operand
@@ -612,7 +612,7 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
             src=new MachineOperand(*internal_reg);
         }
         auto dst1 = genMachineReg(11);
-        auto dst2 = genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[1]->getEntry())->getOffset());
+        auto dst2 = genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[0]->getEntry())->getOffset());
         cur_inst = new StoreMInstruction(cur_block, src, dst1, dst2);
         cur_block->InsertInst(cur_inst);
     }
