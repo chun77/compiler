@@ -674,9 +674,18 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
     case MUL:
         cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::MUL, dst, src1, src2);
         break;
-    case SREM:
-        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::SREM, dst, src1, src2);
-        break;
+    case SREM:{
+        auto internal_res1 = genMachineVReg();  // div res1
+        MachineInstruction* mid_inst1 = nullptr;
+        MachineInstruction* mid_inst2 = nullptr;
+        mid_inst1 = new BinaryMInstruction(cur_block, BinaryMInstruction::DIV, internal_res1, src1, src2);
+        cur_block->InsertInst(mid_inst1);
+        auto internal_res2 = genMachineVReg();  // mul res2
+        mid_inst2 = new BinaryMInstruction(cur_block, BinaryMInstruction::MUL, internal_res2, internal_res1,src2);
+        cur_block->InsertInst(mid_inst2);
+        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::SUB, dst, src1, internal_res2);
+        cur_block->InsertInst(cur_inst);
+        break;}
     default:
         break;
     }
