@@ -120,21 +120,22 @@ bool LinearScan::linearScanRegisterAllocation()
     bool helper=true;
     for (auto &interval : intervals)
     {
-        for (auto it: actives)
+        for (auto &active : actives)
         {
-            if(it->end < interval->start)
+            if(active->end < interval->start)
             // have time ealier than unhandled interval
             {
                 // erase for reuse register
+                int regno=active->rreg;
                 for (auto i = actives.begin(); i != actives.end(); i++)
                 {
-                    if (*i == it)
+                    if (*i == active)
                     {
                         actives.erase(i);
                         break;
                     }
                 }
-                allocReg(nullptr,it->rreg);
+                allocReg(nullptr,regno);
                 // }
                 /*f(actives.empty()){
                     break;
@@ -152,7 +153,7 @@ bool LinearScan::linearScanRegisterAllocation()
                 allocReg(interval,last->rreg);
                 actives.pop_back();   // erase the last active
                 insertActive(interval);
-                break;
+                //break;
             }
             helper=false;
         }else{

@@ -654,7 +654,7 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
         cur_block->InsertInst(cur_inst);
         src1 = new MachineOperand(*internal_reg);
     }
-    if(src1->isImm()&&src2->isImm()){
+    if(src2->isImm()){
         auto internal_reg = genMachineVReg();
         cur_inst = new LoadMInstruction(cur_block, internal_reg, src2);
         cur_block->InsertInst(cur_inst);
