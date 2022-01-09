@@ -152,6 +152,8 @@ public:
     void setFalseBranch(BasicBlock*);
     BasicBlock* getFalseBranch();
     void genMachineCode(AsmBuilder*);
+    void setOp(int op){opcode=op;};
+    enum {E, NE, L, GE, G, LE};
 protected:
     BasicBlock* true_branch;
     BasicBlock* false_branch;

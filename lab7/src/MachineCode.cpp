@@ -374,14 +374,33 @@ void BranchMInstruction::output()
         fprintf(yyout,"\tbx ");
         break;
     case B:
-        fprintf(yyout,"\tb ");
+        fprintf(yyout,"\tb .");
         break;
     case BL:
         fprintf(yyout,"\tbl ");
         break;
+    case BEQ:
+        fprintf(yyout,"\tbeq .");
+        break;
+    case BNE:
+        fprintf(yyout,"\tbne .");
+        break;
+    case BGE:
+        fprintf(yyout,"\tbge .");
+        break;
+    case BGT:
+        fprintf(yyout,"\tbgt .");
+        break;
+    case BLT:
+        fprintf(yyout,"\tblt .");
+        break;
+    case BLE:
+        fprintf(yyout,"\tble .");
+        break;
     default:
         break;
     }
+    //fprintf(yyout, ".");
     this->def_list[0]->output();
     fprintf(yyout, "\n");
 }
@@ -391,6 +410,13 @@ CmpMInstruction::CmpMInstruction(MachineBlock* p,
     int cond)
 {
     // TODO
+    this->parent=p;
+    this->op=op;
+    this->cond=cond;
+    this->use_list.push_back(src1);
+    this->use_list.push_back(src2);
+    src1->setParent(this);
+    src2->setParent(this);
 }
 
 void CmpMInstruction::output()
@@ -398,6 +424,11 @@ void CmpMInstruction::output()
     // TODO
     // Jsut for reg alloca test
     // delete it after test
+    fprintf(yyout, "\tcmp ");
+    use_list[0]->output();
+    fprintf(yyout, ", ");
+    use_list[1]->output();
+    fprintf(yyout, "\n");
 }
 
 StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op, 
