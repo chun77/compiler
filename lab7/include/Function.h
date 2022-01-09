@@ -23,7 +23,7 @@ private:
     BasicBlock *entry;
     Unit *parent;
     vector<Operand *> *params;
-
+    bool leaf=true;
 public:
     Function(Unit *, SymbolEntry *);
     ~Function();
@@ -39,6 +39,8 @@ public:
     SymbolEntry *getSymPtr() { return sym_ptr; };
     void genMachineCode(AsmBuilder*);
     void setParams(vector<Operand *>* p) {this->params = p;};
+    void setNotLeaf(){leaf=false;};
+    bool isLeaf(){return leaf;};
 };
 
 #endif

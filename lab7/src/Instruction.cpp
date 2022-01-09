@@ -575,70 +575,145 @@ void StoreInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO
     auto cur_block = builder->getBlock();
-    MachineInstruction* cur_inst = nullptr;
-    auto src = genMachineOperand(operands[1]);
-    auto dst = genMachineOperand(operands[0]);
-    // Store global operand
-    if (operands[1]->getEntry()->isConstant()) {
-        auto dst1 = genMachineVReg();
-        cur_inst = new LoadMInstruction(cur_block, dst1, src);
-        cur_block->InsertInst(cur_inst);
-        // src = dst1;
-        src = new MachineOperand(*dst1);
-    }
-    if(operands[0]->getEntry()->isVariable()
-    && dynamic_cast<IdentifierSymbolEntry*>(operands[0]->getEntry())->isGlobal())
+    MachineInstruction *cur_inst = nullptr;
+    if (operands[0]->getEntry()->isVariable() && dynamic_cast<IdentifierSymbolEntry *>(operands[0]->getEntry())->isGlobal())
     {
-
+        auto dst = genMachineOperand(operands[0]);
+        auto src = genMachineOperand(operands[1]);
+        if (src->isImm())
+        {
+            auto internal_reg = genMachineVReg();
+            cur_inst = new LoadMInstruction(cur_block, internal_reg, src);
+            cur_block->InsertInst(cur_inst);
+            //src = new MachineOperand(*internal_reg);
+            src=internal_reg;
+        }
         auto internal_reg1 = genMachineVReg();
         auto internal_reg2 = new MachineOperand(*internal_reg1);
-
-        // if(src->isImm()){
-        //     auto internal_reg=genMachineVReg();
-        //     cur_inst=new LoadMInstruction(cur_block,internal_reg,src);
-        //     cur_block->InsertInst(cur_inst);
-        //     src=new MachineOperand(*internal_reg);
-        // }
-        // example: str r0, addr_a
+        // example: load r0, addr_a
         cur_inst = new LoadMInstruction(cur_block, internal_reg1, dst);
         cur_block->InsertInst(cur_inst);
-        // example: str r1, [r0]
+        // example: store r1, [r0]
         cur_inst = new StoreMInstruction(cur_block, src, internal_reg2);
         cur_block->InsertInst(cur_inst);
     }
-    // store local operand
-    else if(operands[0]->getEntry()->isTemporary()
-    && operands[0]->getDef()
-    && operands[0]->getDef()->isAlloc())
+    // else if (paramno != -1)
+    // {
+        
+        
+    //     auto dst1 = genMachineReg(11);
+    //     auto dst2 = genMachineImm(dynamic_cast<TemporarySymbolEntry *>(operands[0]->getEntry())->getOffset());
+    //     if(paramno>3)
+    //     {
+    //         auto reg1=genMachineVReg();
+    //         cur_inst=new LoadMInstruction(cur_block,reg1,genMachineReg(11),genMachineImm((paramno-4)*4));
+    //         cur_block->InsertInst(cur_inst);
+    //         cur_inst=new StoreMInstruction(cur_block,new MachineOperand(*reg1),dst1,dst2);
+    //         cur_block->InsertInst(cur_inst);
+    //     }
+    //     else
+    //     {
+    //         auto src = genMachineReg(paramno);
+    //         cur_inst = new StoreMInstruction(cur_block, src, dst1, dst2);
+    //         cur_block->InsertInst(cur_inst);
+    //     }
+    // }
+    else if (operands[0]->getEntry()->isTemporary() && operands[0]->getDef() && operands[0]->getDef()->isAlloc())
     {
-        // example: str r1, [r0, #4]
-        // auto src = genMachineOperand(operands[1]);
-        if(src->isImm()){
-            auto internal_reg=genMachineVReg();
-            cur_inst=new LoadMInstruction(cur_block,internal_reg,src);
+        // example: store r1, [r0, #4]
+        auto src = genMachineOperand(operands[1]);
+        if (src->isImm())
+        {
+            auto internal_reg = genMachineVReg();
+            cur_inst = new LoadMInstruction(cur_block, internal_reg, src);
             cur_block->InsertInst(cur_inst);
-            src=new MachineOperand(*internal_reg);
+            src = new MachineOperand(*internal_reg);
         }
         auto dst1 = genMachineReg(11);
-        auto dst2 = genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[0]->getEntry())->getOffset());
+        auto dst2 = genMachineImm(dynamic_cast<TemporarySymbolEntry *>(operands[0]->getEntry())->getOffset());
         cur_inst = new StoreMInstruction(cur_block, src, dst1, dst2);
         cur_block->InsertInst(cur_inst);
     }
     // store operand from temporary variable
     else
     {
-        // example: str sr1, [r0]
-        // auto dst = genMachineOperand(operands[0]);
-        // auto src = genMachineOperand(operands[1]);
-        if(src->isImm()){
-            auto internal_reg=genMachineVReg();
-            cur_inst=new LoadMInstruction(cur_block,internal_reg,src);
+        // example: store r1, [r0]
+        auto src = genMachineOperand(operands[1]);
+        if (src->isImm())
+        {
+            auto internal_reg = genMachineVReg();
+            cur_inst = new LoadMInstruction(cur_block, internal_reg, src);
             cur_block->InsertInst(cur_inst);
-            src=new MachineOperand(*internal_reg);
+            src = new MachineOperand(*internal_reg);
         }
+        auto dst = genMachineOperand(operands[0]);
         cur_inst = new StoreMInstruction(cur_block, src, dst);
-        // cur_block->InsertInst(cur_inst);
     }
+    // auto cur_block = builder->getBlock();
+    // MachineInstruction* cur_inst = nullptr;
+    // auto src = genMachineOperand(operands[1]);
+    // auto dst = genMachineOperand(operands[0]);
+    // // Store global operand
+    // if (operands[1]->getEntry()->isConstant()) {
+    //     auto dst1 = genMachineVReg();
+    //     cur_inst = new LoadMInstruction(cur_block, dst1, src);
+    //     cur_block->InsertInst(cur_inst);
+    //     // src = dst1;
+    //     src = new MachineOperand(*dst1);
+    // }
+    // if(operands[0]->getEntry()->isVariable()
+    // && dynamic_cast<IdentifierSymbolEntry*>(operands[0]->getEntry())->isGlobal())
+    // {
+
+    //     auto internal_reg1 = genMachineVReg();
+    //     auto internal_reg2 = new MachineOperand(*internal_reg1);
+
+    //     // if(src->isImm()){
+    //     //     auto internal_reg=genMachineVReg();
+    //     //     cur_inst=new LoadMInstruction(cur_block,internal_reg,src);
+    //     //     cur_block->InsertInst(cur_inst);
+    //     //     src=new MachineOperand(*internal_reg);
+    //     // }
+    //     // example: str r0, addr_a
+    //     cur_inst = new LoadMInstruction(cur_block, internal_reg1, dst);
+    //     cur_block->InsertInst(cur_inst);
+    //     // example: str r1, [r0]
+    //     cur_inst = new StoreMInstruction(cur_block, src, internal_reg2);
+    //     cur_block->InsertInst(cur_inst);
+    // }
+    // // store local operand
+    // else if(operands[0]->getEntry()->isTemporary()
+    // && operands[0]->getDef()
+    // && operands[0]->getDef()->isAlloc())
+    // {
+    //     // example: str r1, [r0, #4]
+    //     // auto src = genMachineOperand(operands[1]);
+    //     if(src->isImm()){
+    //         auto internal_reg=genMachineVReg();
+    //         cur_inst=new LoadMInstruction(cur_block,internal_reg,src);
+    //         cur_block->InsertInst(cur_inst);
+    //         src=new MachineOperand(*internal_reg);
+    //     }
+    //     auto dst1 = genMachineReg(11);
+    //     auto dst2 = genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[0]->getEntry())->getOffset());
+    //     cur_inst = new StoreMInstruction(cur_block, src, dst1, dst2);
+    //     cur_block->InsertInst(cur_inst);
+    // }
+    // // store operand from temporary variable
+    // else
+    // {
+    //     // example: str sr1, [r0]
+    //     // auto dst = genMachineOperand(operands[0]);
+    //     // auto src = genMachineOperand(operands[1]);
+    //     if(src->isImm()){
+    //         auto internal_reg=genMachineVReg();
+    //         cur_inst=new LoadMInstruction(cur_block,internal_reg,src);
+    //         cur_block->InsertInst(cur_inst);
+    //         src=new MachineOperand(*internal_reg);
+    //     }
+    //     cur_inst = new StoreMInstruction(cur_block, src, dst);
+    //     // cur_block->InsertInst(cur_inst);
+    // }
 }
 
 void BinaryInstruction::genMachineCode(AsmBuilder* builder)
@@ -774,9 +849,9 @@ void UncondBrInstruction::genMachineCode(AsmBuilder* builder)
     // TODO
     auto cur_block = builder->getBlock();
     MachineInstruction* cur_inst = nullptr;
-    string false_label=".L";        
-    false_label+=to_string(getBranch()->getNo());
-    auto dst=new MachineOperand(false_label);
+    string label=".L";        
+    label+=to_string(getBranch()->getNo());
+    auto dst=new MachineOperand(label);
     cur_inst = new BranchMInstruction(cur_block, BranchMInstruction::B,dst);
     cur_block->InsertInst(cur_inst);
 }
