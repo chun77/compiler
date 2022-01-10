@@ -898,22 +898,29 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
 void XorInstruction::genMachineCode(AsmBuilder* builder)
 {
     auto cur_block = builder->getBlock();
-    auto cur_fun = builder->getFunction();
-    MachineInstruction *cur_inst=0;
+    // MachineInstruction *cur_inst=0;
+    // auto dst = genMachineOperand(operands[0]);
+    // auto src = genMachineOperand(operands[1]);
+    // cur_inst = new EorMInstruction(cur_block,dst,src);
+    // cur_block->InsertInst(cur_inst);
     auto dst = genMachineOperand(operands[0]);
-    auto src = genMachineOperand(operands[1]);
-    cur_inst = new EorMInstruction(cur_block,dst,src);
+    auto trueOperand = genMachineImm(1);
+    auto falseOperand = genMachineImm(0);
+    auto cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,
+                                        trueOperand, MachineInstruction::EQ);
+    cur_block->InsertInst(cur_inst);
+    cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,
+                                    falseOperand, MachineInstruction::NE);
     cur_block->InsertInst(cur_inst);
 }
 
 void ZextInstruction::genMachineCode(AsmBuilder* builder)
 {
     auto cur_block = builder->getBlock();
-    auto cur_fun = builder->getFunction();
     MachineInstruction *cur_inst=0;
     auto dst = genMachineOperand(operands[0]);
     auto src = genMachineOperand(operands[1]);
-    cur_inst = new UxtbMInstruction(cur_block,dst,src);
+    cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst, src);
     cur_block->InsertInst(cur_inst);
 }
 

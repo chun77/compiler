@@ -254,10 +254,11 @@ void UnaryExpr::genCode()
         if(dynamic_cast<IntType*>(expr->getSymPtr()->getType())->isBool()){   // is a bool expr
             Operand* temp = new Operand(new TemporarySymbolEntry(
                 TypeSystem::intType, SymbolTable::getLabel()));
-            new ZextInstruction(temp, src, bb);
+            new ZextInstruction(temp, expr->getOperand(), bb);
             src=temp;
         }
         new BinaryInstruction(opcode, dst, zero, src, bb);
+        // src=dst;
     }
     if(op== NOT){
         opcode = CmpInstruction::NE;
@@ -394,7 +395,7 @@ void AssignStmt::genCode()
         expr->genCode();
     }
     Operand *addr = dynamic_cast<IdentifierSymbolEntry*>(lval->getSymPtr())->getAddr();
-    Operand *src;
+    Operand *src=expr->getOperand();
     if(dynamic_cast<FuncCallExp*>(expr))
     {
         src=dynamic_cast<FuncCallExp*>(expr)->getOperand();
