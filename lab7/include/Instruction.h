@@ -174,8 +174,10 @@ public:
     FuncCallInstruction(Operand* dst,vector<Operand *> params, SymbolEntry *se, BasicBlock *insert_bb = nullptr);
     void output() const;
     void genMachineCode(AsmBuilder*);
+    ~FuncCallInstruction();
 private:
     SymbolEntry *se;
+    Operand*dst;
 };
 
 class XorInstruction : public Instruction {

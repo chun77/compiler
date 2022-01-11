@@ -416,7 +416,7 @@ void GlobalDeclInstruction::output() const
     fprintf(yyout, "%s = common global %s %s, align 4\n", dst.c_str(),"i32", "0");
 }
 
-FuncCallInstruction::FuncCallInstruction(Operand* dst,vector<Operand *> params, SymbolEntry *se, BasicBlock *insert_bb): Instruction(FUNCCALL, insert_bb),se(se)
+FuncCallInstruction::FuncCallInstruction(Operand* dst,vector<Operand *> params, SymbolEntry *se, BasicBlock *insert_bb): Instruction(FUNCCALL, insert_bb),dst(dst),se(se)
 {
     if(dst!=NULL){
         dst->setDef(this);
@@ -445,6 +445,14 @@ void FuncCallInstruction::output() const
     
     }
     fprintf(yyout,")\n");
+}
+
+FuncCallInstruction::~FuncCallInstruction() {
+    operands[0]->setDef(nullptr);
+    if (operands[0]->usersNum() == 0)
+        delete operands[0];
+    for (long unsigned int i = 1; i < operands.size(); i++)
+        operands[i]->removeUse(this);
 }
 
 XorInstruction::XorInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb):Instruction(XOR, insert_bb)
@@ -877,22 +885,48 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
     * 3. Generate bx instruction */
     auto cur_block = builder->getBlock();
     auto cur_fun = builder->getFunction();
-    auto reg=new MachineOperand(MachineOperand::REG,0);
-    auto src=genMachineOperand(operands[0]);
-    cur_block->InsertInst(new MovMInstruction(cur_block,MovMInstruction::MOV,reg,src));
-    cur_block->InsertInst(new BinaryMInstruction(cur_block,BinaryMInstruction::SUB,new MachineOperand(MachineOperand::REG,13),new MachineOperand(MachineOperand::REG,11),new MachineOperand(MachineOperand::IMM,0)));
+
+    //如果有返回值的话，生成MOV 指令，将返回值保存在 R0 寄存器中
+    if(!operands.empty())
+    {
+        auto reg=new MachineOperand(MachineOperand::REG,0);
+        auto src=genMachineOperand(operands[0]);
+        cur_block->InsertInst(new MovMInstruction(cur_block,MovMInstruction::MOV,reg,src));
+    }
+
+    //生成add指令恢复sp
+    auto cur_func = builder->getFunction();
+    auto sp = new MachineOperand(MachineOperand::REG, 13);
+    //获得current frame offset
+    auto offset =new MachineOperand(MachineOperand::IMM, cur_func->AllocSpace(0));
+    auto cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::ADD,sp, sp, offset);
+    cur_block->InsertInst(cur_inst);
+
+    // 如果该函数有 Callee saved 寄存器，我们还需要生成 POP 指令恢复这些寄存器
+    //在MachineCode.cpp的MachineBlock::output()里实现
+
+    //生成跳转指令回到Caller
+    auto lr = new MachineOperand(MachineOperand::REG, 14);
+    auto cur_inst2 =new BranchMInstruction(cur_block, BranchMInstruction::BX, lr);
+    cur_block->InsertInst(cur_inst2);
+    
+    // cur_block->InsertInst(new BinaryMInstruction(cur_block,BinaryMInstruction::SUB,new MachineOperand(MachineOperand::REG,13),new MachineOperand(MachineOperand::REG,11),new MachineOperand(MachineOperand::IMM,0)));
+    
+    
+    
+    
     // 13:sp 11:fp sub sp, fp, offset
     // 14:lr link register
     // pop fp
-    cur_block->InsertInst(new StackMInstrcuton(cur_block,StackMInstrcuton::POP,new MachineOperand(MachineOperand::REG,11)));
-    if(cur_fun->isLeaf())
-    {
-        // bx lr
-        cur_block->InsertInst(new BranchMInstruction(cur_block,BranchMInstruction::BX,new MachineOperand(MachineOperand::REG,14)));
-    }else{
-        // pop pc
-        cur_block->InsertInst(new StackMInstrcuton(cur_block,StackMInstrcuton::POP, new MachineOperand(MachineOperand::REG,15)));
-    }
+    // cur_block->InsertInst(new StackMInstrcuton(cur_block,StackMInstrcuton::POP,new MachineOperand(MachineOperand::REG,11)));
+    // if(cur_fun->isLeaf())
+    // {
+    //     // bx lr
+    //     cur_block->InsertInst(new BranchMInstruction(cur_block,BranchMInstruction::BX,new MachineOperand(MachineOperand::REG,14)));
+    // }else{
+    //     // pop pc
+    //     cur_block->InsertInst(new StackMInstrcuton(cur_block,StackMInstrcuton::POP, new MachineOperand(MachineOperand::REG,15)));
+    // }
 }
 
 void XorInstruction::genMachineCode(AsmBuilder* builder)
@@ -926,7 +960,68 @@ void ZextInstruction::genMachineCode(AsmBuilder* builder)
 
 void FuncCallInstruction::genMachineCode(AsmBuilder* builder)
 {
+    auto cur_block = builder->getBlock();
+    MachineOperand*passOperand;
+    MachineInstruction*inst;
 
+    // 要使用 R0-R3 寄存器传递前四个参数，和callee saved的关系？
+    int i = 0;
+    for (auto it = operands.begin(); it != operands.end(); it++, i++) {
+        // 第一个operand是fp不处理
+        if (i == 0)
+            continue;
+        if (i == 5)
+            break;
+        //物理寄存器R(i-1)
+       passOperand=genMachineReg(i-1);
+       auto src=genMachineOperand(operands[i]);
+       //从内存加载到寄存器？
+       if(src->isImm()&&src->getVal()>255)
+       {
+           inst=new LoadMInstruction(cur_block,passOperand,src);
+       }
+       //直接寄存器赋值
+       else
+       {
+           inst=new MovMInstruction(cur_block,MovMInstruction::MOV,passOperand,src);
+       }
+        cur_block->InsertInst(inst);
+    }
+    //参数超过4个的时候，通过压栈的方式传递参数
+    for (int i = operands.size() - 1; i > 4; i--) {
+        passOperand = genMachineOperand(operands[i]);
+        if (passOperand->isImm()) {
+            auto dst = genMachineVReg();
+            if (passOperand->getVal() < 256)
+                inst = new MovMInstruction(cur_block, MovMInstruction::MOV,
+                                               dst, passOperand);
+            else
+                inst = new LoadMInstruction(cur_block, dst, passOperand);
+            cur_block->InsertInst(inst);
+            passOperand = dst;
+        }
+        std::vector<MachineOperand*> vec;
+        inst = new StackMInstrcuton(cur_block, StackMInstrcuton::PUSH, vec,
+                                        passOperand);
+        cur_block->InsertInst(inst);
+    }
+
+    auto label = new MachineOperand(se->toStr().c_str());
+    inst = new BranchMInstruction(cur_block, BranchMInstruction::BL, label);
+    cur_block->InsertInst(inst);
+
+    if (operands.size() > 5) {
+        auto off = genMachineImm((operands.size() - 5) * 4);
+        auto sp = new MachineOperand(MachineOperand::REG, 13);
+        inst = new BinaryMInstruction(cur_block, BinaryMInstruction::ADD,sp, sp, off);
+        cur_block->InsertInst(inst);
+    }
+    if (dst) {
+        passOperand = genMachineOperand(dst);
+        auto r0 = new MachineOperand(MachineOperand::REG, 0);
+        inst =new MovMInstruction(cur_block, MovMInstruction::MOV, passOperand, r0);
+        cur_block->InsertInst(inst);
+    }
 }
 
 void GlobalDeclInstruction::genMachineCode(AsmBuilder* builder)

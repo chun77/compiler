@@ -1,4 +1,5 @@
 #include "MachineCode.h"
+#include "Type.h"
 extern FILE* yyout;
 
 MachineOperand::MachineOperand(int tp, int val)
@@ -85,6 +86,8 @@ void MachineOperand::output()
     case LABEL:
         if (this->label.substr(0, 2) == ".L")
             fprintf(yyout, "%s", this->getName().c_str());
+        else if (this->label.substr(0, 1) == "@")
+            fprintf(yyout, "%s", this->label.c_str() + 1);
         else
             fprintf(yyout, "addr_%s", this->getName().c_str());
     default:
@@ -431,16 +434,31 @@ void CmpMInstruction::output()
     fprintf(yyout, "\n");
 }
 
-StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op, 
-    MachineOperand* src,
+//srcs:callee savedRegs
+StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op, std::vector<MachineOperand*> srcs,
+    MachineOperand* fpSrc,MachineOperand* lrSrc,
     int cond)
 {
     // TODO
     this->parent=p;
     this->op=op;
     this->cond=cond;
-    this->use_list.push_back(src);
-    src->setParent(this);
+    if(srcs.size())
+    {
+            for(auto it = srcs.begin(); it != srcs.end(); it++)  
+            {
+                this->use_list.push_back(*it);
+                (*it)->setParent(this);
+            }
+    }
+    this->use_list.push_back(fpSrc);
+    fpSrc->setParent(this);
+    //如果当前函数调用了其他函数才需要保存lr
+    if(lrSrc)
+    {
+        this->use_list.push_back(lrSrc);
+        lrSrc->setParent(this);
+    }
 }
 
 void StackMInstrcuton::output()
@@ -452,12 +470,16 @@ void StackMInstrcuton::output()
         fprintf(yyout, "\tpop {");
         break;
     case PUSH:
-        fprintf(yyout, "\tpush ");
+        fprintf(yyout, "\tpush {");
         break;
     default:
         break;
     }
     this->use_list[0]->output();
+    for (long unsigned int i = 1; i < use_list.size(); i++) {
+        fprintf(yyout, ", ");
+        this->use_list[i]->output();
+    }
     fprintf(yyout, "}\n");
 }
 
@@ -466,14 +488,50 @@ MachineFunction::MachineFunction(MachineUnit* p, SymbolEntry* sym_ptr)
     this->parent = p; 
     this->sym_ptr = sym_ptr; 
     this->stack_size = 0;
+    this->paramsNum=((FunctionType*)(sym_ptr->getType()))->getParamSe().size();
+    
 };
+
+std::vector<MachineOperand*> MachineFunction::getSavedRegs() {
+    std::vector<MachineOperand*> regs;
+    for (auto it = saved_regs.begin(); it != saved_regs.end(); it++) {
+        auto reg = new MachineOperand(MachineOperand::REG, *it);
+        regs.push_back(reg);
+    }
+    return regs;
+}
+
 
 void MachineBlock::output()
 {
     fprintf(yyout, ".L%d:\n", this->no);
+    bool first=true;
+    //目前还avalible的寄存器
+    int offset=(parent->getSavedRegs().size() + 2) * 4;
+    int num = parent->getParamsNum();
     for(auto iter : inst_list)
+    {
+        //在bx前加pop指令
+        if(iter->isBX())
+        {
+            auto fp = new MachineOperand(MachineOperand::REG, 11);
+            auto lr = new MachineOperand(MachineOperand::REG, 14);
+            //将之前push保存的信息pop恢复
+            auto cur_inst =new StackMInstrcuton(this, StackMInstrcuton::POP,parent->getSavedRegs(), fp, lr);
+            cur_inst->output();
+        }
+        // if(num>4&&iter->isStore())
+        // {
+        //     MachineOperand* operand=iter->getUse()[0];
+        //     if(operand->isReg()&&operand->getReg()==3)
+        //     {
+                
+        //     }
+        // }
         iter->output();
+    }
 }
+
 
 void MachineFunction::output()
 {
@@ -487,20 +545,44 @@ void MachineFunction::output()
     *  2. fp = sp
     *  3. Save callee saved register
     *  4. Allocate stack space for local variable */
-    fprintf(yyout, "\tpush {");
-    if(isLeaf()){
-        fprintf(yyout, "fp}\n");
-    }else{
-        fprintf(yyout, "fp, lr}\n");
-    }
-    fprintf(yyout, "\tmov fp,sp\n");
-    fprintf(yyout, "\tsub sp, sp, #%d\n", this->stack_size);
+    // fprintf(yyout, "\tpush {");
+    // if(isLeaf()){
+    //     fprintf(yyout, "fp}\n");
+    // }else{
+    //     fprintf(yyout, "fp, lr}\n");
+    // }
+    //在刚进入一个新的函数开始执行的时候，它们保存的是上个函数的信息，需要将它们入栈保存起来
+    auto fp = new MachineOperand(MachineOperand::REG, 11);
+    auto sp = new MachineOperand(MachineOperand::REG, 13);
+    auto lr = new MachineOperand(MachineOperand::REG, 14);
+    (new StackMInstrcuton(nullptr, StackMInstrcuton::PUSH, getSavedRegs(), fp,lr))->output();
+    (new MovMInstruction(nullptr, MovMInstruction::MOV, fp, sp))->output();
+    // fprintf(yyout, "\tmov fp,sp\n");
+    // fprintf(yyout, "\tsub sp, sp, #%d\n", this->stack_size);
     // Traverse all the block in block_list to print assembly code.
-    for(auto iter : block_list)
+    // for(auto iter : block_list)
+    // {
+    //     if((*iter).empty()==false)
+    //         iter->output();
+    // }
+
+    //之后需要生成 SUB 指令为局部变量分配栈内空间,此时已经知道实际的栈内空间大小
+    int off = AllocSpace(0);
+    auto size = new MachineOperand(MachineOperand::IMM, off);
+    if (off < -255 || off > 255) 
     {
-        if((*iter).empty()==false)
-            iter->output();
+        auto r4 = new MachineOperand(MachineOperand::REG, 4);
+        (new LoadMInstruction(nullptr, r4, size))->output();
+        (new BinaryMInstruction(nullptr, BinaryMInstruction::SUB, sp, sp, r4))->output();
+    } 
+    else 
+    {
+        (new BinaryMInstruction(nullptr, BinaryMInstruction::SUB, sp, sp, size))->output();
     }
+    for (auto iter : block_list) {
+        iter->output();
+    }
+    fprintf(yyout, "\n");
 }
 
 GlobalMInstruction::GlobalMInstruction(MachineBlock* p,MachineOperand* dst, MachineOperand* src, int cond)

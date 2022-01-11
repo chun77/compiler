@@ -76,6 +76,9 @@ public:
     std::vector<MachineOperand*>& getDef() {return def_list;};
     std::vector<MachineOperand*>& getUse() {return use_list;};
     MachineBlock* getParent() { return this->parent;};
+    bool isBX() const { return type == BRANCH && op == 2; };
+    bool isStore() const { return type == STORE; };
+    bool isAdd() const { return type == BINARY && op == 0; };
 };
 
 class BinaryMInstruction : public MachineInstruction
@@ -137,13 +140,15 @@ public:
     void output();
 };
 
-class StackMInstrcuton : public MachineInstruction
-{
-public:
+class StackMInstrcuton : public MachineInstruction {
+   public:
     enum opType { PUSH, POP };
-    StackMInstrcuton(MachineBlock* p, int op, 
-                MachineOperand* src,
-                int cond = MachineInstruction::NONE);
+    StackMInstrcuton(MachineBlock* p,
+                     int op,
+                     std::vector<MachineOperand*> srcs,
+                     MachineOperand* fpSrc,
+                     MachineOperand* lrSrc = nullptr,
+                     int cond = MachineInstruction::NONE);
     void output();
 };
 
@@ -204,6 +209,7 @@ private:
     std::set<int> saved_regs;
     SymbolEntry* sym_ptr;
     bool leaf=true;
+    int paramsNum;
 public:
     std::vector<MachineBlock*>& getBlocks() {return block_list;};
     std::vector<MachineBlock*>::iterator begin() { return block_list.begin(); };
@@ -220,6 +226,9 @@ public:
     void output();
     void setNotLeaf(){leaf=false;};
     bool isLeaf(){return leaf;};
+    int getParamsNum(){return paramsNum;};
+    std::vector<MachineOperand*> getSavedRegs();
+
 };
 
 class MachineUnit
