@@ -18,6 +18,7 @@ public:
     bool isUncond() const {return instType == UNCOND;};
     bool isCond() const {return instType == COND;};
     bool isAlloc() const {return instType == ALLOCA;};
+    bool isReturn() const {return instType == RET;};
     void setParent(BasicBlock *);
     void setNext(Instruction *);
     void setPrev(Instruction *);
