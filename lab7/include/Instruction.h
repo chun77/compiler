@@ -73,10 +73,11 @@ public:
 class StoreInstruction : public Instruction
 {
 public:
-    StoreInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb = nullptr);
+    StoreInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb = nullptr,int num=-1);
     ~StoreInstruction();
     void output() const;
     void genMachineCode(AsmBuilder*);
+    int paramnum;
 };
 
 class GlobalDefInstruction : public Instruction

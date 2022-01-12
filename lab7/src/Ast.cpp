@@ -11,6 +11,7 @@ int Node::counter = 0;
 IRBuilder* Node::builder = nullptr;
 bool firstNotUnary=0;
 bool firstUnary=1;
+int paramnum=0;
 //用于隐式转换
 ConstantSymbolEntry*zeroSe=new ConstantSymbolEntry(TypeSystem::intType,0);
 ExprNode *expr0=new Constant((SymbolEntry*)zeroSe);
@@ -72,6 +73,7 @@ void FunctionDef::genCode()
     if(param!=NULL){
         param->genCode();
     }
+    paramnum=0;
     stmt->genCode();
 
     /**
@@ -601,7 +603,8 @@ void FuncParam::genCode()
     
     BasicBlock *bb;
     bb = builder->getInsertBB();
-    new StoreInstruction(se->getAddr(), id->getOperand(), bb);
+    new StoreInstruction(se->getAddr(), id->getOperand(), bb, paramnum);
+    paramnum++;
 }
 
 void WhileStmt::genCode()
