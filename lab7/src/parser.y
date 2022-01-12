@@ -354,32 +354,32 @@ VarDecl
     ID {
         SymbolEntry *se;
         se = identifiers->lookup($1);
-        if(se!=nullptr&&dynamic_cast<IdentifierSymbolEntry*>(se)->getScope()==identifiers->getLevel()){
+        /*if(se!=nullptr&&dynamic_cast<IdentifierSymbolEntry*>(se)->getScope()==identifiers->getLevel()){
             fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
             exit(EXIT_FAILURE);
             delete [](char*)$1;
             assert(se != nullptr);
-        }else{
+        }else{*/
             se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
             identifiers->install($1, se);
             $$ = new VarDecl(new Id(se),nullptr);
             delete []$1;
-        }
+        //}
     }
     |
     ID ASSIGN Exp{
         SymbolEntry *se;
         se = identifiers->lookup($1);
-        if(se!=nullptr){
+        /*if(se!=nullptr){
             fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
             delete [](char*)$1;
             assert(se != nullptr);
-        }else{
+        }else{*/
             se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
             identifiers->install($1, se);
             $$ = new VarDecl(new Id(se),$3);
             delete []$1;
-        }
+        //}
     }
     ;
 ConstDecl
@@ -387,34 +387,34 @@ ConstDecl
     ID {
         SymbolEntry *se;
         se = identifiers->lookup($1);
-        if(se!=nullptr){
+        /*if(se!=nullptr){
             fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
             delete [](char*)$1;
             assert(se != nullptr);
-        }else{
+        }else{*/
             se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
             //se->setConstant();
             identifiers->install($1, se);
             
             $$ = new ConstDecl(new Id(se),nullptr);
             delete []$1;
-        }
+        //}
     }
     |
     ID ASSIGN Exp{
         SymbolEntry *se;
         se = identifiers->lookup($1);
-        if(se!=nullptr){
+        /*if(se!=nullptr){
             fprintf(stderr,"identifier \"%s\" is redefined\n", (char*)$1);
             delete [](char*)$1;
             assert(se != nullptr);
-        }else{
+        }else{*/
             se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
             //se->setConstant();
             identifiers->install($1, se);
             $$ = new ConstDecl(new Id(se),$3);
             delete []$1;
-        }
+        //}
     }
     ;
 
