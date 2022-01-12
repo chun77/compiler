@@ -31,6 +31,7 @@ private:
     int val;  // value of immediate number
     int reg_no; // register no
     std::string label; // address label
+    bool isFunc=false;
 public:
     enum { IMM, VREG, REG, LABEL };
     MachineOperand(int tp, int val);
@@ -42,6 +43,7 @@ public:
     bool isVReg() { return this->type == VREG; };
     bool isLabel() { return this->type == LABEL; };
     int getVal() {return this->val; };
+    void setVal(int val) { this->val = val; };
     int getReg() {return this->reg_no; };
     void setReg(int regno) {this->type = REG; this->reg_no = regno;};
     std::string getLabel() {return this->label; };
@@ -50,6 +52,8 @@ public:
     MachineInstruction* getParent() { return this->parent;};
     void PrintReg();
     void output();
+    bool IsFunc(){return this->isFunc;};
+    void setFunc(bool b){this->isFunc=b;};
 };
 
 class MachineInstruction

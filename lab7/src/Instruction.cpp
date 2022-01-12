@@ -993,20 +993,20 @@ void FuncCallInstruction::genMachineCode(AsmBuilder* builder)
         if (passOperand->isImm()) {
             auto dst = genMachineVReg();
             if (passOperand->getVal() < 256)
-                inst = new MovMInstruction(cur_block, MovMInstruction::MOV,
-                                               dst, passOperand);
+                inst = new MovMInstruction(cur_block, MovMInstruction::MOV,dst, passOperand);
             else
                 inst = new LoadMInstruction(cur_block, dst, passOperand);
             cur_block->InsertInst(inst);
             passOperand = dst;
         }
         std::vector<MachineOperand*> vec;
-        inst = new StackMInstrcuton(cur_block, StackMInstrcuton::PUSH, vec,
-                                        passOperand);
+        inst = new StackMInstrcuton(cur_block, StackMInstrcuton::PUSH, vec,passOperand);
         cur_block->InsertInst(inst);
     }
-
+    // std::string str1="addr_";
+    // std::string labelStr=str1.append(se->toStr().c_str());
     auto label = new MachineOperand(se->toStr().c_str());
+    label->setFunc(true);
     inst = new BranchMInstruction(cur_block, BranchMInstruction::BL, label);
     cur_block->InsertInst(inst);
 

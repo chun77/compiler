@@ -86,8 +86,8 @@ void MachineOperand::output()
     case LABEL:
         if (this->label.substr(0, 2) == ".L")
             fprintf(yyout, "%s", this->getName().c_str());
-        else if (this->label.substr(0, 1) == "@")
-            fprintf(yyout, "%s", this->label.c_str() + 1);
+        else if (this->label.substr(0, 1) == "@"&&this->IsFunc())
+            fprintf(yyout, "%s", this->getLabel().c_str() + 1);
         else
             fprintf(yyout, "addr_%s", this->getName().c_str());
     default:
@@ -441,6 +441,7 @@ StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op, std::vector<MachineO
 {
     // TODO
     this->parent=p;
+    this->type = MachineInstruction::STACK;
     this->op=op;
     this->cond=cond;
     if(srcs.size())
@@ -448,7 +449,7 @@ StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op, std::vector<MachineO
             for(auto it = srcs.begin(); it != srcs.end(); it++)  
             {
                 this->use_list.push_back(*it);
-                (*it)->setParent(this);
+                // (*it)->setParent(this);
             }
     }
     this->use_list.push_back(fpSrc);
@@ -505,9 +506,9 @@ std::vector<MachineOperand*> MachineFunction::getSavedRegs() {
 void MachineBlock::output()
 {
     fprintf(yyout, ".L%d:\n", this->no);
-    bool first=true;
+    // bool first=true;
     //目前还avalible的寄存器
-    int offset=(parent->getSavedRegs().size() + 2) * 4;
+    // int offset=(parent->getSavedRegs().size() + 2) * 4;
     int num = parent->getParamsNum();
     for(auto iter : inst_list)
     {
@@ -520,6 +521,22 @@ void MachineBlock::output()
             auto cur_inst =new StackMInstrcuton(this, StackMInstrcuton::POP,parent->getSavedRegs(), fp, lr);
             cur_inst->output();
         }
+        iter->output();
+        // if (iter->isAdd()) {
+        //         auto dst = iter->getDef()[0];
+        //         auto src1 = iter->getUse()[0];
+        //         if (dst->isReg() && dst->getReg() == 13 && src1->isReg() &&
+        //             src1->getReg() == 13 && (iter+1)->isBX()) {
+        //             int size = parent->AllocSpace(0);
+        //             if (size < -255 || size > 255) {
+        //                 auto r1 = new MachineOperand(MachineOperand::REG, 1);
+        //                 auto off =new MachineOperand(MachineOperand::IMM, size);
+        //                 (new LoadMInstruction(nullptr, r1, off))->output();
+        //                 iter->getUse()[1]->setReg(1);
+        //             } else
+        //                 iter->getUse()[1]->setVal(size);
+        //         }
+        //     }
         // if(num>4&&iter->isStore())
         // {
         //     MachineOperand* operand=iter->getUse()[0];
@@ -528,7 +545,6 @@ void MachineBlock::output()
                 
         //     }
         // }
-        iter->output();
     }
 }
 
