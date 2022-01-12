@@ -364,6 +364,7 @@ BranchMInstruction::BranchMInstruction(MachineBlock* p, int op,
     this->parent=p;
     this->op=op;
     this->cond=cond;
+    this->type=MachineInstruction::BRANCH;
     this->def_list.push_back(dst);
     dst->setParent(this);
 }
@@ -596,6 +597,9 @@ void MachineFunction::output()
         (new BinaryMInstruction(nullptr, BinaryMInstruction::SUB, sp, sp, size))->output();
     }
     for (auto iter : block_list) {
+        if(iter->empty()){
+            continue;
+        }
         iter->output();
     }
     fprintf(yyout, "\n");
