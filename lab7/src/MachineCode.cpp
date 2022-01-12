@@ -276,7 +276,7 @@ StoreMInstruction::StoreMInstruction(MachineBlock* p,
 {
     // TODO
     this->parent = p;
-    this->type = MachineInstruction::LOAD;
+    this->type = MachineInstruction::STORE;
     this->op = -1;
     this->cond = cond;
     this->use_list.push_back(dst);
@@ -310,8 +310,10 @@ void StoreMInstruction::output()
     this->use_list[1]->output();
     if( this->use_list.size() > 1 )
     {
-        fprintf(yyout, ", ");
-        this->use_list[2]->output();
+        if(use_list[2]){
+            fprintf(yyout, ", ");
+            this->use_list[2]->output();
+        }
     }
 
     if(this->use_list[1]->isReg()||this->use_list[1]->isVReg())
